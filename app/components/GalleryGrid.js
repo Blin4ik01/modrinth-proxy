@@ -8,7 +8,6 @@ export default function GalleryGrid({ gallery }) {
 
   const handlePrev = () => {
     let newIndex = selectedIndex - 1
-    // Пропускаем заблокированные изображения
     while (newIndex >= 0 && gallery[newIndex]?.isBlocked) {
       newIndex--
     }
@@ -19,7 +18,6 @@ export default function GalleryGrid({ gallery }) {
 
   const handleNext = () => {
     let newIndex = selectedIndex + 1
-    // Пропускаем заблокированные изображения
     while (newIndex < gallery.length && gallery[newIndex]?.isBlocked) {
       newIndex++
     }
@@ -31,16 +29,12 @@ export default function GalleryGrid({ gallery }) {
   const handleClose = () => {
     setSelectedIndex(null)
   }
-
-  // Проверяем, есть ли предыдущее незаблокированное изображение
   const hasPrevUnblocked = () => {
     for (let i = selectedIndex - 1; i >= 0; i--) {
       if (!gallery[i]?.isBlocked) return true
     }
     return false
   }
-
-  // Проверяем, есть ли следующее незаблокированное изображение
   const hasNextUnblocked = () => {
     for (let i = selectedIndex + 1; i < gallery.length; i++) {
       if (!gallery[i]?.isBlocked) return true
@@ -65,7 +59,6 @@ export default function GalleryGrid({ gallery }) {
         {gallery.map((item, idx) => (
           <div key={idx} className="bg-modrinth-dark border border-gray-800 rounded-lg overflow-hidden hover:border-gray-700 transition-colors">
             {item.isBlocked ? (
-              // Заглушка для заблокированного изображения
               <div className="relative w-full aspect-video bg-gradient-to-br from-red-500/10 to-orange-500/10 border-b border-red-500/20 flex items-center justify-center">
                 <div className="text-center px-4 py-8">
                   <svg className="w-12 h-12 mx-auto mb-3 text-red-400" fill="currentColor" viewBox="0 0 24 24">
