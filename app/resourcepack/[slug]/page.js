@@ -206,7 +206,7 @@ export default async function ResourcepackPage({ params }) {
         </div>
       </div>
 
-      <ContentNavigation slug={slug} contentType="resourcepack" versionsCount={versions.length} />
+      <ContentNavigation slug={slug} contentType="resourcepack" versionsCount={versions.length} galleryCount={pack.gallery?.length || 0} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="min-w-0">

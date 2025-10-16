@@ -1,53 +1,29 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getMod, getModVersions, getTeamMembers, formatDownloads, formatDate } from '@/lib/modrinth'
-import { filterModContent, filterTeamMembers, isProjectBlocked, isOrganizationBlocked } from '@/lib/contentFilter'
+import { getMod, getModVersions, formatDownloads } from '@/lib/modrinth'
+import { isProjectBlocked, isOrganizationBlocked, filterGalleryImages } from '@/lib/contentFilter'
+import ContentNavigation from '@/app/components/ContentNavigation'
+import ModSidebar from '@/app/components/ModSidebar'
 import DownloadModal from '@/app/components/DownloadModal'
 import MobileDownloadButton from '@/app/components/MobileDownloadButton'
-import ModSidebar from '@/app/components/ModSidebar'
-import ContentNavigation from '@/app/components/ContentNavigation'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeRaw from 'rehype-raw'
+import GalleryGrid from '@/app/components/GalleryGrid'
 
 export async function generateMetadata({ params }) {
   try {
     const mod = await getMod(params.slug)
-    const url = `https://modrinth.white-minecraft.ru/mod/${params.slug}`
-    const fullDescription = mod.description || `Скачать ${mod.title} для Minecraft. ${formatDownloads(mod.downloads)} загрузок. Поддержка версий: ${mod.game_versions?.slice(0, 3).join(', ')}.`
-    
     return {
-      title: `${mod.title} - Майнкрафт Мод`,
-      description: fullDescription,
-      robots: 'all',
-      openGraph: {
-        siteName: 'modrinth.white-minecraft',
-        type: 'website',
-        url: url,
-        title: `${mod.title} - Майнкрафт Мод`,
-        description: mod.description,
-        images: mod.icon_url ? [{ url: mod.icon_url }] : [],
-      },
-      twitter: {
-        card: 'summary',
-        title: `${mod.title} - Майнкрафт Мод`,
-        description: mod.description,
-        images: mod.icon_url ? [mod.icon_url] : [],
-      },
-      other: {
-        'theme-color': '#1bd96a',
-      },
+      title: `${mod.title} - Галерея | ModrinthProxy`,
+      description: `Просмотрите галерею изображений для ${mod.title}`,
     }
   } catch {
     return {
-      title: 'Мод не найден | ModrinthProxy',
-      description: 'Запрашиваемый мод не найден',
+      title: 'Галерея не найдена',
     }
   }
 }
 
-export default async function ModPage({ params }) {
-  const { slug } = params;
+export default async function ModGalleryPage({ params }) {
+  const { slug } = params
   
   if (isProjectBlocked(slug)) {
     return (
@@ -61,34 +37,24 @@ export default async function ModPage({ params }) {
             <p className="text-gray-300 mb-3">
               Данный проект недоступен в соответствии с региональными ограничениями и требованиями Роскомнадзора.
             </p>
-            <p className="text-gray-400 text-sm">
-              К сожалению, некоторые проекты были заблокированы на территории Российской Федерации по решению регулирующих органов. Мы вынуждены ограничить доступ к этому контенту для соблюдения действующего законодательства.
-            </p>
           </div>
         </div>
         <Link 
           href="/mods"
           className="inline-flex items-center gap-2 bg-modrinth-green text-black px-6 py-3 rounded-lg font-semibold hover:bg-green-400 transition"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
           <span>Вернуться к модам</span>
         </Link>
       </div>
     )
   }
 
-  let mod, versions, teamMembers;
+  let mod, versions
   try {
-    [mod, versions, teamMembers] = await Promise.all([
+    [mod, versions] = await Promise.all([
       getMod(slug),
       getModVersions(slug),
-      getTeamMembers(slug),
-    ]);
-    
-    mod = filterModContent(mod);
-    teamMembers = filterTeamMembers(teamMembers);
+    ])
     
     if (isOrganizationBlocked(mod.organization)) {
       return (
@@ -102,18 +68,12 @@ export default async function ModPage({ params }) {
               <p className="text-gray-300 mb-3">
                 Данный проект недоступен в соответствии с региональными ограничениями и требованиями Роскомнадзора.
               </p>
-              <p className="text-gray-400 text-sm">
-                К сожалению, некоторые проекты были заблокированы на территории Российской Федерации по решению регулирующих органов. Мы вынуждены ограничить доступ к этому контенту для соблюдения действующего законодательства.
-              </p>
             </div>
           </div>
           <Link 
             href="/mods"
-            className="inline-flex items-center gap-2 bg-modrinth-green hover:bg-green-400 text-black px-6 py-3 rounded-lg font-bold transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center gap-2 bg-modrinth-green text-black px-6 py-3 rounded-lg font-semibold hover:bg-green-400 transition"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
             <span>Вернуться к модам</span>
           </Link>
         </div>
@@ -122,6 +82,10 @@ export default async function ModPage({ params }) {
   } catch (error) {
     notFound()
   }
+
+  const gallery = mod.gallery || []
+  const filteredGallery = filterGalleryImages(gallery)
+  const sortedGallery = [...filteredGallery].sort((a, b) => a.ordering - b.ordering)
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -206,26 +170,15 @@ export default async function ModPage({ params }) {
         </div>
       </div>
 
-      <ContentNavigation slug={slug} contentType="mod" versionsCount={versions.length} galleryCount={mod.gallery?.length || 0} />
+      <ContentNavigation slug={slug} contentType="mod" versionsCount={versions.length} galleryCount={gallery.length} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="min-w-0">
-          <div className="bg-modrinth-dark border border-gray-800 rounded-lg overflow-hidden">
-            <div className="p-4 md:p-6">
-              <div className="prose prose-invert prose-sm max-w-none">
-                <ReactMarkdown 
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]}
-                >
-                  {mod.body}
-                </ReactMarkdown>
-              </div>
-            </div>
-          </div>
+          <GalleryGrid gallery={sortedGallery} />
         </div>
         
         <div className="lg:sticky lg:top-4 lg:self-start">
-          <ModSidebar mod={mod} teamMembers={teamMembers} />
+          <ModSidebar mod={mod} teamMembers={[]} />
         </div>
       </div>
     </div>

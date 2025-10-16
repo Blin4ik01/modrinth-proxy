@@ -1,53 +1,29 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getMod, getModVersions, getTeamMembers, formatDownloads } from '@/lib/modrinth'
-import { filterModContent, filterTeamMembers, isProjectBlocked, isOrganizationBlocked } from '@/lib/contentFilter'
+import { getMod, getModVersions, formatDownloads } from '@/lib/modrinth'
+import { isProjectBlocked, isOrganizationBlocked, filterGalleryImages } from '@/lib/contentFilter'
+import ContentNavigation from '@/app/components/ContentNavigation'
+import ModSidebar from '@/app/components/ModSidebar'
 import DownloadModal from '@/app/components/DownloadModal'
 import MobileDownloadButton from '@/app/components/MobileDownloadButton'
-import ModSidebar from '@/app/components/ModSidebar'
-import ContentNavigation from '@/app/components/ContentNavigation'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeRaw from 'rehype-raw'
+import GalleryGrid from '@/app/components/GalleryGrid'
 
 export async function generateMetadata({ params }) {
   try {
     const pack = await getMod(params.slug)
-    const url = `https://modrinth.white-minecraft.ru/datapack/${params.slug}`
-    const fullDescription = pack.description || `Скачать ${pack.title} для Minecraft. ${formatDownloads(pack.downloads)} загрузок. Поддержка версий: ${pack.game_versions?.slice(0, 3).join(', ')}.`
-    
     return {
-      title: `${pack.title} - Майнкрафт Датапак`,
-      description: fullDescription,
-      robots: 'all',
-      openGraph: {
-        siteName: 'modrinth.white-minecraft',
-        type: 'website',
-        url: url,
-        title: `${pack.title} - Майнкрафт Датапак`,
-        description: pack.description,
-        images: pack.icon_url ? [{ url: pack.icon_url }] : [],
-      },
-      twitter: {
-        card: 'summary',
-        title: `${pack.title} - Майнкрафт Датапак`,
-        description: pack.description,
-        images: pack.icon_url ? [pack.icon_url] : [],
-      },
-      other: {
-        'theme-color': '#1bd96a',
-      },
+      title: `${pack.title} - Галерея | ModrinthProxy`,
+      description: `Просмотрите галерею изображений для ${pack.title}`,
     }
   } catch {
     return {
-      title: 'Датапак не найден | ModrinthProxy',
-      description: 'Запрашиваемый датапак не найден',
+      title: 'Галерея не найдена',
     }
   }
 }
 
-export default async function DatapackPage({ params }) {
-  const { slug } = params;
+export default async function DatapackGalleryPage({ params }) {
+  const { slug } = params
   
   if (isProjectBlocked(slug)) {
     return (
@@ -61,34 +37,24 @@ export default async function DatapackPage({ params }) {
             <p className="text-gray-300 mb-3">
               Данный проект недоступен в соответствии с региональными ограничениями и требованиями Роскомнадзора.
             </p>
-            <p className="text-gray-400 text-sm">
-              К сожалению, некоторые проекты были заблокированы на территории Российской Федерации по решению регулирующих органов. Мы вынуждены ограничить доступ к этому контенту для соблюдения действующего законодательства.
-            </p>
           </div>
         </div>
         <Link 
           href="/datapacks"
           className="inline-flex items-center gap-2 bg-modrinth-green text-black px-6 py-3 rounded-lg font-semibold hover:bg-green-400 transition"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
           <span>Вернуться к датапакам</span>
         </Link>
       </div>
     )
   }
 
-  let pack, versions, teamMembers;
+  let pack, versions
   try {
-    [pack, versions, teamMembers] = await Promise.all([
+    [pack, versions] = await Promise.all([
       getMod(slug),
       getModVersions(slug),
-      getTeamMembers(slug),
-    ]);
-    
-    pack = filterModContent(pack);
-    teamMembers = filterTeamMembers(teamMembers);
+    ])
     
     if (isOrganizationBlocked(pack.organization)) {
       return (
@@ -100,20 +66,14 @@ export default async function DatapackPage({ params }) {
             <h1 className="text-3xl font-bold text-red-500 mb-4">Доступ ограничен</h1>
             <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-6 mb-6 text-left">
               <p className="text-gray-300 mb-3">
-                Данный проект недоступен в соответствии с региональными ограничениями и требованиями Роскомнадзора.
-              </p>
-              <p className="text-gray-400 text-sm">
-                К сожалению, некоторые проекты были заблокированы на территории Российской Федерации по решению регулирующих органов. Мы вынуждены ограничить доступ к этому контенту для соблюдения действующего законодательства.
+                Данный проект недоступен в соответствии с региональными ограничениями и требованиям Роскомнадзора.
               </p>
             </div>
           </div>
           <Link 
             href="/datapacks"
-            className="inline-flex items-center gap-2 bg-modrinth-green hover:bg-green-400 text-black px-6 py-3 rounded-lg font-bold transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center gap-2 bg-modrinth-green text-black px-6 py-3 rounded-lg font-semibold hover:bg-green-400 transition"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
             <span>Вернуться к датапакам</span>
           </Link>
         </div>
@@ -122,6 +82,10 @@ export default async function DatapackPage({ params }) {
   } catch (error) {
     notFound()
   }
+
+  const gallery = pack.gallery || []
+  const filteredGallery = filterGalleryImages(gallery)
+  const sortedGallery = [...filteredGallery].sort((a, b) => a.ordering - b.ordering)
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -140,16 +104,11 @@ export default async function DatapackPage({ params }) {
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 lg:items-start">
           <div className="flex gap-3 md:gap-4 flex-1">
             {pack.icon_url && (
-              <img
-                src={pack.icon_url}
-                alt={pack.title}
-                className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover flex-shrink-0"
-              />
+              <img src={pack.icon_url} alt={pack.title} className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover flex-shrink-0" />
             )}
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl md:text-3xl font-bold mb-2">{pack.title}</h1>
               <p className="text-gray-300 mb-3 text-sm md:text-base">{pack.description}</p>
-              
               <div className="hidden lg:flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm">
                 <div className="flex items-center gap-1.5 text-gray-400">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,12 +124,7 @@ export default async function DatapackPage({ params }) {
                 </div>
                 <div className="hidden sm:flex flex-wrap gap-1.5">
                   {pack.categories.slice(0, 4).map((cat) => (
-                    <Link
-                      key={cat}
-                      href={`/datapacks?f=categories:${cat}`}
-                      className="px-2 py-0.5 text-xs font-semibold rounded-full hover:underline transition-all"
-                      style={{ backgroundColor: '#34363c', color: '#80878f' }}
-                    >
+                    <Link key={cat} href={`/datapacks?f=categories:${cat}`} className="px-2 py-0.5 text-xs font-semibold rounded-full hover:underline transition-all" style={{ backgroundColor: '#34363c', color: '#80878f' }}>
                       {cat}
                     </Link>
                   ))}
@@ -178,12 +132,10 @@ export default async function DatapackPage({ params }) {
               </div>
             </div>
           </div>
-
           <div className="w-full lg:w-auto lg:flex lg:items-center">
             <div className="hidden lg:block w-full lg:w-auto">
               <DownloadModal mod={pack} versions={versions} contentType="datapacks" />
             </div>
-            
             <div className="lg:hidden flex items-center gap-3 justify-between">
               <div className="flex flex-col gap-2 text-xs">
                 <div className="flex items-center gap-1.5 text-gray-400">
@@ -199,35 +151,24 @@ export default async function DatapackPage({ params }) {
                   <span className="font-semibold text-white">{formatDownloads(pack.followers)}</span>
                 </div>
               </div>
-              
               <MobileDownloadButton />
             </div>
           </div>
         </div>
       </div>
 
-      <ContentNavigation slug={slug} contentType="datapack" versionsCount={versions.length} galleryCount={pack.gallery?.length || 0} />
+      <ContentNavigation slug={slug} contentType="datapack" versionsCount={versions.length} galleryCount={gallery.length} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="min-w-0">
-          <div className="bg-modrinth-dark border border-gray-800 rounded-lg overflow-hidden">
-            <div className="p-4 md:p-6">
-              <div className="prose prose-invert prose-sm max-w-none">
-                <ReactMarkdown 
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]}
-                >
-                  {pack.body}
-                </ReactMarkdown>
-              </div>
-            </div>
-          </div>
+          <GalleryGrid gallery={sortedGallery} />
         </div>
         
         <div className="lg:sticky lg:top-4 lg:self-start">
-          <ModSidebar mod={pack} teamMembers={teamMembers} />
+          <ModSidebar mod={pack} teamMembers={[]} />
         </div>
       </div>
     </div>
   )
 }
+

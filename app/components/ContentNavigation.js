@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-export default function ContentNavigation({ slug, contentType, versionsCount = 0 }) {
+export default function ContentNavigation({ slug, contentType, versionsCount = 0, galleryCount = 0 }) {
   const pathname = usePathname()
   
   const isActive = (path) => {
@@ -18,6 +18,7 @@ export default function ContentNavigation({ slug, contentType, versionsCount = 0
   
   const tabs = [
     { href: `/${contentType}/${slug}`, label: 'Описание' },
+    { href: `/${contentType}/${slug}/gallery`, label: `Галерея${galleryCount > 0 ? ` (${galleryCount})` : ''}` },
     { href: `/${contentType}/${slug}/changelog`, label: 'Изменения' },
     { href: `/${contentType}/${slug}/versions`, label: `Версии${versionsCount > 0 ? ` (${versionsCount})` : ''}` },
   ]
