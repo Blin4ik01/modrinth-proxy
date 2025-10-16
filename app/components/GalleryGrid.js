@@ -9,12 +9,10 @@ export default function GalleryGrid({ gallery }) {
   const handlePrev = () => {
     let newIndex = selectedIndex - 1
     
-    // Если вышли за начало, переходим в конец
     if (newIndex < 0) {
       newIndex = gallery.length - 1
     }
     
-    // Пропускаем заблокированные изображения
     let attempts = 0
     while (gallery[newIndex]?.isBlocked && attempts < gallery.length) {
       newIndex--
@@ -32,12 +30,10 @@ export default function GalleryGrid({ gallery }) {
   const handleNext = () => {
     let newIndex = selectedIndex + 1
     
-    // Если вышли за конец, переходим в начало
     if (newIndex >= gallery.length) {
       newIndex = 0
     }
     
-    // Пропускаем заблокированные изображения
     let attempts = 0
     while (gallery[newIndex]?.isBlocked && attempts < gallery.length) {
       newIndex++
@@ -55,7 +51,7 @@ export default function GalleryGrid({ gallery }) {
   const handleClose = () => {
     setSelectedIndex(null)
   }
-  // Проверяем, есть ли хотя бы две незаблокированные картинки для навигации
+
   const hasMultipleImages = () => {
     const unblocked = gallery.filter(img => !img?.isBlocked)
     return unblocked.length > 1
