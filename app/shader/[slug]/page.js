@@ -150,7 +150,7 @@ export default async function ShaderPage({ params }) {
               <h1 className="text-2xl md:text-3xl font-bold mb-2">{shader.title}</h1>
               <p className="text-gray-300 mb-3 text-sm md:text-base">{shader.description}</p>
               
-              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm">
+              <div className="hidden lg:flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm">
                 <div className="flex items-center gap-1.5 text-gray-400">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
