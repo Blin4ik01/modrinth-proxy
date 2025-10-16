@@ -57,12 +57,14 @@ export default async function ResourcepacksPage({ searchParams }) {
     facets.push(resolutions.map(r => `categories:${r}`));
   }
 
-  let data, blockedCount = 0;
+  let data, blockedCount = 0, blockedByProject = 0, blockedByOrganization = 0;
   try {
     data = await searchMods({ query, facets, limit, offset });
     const filtered = filterModsList(data.hits);
     data.hits = filtered.hits;
     blockedCount = filtered.blockedCount;
+    blockedByProject = filtered.blockedByProject;
+    blockedByOrganization = filtered.blockedByOrganization;
   } catch (error) {
     return (
       <div className="text-center py-16">
@@ -87,7 +89,11 @@ export default async function ResourcepacksPage({ searchParams }) {
                 {data.total_hits.toLocaleString('ru-RU')} ресурспаков найдено
                 {blockedCount > 0 && (
                   <span className="text-red-400 ml-2">
-                    (из них {blockedCount} заблокировано по требованиям РКН)
+                    (из них {blockedCount} заблокировано по требованиям РКН
+                    {blockedByProject > 0 && blockedByOrganization > 0 && (
+                      <>: {blockedByProject} по проекту, {blockedByOrganization} по организации</>
+                    )}
+                    )
                   </span>
                 )}
               </p>
@@ -110,7 +116,29 @@ export default async function ResourcepacksPage({ searchParams }) {
 
       {data.hits.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-xl text-gray-400">Ресурспаки не найдены</p>
+          {blockedCount > 0 ? (
+            <div className="max-w-2xl mx-auto">
+              <svg className="w-16 h-16 mx-auto text-red-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p className="text-xl font-semibold text-red-400 mb-3">Все ресурспаки на этой странице заблокированы</p>
+              <p className="text-gray-400 text-sm">
+                Из {data.total_hits.toLocaleString('ru-RU')} найденных ресурспаков, {blockedCount} на текущей странице заблокированы по требованиям РКН
+                {blockedByProject > 0 && blockedByOrganization > 0 && (
+                  <> ({blockedByProject} по проекту, {blockedByOrganization} по организации)</>
+                )}
+                {blockedByProject > 0 && blockedByOrganization === 0 && (
+                  <> (по проекту)</>
+                )}
+                {blockedByProject === 0 && blockedByOrganization > 0 && (
+                  <> (по организации)</>
+                )}
+                . Попробуйте изменить параметры поиска или фильтры.
+              </p>
+            </div>
+          ) : (
+            <p className="text-xl text-gray-400">Ресурспаки не найдены</p>
+          )}
         </div>
       ) : (
         <>
