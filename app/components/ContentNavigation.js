@@ -18,10 +18,10 @@ export default function ContentNavigation({ slug, contentType, versionsCount = 0
   
   const tabs = [
     { href: `/${contentType}/${slug}`, label: 'Описание' },
-    { href: `/${contentType}/${slug}/gallery`, label: `Галерея${galleryCount > 0 ? ` (${galleryCount})` : ''}` },
+    galleryCount > 0 && { href: `/${contentType}/${slug}/gallery`, label: `Галерея (${galleryCount})` },
     { href: `/${contentType}/${slug}/changelog`, label: 'Изменения' },
     { href: `/${contentType}/${slug}/versions`, label: `Версии${versionsCount > 0 ? ` (${versionsCount})` : ''}` },
-  ]
+  ].filter(Boolean)
   
   return (
     <div className="overflow-x-auto mb-4">
