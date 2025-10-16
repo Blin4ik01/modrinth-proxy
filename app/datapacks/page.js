@@ -59,6 +59,16 @@ export default async function DatapacksPage({ searchParams }) {
 
   const totalPages = Math.ceil(data.total_hits / limit);
 
+  const buildPageUrl = (newPage) => {
+    const params = new URLSearchParams();
+    if (query) params.set('q', query);
+    if (version) params.set('v', version);
+    if (loaders.length > 0) params.set('l', loaders.join(','));
+    if (categories.length > 0) params.set('c', categories.join(','));
+    params.set('page', newPage.toString());
+    return `/datapacks?${params.toString()}`;
+  };
+
   return (
     <>
       <MobileMenu />
@@ -129,7 +139,7 @@ export default async function DatapacksPage({ searchParams }) {
             <div className="flex justify-center gap-2 mb-6">
               {page > 1 && (
                 <Link
-                  href={`/datapacks?q=${query}&page=${page - 1}`}
+                  href={buildPageUrl(page - 1)}
                   className="px-4 py-2 bg-modrinth-dark border border-gray-700 rounded-lg hover:border-modrinth-green transition"
                 >
                   ← Назад
@@ -142,7 +152,7 @@ export default async function DatapacksPage({ searchParams }) {
 
               {page < totalPages && (
                 <Link
-                  href={`/datapacks?q=${query}&page=${page + 1}`}
+                  href={buildPageUrl(page + 1)}
                   className="px-4 py-2 bg-modrinth-dark border border-gray-700 rounded-lg hover:border-modrinth-green transition"
                 >
                   Вперёд →
@@ -207,7 +217,7 @@ export default async function DatapacksPage({ searchParams }) {
             <div className="flex justify-center gap-2 mt-8">
               {page > 1 && (
                 <Link
-                  href={`/datapacks?q=${query}&page=${page - 1}`}
+                  href={buildPageUrl(page - 1)}
                   className="px-4 py-2 bg-modrinth-dark border border-gray-700 rounded-lg hover:border-modrinth-green transition"
                 >
                   ← Назад
@@ -220,7 +230,7 @@ export default async function DatapacksPage({ searchParams }) {
 
               {page < totalPages && (
                 <Link
-                  href={`/datapacks?q=${query}&page=${page + 1}`}
+                  href={buildPageUrl(page + 1)}
                   className="px-4 py-2 bg-modrinth-dark border border-gray-700 rounded-lg hover:border-modrinth-green transition"
                 >
                   Вперёд →
