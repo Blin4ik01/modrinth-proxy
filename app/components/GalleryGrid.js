@@ -8,20 +8,46 @@ export default function GalleryGrid({ gallery }) {
 
   const handlePrev = () => {
     let newIndex = selectedIndex - 1
-    while (newIndex >= 0 && gallery[newIndex]?.isBlocked) {
-      newIndex--
+    
+    // Если вышли за начало, переходим в конец
+    if (newIndex < 0) {
+      newIndex = gallery.length - 1
     }
-    if (newIndex >= 0) {
+    
+    // Пропускаем заблокированные изображения
+    let attempts = 0
+    while (gallery[newIndex]?.isBlocked && attempts < gallery.length) {
+      newIndex--
+      if (newIndex < 0) {
+        newIndex = gallery.length - 1
+      }
+      attempts++
+    }
+    
+    if (!gallery[newIndex]?.isBlocked) {
       setSelectedIndex(newIndex)
     }
   }
 
   const handleNext = () => {
     let newIndex = selectedIndex + 1
-    while (newIndex < gallery.length && gallery[newIndex]?.isBlocked) {
-      newIndex++
+    
+    // Если вышли за конец, переходим в начало
+    if (newIndex >= gallery.length) {
+      newIndex = 0
     }
-    if (newIndex < gallery.length) {
+    
+    // Пропускаем заблокированные изображения
+    let attempts = 0
+    while (gallery[newIndex]?.isBlocked && attempts < gallery.length) {
+      newIndex++
+      if (newIndex >= gallery.length) {
+        newIndex = 0
+      }
+      attempts++
+    }
+    
+    if (!gallery[newIndex]?.isBlocked) {
       setSelectedIndex(newIndex)
     }
   }
@@ -29,17 +55,10 @@ export default function GalleryGrid({ gallery }) {
   const handleClose = () => {
     setSelectedIndex(null)
   }
-  const hasPrevUnblocked = () => {
-    for (let i = selectedIndex - 1; i >= 0; i--) {
-      if (!gallery[i]?.isBlocked) return true
-    }
-    return false
-  }
-  const hasNextUnblocked = () => {
-    for (let i = selectedIndex + 1; i < gallery.length; i++) {
-      if (!gallery[i]?.isBlocked) return true
-    }
-    return false
+  // Проверяем, есть ли хотя бы две незаблокированные картинки для навигации
+  const hasMultipleImages = () => {
+    const unblocked = gallery.filter(img => !img?.isBlocked)
+    return unblocked.length > 1
   }
 
   if (gallery.length === 0) {
@@ -108,8 +127,8 @@ export default function GalleryGrid({ gallery }) {
           onClose={handleClose}
           onPrev={handlePrev}
           onNext={handleNext}
-          hasPrev={hasPrevUnblocked()}
-          hasNext={hasNextUnblocked()}
+          hasPrev={hasMultipleImages()}
+          hasNext={hasMultipleImages()}
         />
       )}
     </>
