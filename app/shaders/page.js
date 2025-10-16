@@ -92,6 +92,8 @@ export default async function ShadersPage({ searchParams }) {
     if (version) params.set('v', version);
     if (loaders.length > 0) params.set('l', loaders.join(','));
     if (categories.length > 0) params.set('c', categories.join(','));
+    if (features.length > 0) params.set('f', features.join(','));
+    if (performance.length > 0) params.set('p', performance.join(','));
     params.set('page', newPage.toString());
     return `/shaders?${params.toString()}`;
   };

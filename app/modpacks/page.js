@@ -62,6 +62,7 @@ export default async function ModpacksPage({ searchParams }) {
     if (version) params.set('v', version);
     if (loaders.length > 0) params.set('l', loaders.join(','));
     if (categories.length > 0) params.set('c', categories.join(','));
+    if (environments.length > 0) params.set('e', environments.join(','));
     params.set('page', newPage.toString());
     return `/modpacks?${params.toString()}`;
   };

@@ -79,8 +79,8 @@ export default async function PluginsPage({ searchParams }) {
     if (query) params.set('q', query);
     if (version) params.set('v', version);
     if (loaders.length > 0) params.set('l', loaders.join(','));
+    if (platforms.length > 0) params.set('p', platforms.join(','));
     if (categories.length > 0) params.set('c', categories.join(','));
-    if (environment) params.set('e', environment);
     params.set('page', newPage.toString());
     return `/plugins?${params.toString()}`;
   };

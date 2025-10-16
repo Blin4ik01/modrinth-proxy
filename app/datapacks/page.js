@@ -63,7 +63,6 @@ export default async function DatapacksPage({ searchParams }) {
     const params = new URLSearchParams();
     if (query) params.set('q', query);
     if (version) params.set('v', version);
-    if (loaders.length > 0) params.set('l', loaders.join(','));
     if (categories.length > 0) params.set('c', categories.join(','));
     params.set('page', newPage.toString());
     return `/datapacks?${params.toString()}`;
