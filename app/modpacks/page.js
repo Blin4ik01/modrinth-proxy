@@ -12,12 +12,59 @@ export const metadata = {
 export default async function ModpacksPage({ searchParams }) {
   const query = searchParams.q || '';
   const version = searchParams.v || '';
-  const loaders = searchParams.l?.split(',').filter(Boolean) || [];
-  const categories = searchParams.c?.split(',').filter(Boolean) || [];
-  const environments = searchParams.e?.split(',').filter(Boolean) || [];
+  const environment = searchParams.e || '';
   const page = parseInt(searchParams.page || '1');
   const limit = 20;
   const offset = (page - 1) * limit;
+
+  const loaders = []
+  const excludedLoaders = []
+  const categories = []
+  const excludedCategories = []
+  let includeOpenSource = false
+  let excludeOpenSource = false
+
+  const gParams = Array.isArray(searchParams.g) ? searchParams.g : (searchParams.g ? [searchParams.g] : [])
+  gParams.forEach(param => {
+    const decoded = decodeURIComponent(param)
+    if (decoded.startsWith('categories!=')) {
+      const loaderId = decoded.substring(12)
+      if (!excludedLoaders.includes(loaderId)) {
+        excludedLoaders.push(loaderId)
+      }
+    } else if (decoded.startsWith('categories:')) {
+      const loaderId = decoded.substring(11)
+      if (!loaders.includes(loaderId)) {
+        loaders.push(loaderId)
+      }
+    }
+  })
+
+  const fParams = Array.isArray(searchParams.f) ? searchParams.f : (searchParams.f ? [searchParams.f] : [])
+  fParams.forEach(param => {
+    const decoded = decodeURIComponent(param)
+    if (decoded.startsWith('categories!=')) {
+      const catId = decoded.substring(12)
+      if (!excludedCategories.includes(catId)) {
+        excludedCategories.push(catId)
+      }
+    } else if (decoded.startsWith('categories:')) {
+      const catId = decoded.substring(11)
+      if (!categories.includes(catId)) {
+        categories.push(catId)
+      }
+    }
+  })
+
+  const lParams = Array.isArray(searchParams.l) ? searchParams.l : (searchParams.l ? [searchParams.l] : [])
+  lParams.forEach(param => {
+    const decoded = decodeURIComponent(param)
+    if (decoded === 'open_source:true') {
+      includeOpenSource = true
+    } else if (decoded === 'open_source!=true') {
+      excludeOpenSource = true
+    }
+  })
 
   const facets = [['project_type:modpack']];
   
@@ -33,8 +80,14 @@ export default async function ModpacksPage({ searchParams }) {
     facets.push(categories.map(c => `categories:${c}`));
   }
   
-  if (environments.length > 0) {
-    facets.push(environments.map(e => `client_side:${e}`));
+  if (environment === 'client') {
+    facets.push(['client_side:required']);
+  } else if (environment === 'server') {
+    facets.push(['server_side:required']);
+  }
+
+  if (includeOpenSource) {
+    facets.push(['open_source:true'])
   }
 
   let data, blockedCount = 0, blockedByProject = 0, blockedByOrganization = 0;
@@ -60,9 +113,28 @@ export default async function ModpacksPage({ searchParams }) {
     const params = new URLSearchParams();
     if (query) params.set('q', query);
     if (version) params.set('v', version);
-    if (loaders.length > 0) params.set('l', loaders.join(','));
-    if (categories.length > 0) params.set('c', categories.join(','));
-    if (environments.length > 0) params.set('e', environments.join(','));
+    if (environment) params.set('e', environment);
+    
+    loaders.forEach(loader => {
+      params.append('g', `categories:${loader}`)
+    })
+    excludedLoaders.forEach(loader => {
+      params.append('g', `categories!=${loader}`)
+    })
+    
+    categories.forEach(cat => {
+      params.append('f', `categories:${cat}`)
+    })
+    excludedCategories.forEach(cat => {
+      params.append('f', `categories!=${cat}`)
+    })
+
+    if (includeOpenSource) {
+      params.append('l', 'open_source:true')
+    } else if (excludeOpenSource) {
+      params.append('l', 'open_source!=true')
+    }
+    
     params.set('page', newPage.toString());
     return `/modpacks?${params.toString()}`;
   };
@@ -243,4 +315,3 @@ export default async function ModpacksPage({ searchParams }) {
     </>
   )
 }
-

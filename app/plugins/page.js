@@ -11,31 +11,75 @@ export const metadata = {
 
 export default async function PluginsPage({ searchParams }) {
   const query = searchParams.q || '';
-  let version = searchParams.v || '';
-  let loaders = searchParams.l?.split(',').filter(Boolean) || [];
-  const platforms = searchParams.p?.split(',').filter(Boolean) || [];
-  let categories = searchParams.c?.split(',').filter(Boolean) || [];
+  const version = searchParams.v || '';
   const page = parseInt(searchParams.page || '1');
   const limit = 20;
   const offset = (page - 1) * limit;
 
-  if (searchParams.f) {
-    const facets = searchParams.f.split(',');
-    const loadersSet = ['bukkit', 'spigot', 'paper', 'purpur', 'sponge', 'bungeecord', 'waterfall', 'velocity'];
-    
-    facets.forEach(facet => {
-      const [type, value] = facet.split(':');
-      if (type === 'categories') {
-        if (loadersSet.includes(value.toLowerCase())) {
-          if (!loaders.includes(value)) loaders.push(value);
-        } else {
-          if (!categories.includes(value)) categories.push(value);
+  const loaders = []
+  const excludedLoaders = []
+  const platforms = []
+  const excludedPlatforms = []
+  const categories = []
+  const excludedCategories = []
+  let includeOpenSource = false
+  let excludeOpenSource = false
+
+  const platformIds = ['bungeecord', 'waterfall', 'velocity']
+
+  const gParams = Array.isArray(searchParams.g) ? searchParams.g : (searchParams.g ? [searchParams.g] : [])
+  gParams.forEach(param => {
+    const decoded = decodeURIComponent(param)
+    if (decoded.startsWith('categories!=')) {
+      const id = decoded.substring(12)
+      if (platformIds.includes(id)) {
+        if (!excludedPlatforms.includes(id)) {
+          excludedPlatforms.push(id)
         }
-      } else if (type === 'versions' && !version) {
-        version = value;
+      } else {
+        if (!excludedLoaders.includes(id)) {
+          excludedLoaders.push(id)
+        }
       }
-    });
-  }
+    } else if (decoded.startsWith('categories:')) {
+      const id = decoded.substring(11)
+      if (platformIds.includes(id)) {
+        if (!platforms.includes(id)) {
+          platforms.push(id)
+        }
+      } else {
+        if (!loaders.includes(id)) {
+          loaders.push(id)
+        }
+      }
+    }
+  })
+
+  const fParams = Array.isArray(searchParams.f) ? searchParams.f : (searchParams.f ? [searchParams.f] : [])
+  fParams.forEach(param => {
+    const decoded = decodeURIComponent(param)
+    if (decoded.startsWith('categories!=')) {
+      const catId = decoded.substring(12)
+      if (!excludedCategories.includes(catId)) {
+        excludedCategories.push(catId)
+      }
+    } else if (decoded.startsWith('categories:')) {
+      const catId = decoded.substring(11)
+      if (!categories.includes(catId)) {
+        categories.push(catId)
+      }
+    }
+  })
+
+  const lParams = Array.isArray(searchParams.l) ? searchParams.l : (searchParams.l ? [searchParams.l] : [])
+  lParams.forEach(param => {
+    const decoded = decodeURIComponent(param)
+    if (decoded === 'open_source:true') {
+      includeOpenSource = true
+    } else if (decoded === 'open_source!=true') {
+      excludeOpenSource = true
+    }
+  })
 
   const facets = [['project_type:plugin']];
   
@@ -44,15 +88,19 @@ export default async function PluginsPage({ searchParams }) {
   }
   
   if (loaders.length > 0) {
-    facets.push(loaders.map(l => `categories:${l}`));
+    loaders.forEach(l => facets.push([`categories:${l}`]));
   }
   
   if (platforms.length > 0) {
-    facets.push(platforms.map(p => `categories:${p}`));
+    platforms.forEach(p => facets.push([`categories:${p}`]));
   }
   
   if (categories.length > 0) {
-    facets.push(categories.map(c => `categories:${c}`));
+    categories.forEach(c => facets.push([`categories:${c}`]));
+  }
+
+  if (includeOpenSource) {
+    facets.push(['open_source:true'])
   }
 
   let data, blockedCount = 0, blockedByProject = 0, blockedByOrganization = 0;
@@ -78,9 +126,33 @@ export default async function PluginsPage({ searchParams }) {
     const params = new URLSearchParams();
     if (query) params.set('q', query);
     if (version) params.set('v', version);
-    if (loaders.length > 0) params.set('l', loaders.join(','));
-    if (platforms.length > 0) params.set('p', platforms.join(','));
-    if (categories.length > 0) params.set('c', categories.join(','));
+    
+    loaders.forEach(loader => {
+      params.append('g', `categories:${loader}`)
+    })
+    platforms.forEach(platform => {
+      params.append('g', `categories:${platform}`)
+    })
+    excludedLoaders.forEach(loader => {
+      params.append('g', `categories!=${loader}`)
+    })
+    excludedPlatforms.forEach(platform => {
+      params.append('g', `categories!=${platform}`)
+    })
+    
+    categories.forEach(cat => {
+      params.append('f', `categories:${cat}`)
+    })
+    excludedCategories.forEach(cat => {
+      params.append('f', `categories!=${cat}`)
+    })
+
+    if (includeOpenSource) {
+      params.append('l', 'open_source:true')
+    } else if (excludeOpenSource) {
+      params.append('l', 'open_source!=true')
+    }
+    
     params.set('page', newPage.toString());
     return `/plugins?${params.toString()}`;
   };
@@ -261,5 +333,3 @@ export default async function PluginsPage({ searchParams }) {
     </>
   )
 }
-
-

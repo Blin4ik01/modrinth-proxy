@@ -12,30 +12,39 @@ export const metadata = {
 export default async function ModsPage({ searchParams }) {
   const query = searchParams.q || '';
   let version = searchParams.v || '';
-  let loaders = searchParams.l?.split(',').filter(Boolean) || [];
-  let categories = searchParams.c?.split(',').filter(Boolean) || [];
   const environment = searchParams.e || '';
   const page = parseInt(searchParams.page || '1');
   const limit = 20;
   const offset = (page - 1) * limit;
-
-  if (searchParams.f) {
-    const facets = searchParams.f.split(',');
-    const loadersSet = ['forge', 'fabric', 'neoforge', 'quilt'];
-    
-    facets.forEach(facet => {
-      const [type, value] = facet.split(':');
-      if (type === 'categories') {
-        if (loadersSet.includes(value.toLowerCase())) {
-          if (!loaders.includes(value)) loaders.push(value);
-        } else {
-          if (!categories.includes(value)) categories.push(value);
-        }
-      } else if (type === 'versions' && !version) {
-        version = value;
-      }
-    });
-  }
+  
+  const gParams = Array.isArray(searchParams.g) ? searchParams.g : (searchParams.g ? [searchParams.g] : []);
+  const fParams = Array.isArray(searchParams.f) ? searchParams.f : (searchParams.f ? [searchParams.f] : []);
+  let loaders = [];
+  let excludedLoaders = [];
+  let categories = [];
+  let excludedCategories = [];
+  
+  gParams.forEach(param => {
+    const decoded = decodeURIComponent(param);
+    if (decoded.includes('categories:')) {
+      const value = decoded.replace('categories:', '');
+      loaders.push(value);
+    } else if (decoded.includes('categories!=')) {
+      const value = decoded.replace('categories!=', '');
+      excludedLoaders.push(value);
+    }
+  });
+  
+  fParams.forEach(param => {
+    const decoded = decodeURIComponent(param);
+    if (decoded.includes('categories:')) {
+      const value = decoded.replace('categories:', '');
+      categories.push(value);
+    } else if (decoded.includes('categories!=')) {
+      const value = decoded.replace('categories!=', '');
+      excludedCategories.push(value);
+    }
+  });
 
   const facets = [['project_type:mod']];
   
@@ -78,8 +87,10 @@ export default async function ModsPage({ searchParams }) {
     const params = new URLSearchParams();
     if (query) params.set('q', query);
     if (version) params.set('v', version);
-    if (loaders.length > 0) params.set('l', loaders.join(','));
-    if (categories.length > 0) params.set('c', categories.join(','));
+    loaders.forEach(l => params.append('g', `categories:${l}`));
+    excludedLoaders.forEach(l => params.append('g', `categories!=${l}`));
+    categories.forEach(c => params.append('f', `categories:${c}`));
+    excludedCategories.forEach(c => params.append('f', `categories!=${c}`));
     if (environment) params.set('e', environment);
     params.set('page', newPage.toString());
     return `/mods?${params.toString()}`;

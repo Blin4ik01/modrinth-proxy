@@ -11,39 +11,59 @@ export const metadata = {
 
 export default async function ShadersPage({ searchParams }) {
   const query = searchParams.q || '';
-  let version = searchParams.v || '';
-  let categories = searchParams.c?.split(',').filter(Boolean) || [];
-  let features = searchParams.f?.split(',').filter(Boolean) || [];
-  const performance = searchParams.p?.split(',').filter(Boolean) || [];
-  let loaders = searchParams.l?.split(',').filter(Boolean) || [];
+  const version = searchParams.v || '';
   const page = parseInt(searchParams.page || '1');
   const limit = 20;
   const offset = (page - 1) * limit;
 
-  if (searchParams.f) {
-    const rawFeatures = searchParams.f.split(',');
-    const parsedFeatures = [];
-    const shadersLoaderSet = ['iris', 'optifine', 'canvas'];
-    
-    rawFeatures.forEach(item => {
-      if (item.includes(':')) {
-        const [type, value] = item.split(':');
-        if (type === 'categories') {
-          if (shadersLoaderSet.includes(value.toLowerCase())) {
-            if (!loaders.includes(value)) loaders.push(value);
-          } else {
-            if (!categories.includes(value)) categories.push(value);
-          }
-        } else if (type === 'versions' && !version) {
-          version = value;
-        }
-      } else {
-        parsedFeatures.push(item);
+  const fParams = Array.isArray(searchParams.f) ? searchParams.f : (searchParams.f ? [searchParams.f] : []);
+  const gParams = Array.isArray(searchParams.g) ? searchParams.g : (searchParams.g ? [searchParams.g] : []);
+  
+  let styles = [];
+  let excludedStyles = [];
+  let features = [];
+  let excludedFeatures = [];
+  let performance = [];
+  let excludedPerformance = [];
+  let loaders = [];
+  let excludedLoaders = [];
+
+  const STYLE_IDS = ['cartoon', 'cursed', 'fantasy', 'realistic', 'semi-realistic', 'vanilla-like'];
+  const FEATURE_IDS = ['atmosphere', 'bloom', 'colored-lighting', 'foliage', 'path-tracing', 'pbr', 'reflections', 'shadows'];
+  const PERFORMANCE_IDS = ['high', 'low', 'medium', 'potato', 'screenshot'];
+
+  fParams.forEach(param => {
+    const decoded = decodeURIComponent(param);
+    if (decoded.includes('categories:') || decoded.includes('categories!=')) {
+      const isExcluded = decoded.includes('categories!=');
+      const value = decoded.replace('categories:', '').replace('categories!=', '');
+      
+      if (STYLE_IDS.includes(value)) {
+        if (isExcluded) excludedStyles.push(value);
+        else styles.push(value);
+      } else if (FEATURE_IDS.includes(value)) {
+        if (isExcluded) excludedFeatures.push(value);
+        else features.push(value);
+      } else if (PERFORMANCE_IDS.includes(value)) {
+        if (isExcluded) excludedPerformance.push(value);
+        else performance.push(value);
       }
-    });
-    
-    features = parsedFeatures;
-  }
+    }
+  });
+
+  gParams.forEach(param => {
+    const decoded = decodeURIComponent(param);
+    if (decoded.includes('categories:')) {
+      const value = decoded.replace('categories:', '');
+      loaders.push(value);
+    } else if (decoded.includes('categories!=')) {
+      const value = decoded.replace('categories!=', '');
+      excludedLoaders.push(value);
+    }
+  });
+
+  const lParam = searchParams.l;
+  const openSourceState = lParam === 'open_source:true' ? 'selected' : lParam === 'open_source:false' ? 'excluded' : 'none';
 
   const facets = [['project_type:shader']];
   
@@ -51,20 +71,24 @@ export default async function ShadersPage({ searchParams }) {
     facets.push([`versions:${version}`]);
   }
   
-  if (categories.length > 0) {
-    facets.push(categories.map(c => `categories:${c}`));
+  if (styles.length > 0) {
+    styles.forEach(s => facets.push([`categories:${s}`]));
   }
   
   if (features.length > 0) {
-    facets.push(features.map(f => `categories:${f}`));
+    features.forEach(f => facets.push([`categories:${f}`]));
   }
   
   if (performance.length > 0) {
-    facets.push(performance.map(p => `categories:${p}`));
+    performance.forEach(p => facets.push([`categories:${p}`]));
   }
   
   if (loaders.length > 0) {
-    facets.push(loaders.map(l => `categories:${l}`));
+    loaders.forEach(l => facets.push([`categories:${l}`]));
+  }
+  
+  if (openSourceState === 'selected') {
+    facets.push(['open_source:true']);
   }
 
   let data, blockedCount = 0, blockedByProject = 0, blockedByOrganization = 0;
@@ -90,10 +114,16 @@ export default async function ShadersPage({ searchParams }) {
     const params = new URLSearchParams();
     if (query) params.set('q', query);
     if (version) params.set('v', version);
-    if (loaders.length > 0) params.set('l', loaders.join(','));
-    if (categories.length > 0) params.set('c', categories.join(','));
-    if (features.length > 0) params.set('f', features.join(','));
-    if (performance.length > 0) params.set('p', performance.join(','));
+    styles.forEach(s => params.append('f', `categories:${s}`));
+    excludedStyles.forEach(s => params.append('f', `categories!=${s}`));
+    features.forEach(f => params.append('f', `categories:${f}`));
+    excludedFeatures.forEach(f => params.append('f', `categories!=${f}`));
+    performance.forEach(p => params.append('f', `categories:${p}`));
+    excludedPerformance.forEach(p => params.append('f', `categories!=${p}`));
+    loaders.forEach(l => params.append('g', `categories:${l}`));
+    excludedLoaders.forEach(l => params.append('g', `categories!=${l}`));
+    if (openSourceState === 'selected') params.set('l', 'open_source:true');
+    else if (openSourceState === 'excluded') params.set('l', 'open_source:false');
     params.set('page', newPage.toString());
     return `/shaders?${params.toString()}`;
   };
@@ -274,5 +304,3 @@ export default async function ShadersPage({ searchParams }) {
     </>
   )
 }
-
-

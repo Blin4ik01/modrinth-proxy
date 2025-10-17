@@ -3,35 +3,8 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { MC_VERSIONS_RELEASE, MC_VERSIONS_FULL } from '@/lib/mcVersions'
-
-const LOADERS = [
-  { id: 'fabric', name: 'Fabric', color: 'bg-amber-600' },
-  { id: 'forge', name: 'Forge', color: 'bg-blue-600' },
-  { id: 'neoforge', name: 'NeoForge', color: 'bg-orange-600' },
-  { id: 'quilt', name: 'Quilt', color: 'bg-purple-600' },
-]
-
-const CATEGORIES = [
-  { id: 'adventure', name: 'Приключения' },
-  { id: 'cursed', name: 'Проклятое' },
-  { id: 'decoration', name: 'Декорации' },
-  { id: 'economy', name: 'Экономика' },
-  { id: 'equipment', name: 'Снаряжение' },
-  { id: 'food', name: 'Еда' },
-  { id: 'game-mechanics', name: 'Механики' },
-  { id: 'library', name: 'Библиотеки' },
-  { id: 'magic', name: 'Магия' },
-  { id: 'management', name: 'Управление' },
-  { id: 'minigame', name: 'Мини-игры' },
-  { id: 'mobs', name: 'Мобы' },
-  { id: 'optimization', name: 'Оптимизация' },
-  { id: 'social', name: 'Социальное' },
-  { id: 'storage', name: 'Хранение' },
-  { id: 'technology', name: 'Технологии' },
-  { id: 'transportation', name: 'Транспорт' },
-  { id: 'utility', name: 'Утилиты' },
-  { id: 'worldgen', name: 'Генерация мира' },
-]
+import { LOADERS, MAIN_LOADERS_COUNT } from '@/lib/loaders'
+import { CATEGORIES } from '@/lib/categories'
 
 const ENVIRONMENTS = [
   { id: 'client', name: 'Клиент' },
@@ -43,92 +16,171 @@ export default function SidebarFilters({ onFilterChange, isMobile = false }) {
   const searchParams = useSearchParams()
   
   const parseFacets = () => {
-    let loaders = searchParams.get('l')?.split(',').filter(Boolean) || []
-    let categories = searchParams.get('c')?.split(',').filter(Boolean) || []
-    let version = searchParams.get('v') || ''
+    const gParams = searchParams.getAll('g')
+    const fParams = searchParams.getAll('f')
+    const loaders = []
+    const excludedLoaders = []
+    const categories = []
+    const excludedCategories = []
     
-    const facetParam = searchParams.get('f')
-    if (facetParam) {
-      const facets = facetParam.split(',')
-      const loadersSet = ['forge', 'fabric', 'neoforge', 'quilt']
-      
-      facets.forEach(facet => {
-        const [type, value] = facet.split(':')
-        if (type === 'categories') {
-          if (loadersSet.includes(value.toLowerCase())) {
-            if (!loaders.includes(value)) loaders.push(value)
-          } else {
-            if (!categories.includes(value)) categories.push(value)
-          }
-        } else if (type === 'versions' && !version) {
-          version = value
-        }
-      })
-    }
+    gParams.forEach(param => {
+      const decoded = decodeURIComponent(param)
+      if (decoded.includes('categories:')) {
+        const value = decoded.replace('categories:', '')
+        loaders.push(value)
+      } else if (decoded.includes('categories!=')) {
+        const value = decoded.replace('categories!=', '')
+        excludedLoaders.push(value)
+      }
+    })
     
-    return { loaders, categories, version }
+    fParams.forEach(param => {
+      const decoded = decodeURIComponent(param)
+      if (decoded.includes('categories:')) {
+        const value = decoded.replace('categories:', '')
+        categories.push(value)
+      } else if (decoded.includes('categories!=')) {
+        const value = decoded.replace('categories!=', '')
+        excludedCategories.push(value)
+      }
+    })
+    
+    const version = searchParams.get('v') || ''
+    
+    return { loaders, excludedLoaders, categories, excludedCategories, version }
   }
   
-  const { loaders: initialLoaders, categories: initialCategories, version: initialVersion } = parseFacets()
+  const { loaders: initialLoaders, excludedLoaders: initialExcludedLoaders, categories: initialCategories, excludedCategories: initialExcludedCategories, version: initialVersion } = parseFacets()
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   const [selectedVersion, setSelectedVersion] = useState(initialVersion)
   const [selectedLoaders, setSelectedLoaders] = useState(initialLoaders)
+  const [excludedLoaders, setExcludedLoaders] = useState(initialExcludedLoaders)
   const [selectedCategories, setSelectedCategories] = useState(initialCategories)
+  const [excludedCategories, setExcludedCategories] = useState(initialExcludedCategories)
   const [selectedEnvironment, setSelectedEnvironment] = useState(searchParams.get('e') || '')
   const [showAllVersions, setShowAllVersions] = useState(false)
   const [versionSearch, setVersionSearch] = useState('')
+  const [showAllLoaders, setShowAllLoaders] = useState(false)
 
   const updateFilters = (updates) => {
-    const params = new URLSearchParams(searchParams)
-    
-    params.delete('f')
+    const params = new URLSearchParams()
     
     if (updates.q !== undefined) {
       if (updates.q) params.set('q', updates.q)
-      else params.delete('q')
+    } else {
+      const q = searchParams.get('q')
+      if (q) params.set('q', q)
     }
     
     if (updates.v !== undefined) {
       if (updates.v) params.set('v', updates.v)
-      else params.delete('v')
+    } else {
+      const v = searchParams.get('v')
+      if (v) params.set('v', v)
     }
     
-    if (updates.l !== undefined) {
-      if (updates.l.length > 0) params.set('l', updates.l.join(','))
-      else params.delete('l')
-    }
+    const currentLoaders = updates.l !== undefined ? updates.l : selectedLoaders
+    const currentExcludedLoaders = updates.le !== undefined ? updates.le : excludedLoaders
+    const currentCategories = updates.c !== undefined ? updates.c : selectedCategories
+    const currentExcludedCategories = updates.ce !== undefined ? updates.ce : excludedCategories
     
-    if (updates.c !== undefined) {
-      if (updates.c.length > 0) params.set('c', updates.c.join(','))
-      else params.delete('c')
-    }
+    currentLoaders.forEach(l => params.append('g', `categories:${l}`))
+    currentExcludedLoaders.forEach(l => params.append('g', `categories!=${l}`))
+    currentCategories.forEach(c => params.append('f', `categories:${c}`))
+    currentExcludedCategories.forEach(c => params.append('f', `categories!=${c}`))
     
     if (updates.e !== undefined) {
       if (updates.e) params.set('e', updates.e)
-      else params.delete('e')
+    } else {
+      const e = searchParams.get('e')
+      if (e) params.set('e', e)
     }
-
-    params.delete('page')
     
     router.push(`/mods?${params.toString()}`)
     onFilterChange?.()
   }
 
   const toggleLoader = (loaderId) => {
-    const newLoaders = selectedLoaders.includes(loaderId)
-      ? selectedLoaders.filter(l => l !== loaderId)
-      : [...selectedLoaders, loaderId]
+    const isSelected = selectedLoaders.includes(loaderId)
+    const isExcluded = excludedLoaders.includes(loaderId)
+    let newLoaders = [...selectedLoaders]
+    let newExcluded = [...excludedLoaders]
+    
+    if (isSelected) {
+      newLoaders = newLoaders.filter(l => l !== loaderId)
+    } else {
+      newLoaders.push(loaderId)
+      if (isExcluded) {
+        newExcluded = newExcluded.filter(l => l !== loaderId)
+      }
+    }
+    
     setSelectedLoaders(newLoaders)
-    updateFilters({ l: newLoaders })
+    setExcludedLoaders(newExcluded)
+    updateFilters({ l: newLoaders, le: newExcluded })
+  }
+
+  const toggleLoaderExclude = (loaderId, e) => {
+    e.stopPropagation()
+    const isSelected = selectedLoaders.includes(loaderId)
+    const isExcluded = excludedLoaders.includes(loaderId)
+    let newLoaders = [...selectedLoaders]
+    let newExcluded = [...excludedLoaders]
+    
+    if (isExcluded) {
+      newExcluded = newExcluded.filter(l => l !== loaderId)
+    } else {
+      newExcluded.push(loaderId)
+      if (isSelected) {
+        newLoaders = newLoaders.filter(l => l !== loaderId)
+      }
+    }
+    
+    setSelectedLoaders(newLoaders)
+    setExcludedLoaders(newExcluded)
+    updateFilters({ l: newLoaders, le: newExcluded })
   }
 
   const toggleCategory = (categoryId) => {
-    const newCategories = selectedCategories.includes(categoryId)
-      ? selectedCategories.filter(c => c !== categoryId)
-      : [...selectedCategories, categoryId]
+    const isSelected = selectedCategories.includes(categoryId)
+    const isExcluded = excludedCategories.includes(categoryId)
+    let newCategories = [...selectedCategories]
+    let newExcluded = [...excludedCategories]
+    
+    if (isSelected) {
+      newCategories = newCategories.filter(c => c !== categoryId)
+    } else {
+      newCategories.push(categoryId)
+      if (isExcluded) {
+        newExcluded = newExcluded.filter(c => c !== categoryId)
+      }
+    }
+    
     setSelectedCategories(newCategories)
-    updateFilters({ c: newCategories })
+    setExcludedCategories(newExcluded)
+    updateFilters({ c: newCategories, ce: newExcluded })
+  }
+
+  const toggleCategoryExclude = (categoryId, e) => {
+    e.stopPropagation()
+    const isSelected = selectedCategories.includes(categoryId)
+    const isExcluded = excludedCategories.includes(categoryId)
+    let newCategories = [...selectedCategories]
+    let newExcluded = [...excludedCategories]
+    
+    if (isExcluded) {
+      newExcluded = newExcluded.filter(c => c !== categoryId)
+    } else {
+      newExcluded.push(categoryId)
+      if (isSelected) {
+        newCategories = newCategories.filter(c => c !== categoryId)
+      }
+    }
+    
+    setSelectedCategories(newCategories)
+    setExcludedCategories(newExcluded)
+    updateFilters({ c: newCategories, ce: newExcluded })
   }
 
   const handleSearch = (e) => {
@@ -137,7 +189,7 @@ export default function SidebarFilters({ onFilterChange, isMobile = false }) {
   }
 
   return (
-    <div className={isMobile ? "w-full" : "hidden lg:block w-80 flex-shrink-0 sticky top-4 h-fit max-h-[calc(100vh-2rem)] overflow-y-auto custom-scrollbar"}>
+    <div className={isMobile ? "w-full" : "hidden lg:block w-80 flex-shrink-0"}>
       <div className="space-y-4">
      
         <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
@@ -174,19 +226,19 @@ export default function SidebarFilters({ onFilterChange, isMobile = false }) {
                 : versions
               
               return filteredVersions.map(version => (
-                <button
-                  key={version}
-                  onClick={() => {
-                    const newVersion = selectedVersion === version ? '' : version
-                    setSelectedVersion(newVersion)
-                    updateFilters({ v: newVersion })
-                  }}
+              <button
+                key={version}
+                onClick={() => {
+                  const newVersion = selectedVersion === version ? '' : version
+                  setSelectedVersion(newVersion)
+                  updateFilters({ v: newVersion })
+                }}
                   className={`w-full text-left px-3 py-1.5 rounded text-sm transition-all group flex items-center justify-between ${
-                    selectedVersion === version
-                      ? 'bg-modrinth-green text-black font-semibold'
-                      : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                  }`}
-                >
+                  selectedVersion === version
+                    ? 'bg-modrinth-green text-black font-semibold'
+                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                }`}
+              >
                   <span>{version}</span>
                   {selectedVersion === version && (
                     <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
@@ -217,7 +269,7 @@ export default function SidebarFilters({ onFilterChange, isMobile = false }) {
               <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
                 Показать все версии
               </span>
-            </button>
+              </button>
           </div>
         </div>
 
@@ -228,23 +280,62 @@ export default function SidebarFilters({ onFilterChange, isMobile = false }) {
             </svg>
             Загрузчик
           </h3>
-          <div className="space-y-2">
-            {LOADERS.map(loader => (
+          <div className="flex flex-col gap-1">
+            {(showAllLoaders ? LOADERS : LOADERS.slice(0, MAIN_LOADERS_COUNT)).map(loader => {
+              const isSelected = selectedLoaders.includes(loader.id)
+              const isExcluded = excludedLoaders.includes(loader.id)
+              
+              return (
+                <div key={loader.id} className="flex gap-1 items-center group">
+                  <button
+                    onClick={() => toggleLoader(loader.id)}
+                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                      isExcluded
+                        ? 'text-white hover:brightness-125'
+                        : isSelected
+                          ? 'text-white hover:brightness-125'
+                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                    }`}
+                    style={
+                      isExcluded
+                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
+                        : isSelected
+                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                          : undefined
+                    }
+                  >
+                    <div className="h-4 w-4 flex-shrink-0">{loader.icon}</div>
+                    <span className="truncate text-sm flex-1">{loader.name}</span>
+                    <svg className={`w-4 h-4 flex-shrink-0 ml-auto transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={(e) => toggleLoaderExclude(loader.id, e)}
+                    title="Исключить"
+                    className={`flex items-center justify-center rounded-xl px-2 py-1 text-sm font-semibold transition-all ${
+                      isExcluded
+                        ? 'text-white hover:brightness-125'
+                        : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-red-400'
+                    } ${isExcluded ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                    style={isExcluded ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' } : undefined}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="m4.9 4.9 14.2 14.2" />
+                    </svg>
+                  </button>
+                </div>
+              )
+            })}
+            {LOADERS.length > MAIN_LOADERS_COUNT && (
               <button
-                key={loader.id}
-                onClick={() => toggleLoader(loader.id)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-                  selectedLoaders.includes(loader.id)
-                    ? `${loader.color} text-white shadow-lg`
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
-                }`}
+                onClick={() => setShowAllLoaders(!showAllLoaders)}
+                className="text-sm text-gray-400 hover:text-white transition-colors py-2 text-left font-semibold"
               >
-                <div className={`w-2 h-2 rounded-full ${
-                  selectedLoaders.includes(loader.id) ? 'bg-white' : 'bg-gray-600'
-                }`}></div>
-                {loader.name}
+                {showAllLoaders ? 'Показать меньше' : 'Показать больше'}
               </button>
-            ))}
+            )}
           </div>
         </div>
 
@@ -255,20 +346,54 @@ export default function SidebarFilters({ onFilterChange, isMobile = false }) {
             </svg>
             Категории
           </h3>
-          <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
-            {CATEGORIES.map(cat => (
+          <div className="max-h-52 overflow-y-auto custom-scrollbar flex flex-col gap-1 pr-2">
+            {CATEGORIES.map(cat => {
+              const isSelected = selectedCategories.includes(cat.id)
+              const isExcluded = excludedCategories.includes(cat.id)
+              
+              return (
+                <div key={cat.id} className="flex gap-1 items-center group">
               <button
-                key={cat.id}
                 onClick={() => toggleCategory(cat.id)}
-                className={`w-full text-left px-3 py-1.5 rounded text-sm transition-all ${
-                  selectedCategories.includes(cat.id)
-                    ? 'bg-modrinth-green text-black font-semibold'
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                }`}
-              >
-                {cat.name}
+                    className={`flex-1 text-left px-2 py-1.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                      isExcluded
+                        ? 'text-white hover:brightness-125'
+                        : isSelected
+                          ? 'text-white hover:brightness-125'
+                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                    }`}
+                    style={
+                      isExcluded
+                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
+                        : isSelected
+                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                          : undefined
+                    }
+                  >
+                    <div className="h-4 w-4 flex-shrink-0">{cat.icon}</div>
+                    <span className="truncate text-sm flex-1">{cat.name}</span>
+                    <svg className={`w-4 h-4 flex-shrink-0 ml-auto transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={(e) => toggleCategoryExclude(cat.id, e)}
+                    title="Исключить"
+                    className={`flex items-center justify-center rounded-xl px-2 py-1 text-sm font-semibold transition-all ${
+                      isExcluded
+                        ? 'text-white hover:brightness-125'
+                        : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-red-400'
+                    } ${isExcluded ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                    style={isExcluded ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' } : undefined}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="m4.9 4.9 14.2 14.2" />
+                    </svg>
               </button>
-            ))}
+                </div>
+              )
+            })}
           </div>
         </div>
 
@@ -300,24 +425,26 @@ export default function SidebarFilters({ onFilterChange, isMobile = false }) {
           </div>
         </div>
 
-        {(selectedVersion || selectedLoaders.length > 0 || selectedCategories.length > 0 || selectedEnvironment || searchQuery) && (
-          <div className="bg-modrinth-dark border border-red-600/30 rounded-xl p-3">
-            <button
-              onClick={() => {
-                setSearchQuery('')
-                setSelectedVersion('')
-                setSelectedLoaders([])
-                setSelectedCategories([])
-                setSelectedEnvironment('')
-                router.push('/mods')
-              }}
-              className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1.5"
-            >
+        {(selectedVersion || selectedLoaders.length > 0 || excludedLoaders.length > 0 || selectedCategories.length > 0 || excludedCategories.length > 0 || selectedEnvironment || searchQuery) && (
+          <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-3">
+          <button
+            onClick={() => {
+              setSearchQuery('')
+              setSelectedVersion('')
+              setSelectedLoaders([])
+                setExcludedLoaders([])
+              setSelectedCategories([])
+                setExcludedCategories([])
+              setSelectedEnvironment('')
+              router.push('/mods')
+            }}
+              className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-red-600/30 flex items-center justify-center gap-1.5"
+          >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
-              Сбросить фильтры
-            </button>
+            Сбросить фильтры
+          </button>
           </div>
         )}
       </div>

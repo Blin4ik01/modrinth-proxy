@@ -1,146 +1,257 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MC_VERSIONS_RELEASE, MC_VERSIONS_FULL } from '@/lib/mcVersions'
+import { PLUGIN_LOADERS, PLUGIN_PLATFORMS } from '@/lib/loaders'
+import { CATEGORIES } from '@/lib/categories'
 
-const LOADERS = [
-  { id: 'bukkit', name: 'Bukkit', color: 'bg-orange-600' },
-  { id: 'folia', name: 'Folia', color: 'bg-green-600' },
-  { id: 'paper', name: 'Paper', color: 'bg-gray-600' },
-  { id: 'purpur', name: 'Purpur', color: 'bg-purple-600' },
-  { id: 'spigot', name: 'Spigot', color: 'bg-yellow-600' },
-  { id: 'sponge', name: 'Sponge', color: 'bg-yellow-500' },
-]
+const PLUGIN_CATEGORIES = CATEGORIES.filter(cat => 
+  ['adventure', 'cursed', 'decoration', 'economy', 'equipment', 'food', 'game-mechanics', 'library', 'magic', 'management', 'minigame', 'mobs', 'optimization', 'social', 'storage', 'technology', 'transportation', 'utility', 'worldgen'].includes(cat.id)
+)
 
-const PLATFORMS = [
-  { id: 'bungeecord', name: 'BungeeCord', color: 'bg-blue-600' },
-  { id: 'velocity', name: 'Velocity', color: 'bg-cyan-600' },
-  { id: 'waterfall', name: 'Waterfall', color: 'bg-indigo-600' },
-]
-
-const CATEGORIES = [
-  { id: 'adventure', name: 'Приключения' },
-  { id: 'cursed', name: 'Проклятое' },
-  { id: 'decoration', name: 'Декорации' },
-  { id: 'economy', name: 'Экономика' },
-  { id: 'equipment', name: 'Снаряжение' },
-  { id: 'food', name: 'Еда' },
-  { id: 'game-mechanics', name: 'Механики' },
-  { id: 'library', name: 'Библиотеки' },
-  { id: 'magic', name: 'Магия' },
-  { id: 'management', name: 'Управление' },
-  { id: 'minigame', name: 'Мини-игры' },
-  { id: 'mobs', name: 'Мобы' },
-  { id: 'optimization', name: 'Оптимизация' },
-  { id: 'social', name: 'Социальное' },
-  { id: 'storage', name: 'Хранение' },
-  { id: 'technology', name: 'Технологии' },
-  { id: 'transportation', name: 'Транспорт' },
-  { id: 'utility', name: 'Утилиты' },
-  { id: 'worldgen', name: 'Генерация мира' },
-]
-
-export default function PluginSidebarFilters({ onFilterChange, isMobile = false }) {
+export default function PluginSidebarFilters({ isMobile = false, onFilterChange }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   
-  const parseFacets = () => {
-    let loaders = searchParams.get('l')?.split(',').filter(Boolean) || []
-    let platforms = searchParams.get('p')?.split(',').filter(Boolean) || []
-    let categories = searchParams.get('c')?.split(',').filter(Boolean) || []
-    let version = searchParams.get('v') || ''
-    
-    const facetParam = searchParams.get('f')
-    if (facetParam) {
-      const facets = facetParam.split(',')
-      const loadersSet = ['bukkit', 'spigot', 'paper', 'purpur', 'sponge', 'bungeecord', 'waterfall', 'velocity']
-      
-      facets.forEach(facet => {
-        const [type, value] = facet.split(':')
-        if (type === 'categories') {
-          if (loadersSet.includes(value.toLowerCase())) {
-            if (!loaders.includes(value)) loaders.push(value)
-          } else {
-            if (!categories.includes(value)) categories.push(value)
-          }
-        } else if (type === 'versions' && !version) {
-          version = value
-        }
-      })
-    }
-    
-    return { loaders, platforms, categories, version }
-  }
-  
-  const { loaders: initialLoaders, platforms: initialPlatforms, categories: initialCategories, version: initialVersion } = parseFacets()
-  
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
-  const [selectedVersion, setSelectedVersion] = useState(initialVersion)
-  const [selectedLoaders, setSelectedLoaders] = useState(initialLoaders)
-  const [selectedPlatforms, setSelectedPlatforms] = useState(initialPlatforms)
-  const [selectedCategories, setSelectedCategories] = useState(initialCategories)
+  const [selectedVersion, setSelectedVersion] = useState(searchParams.get('v') || '')
+  const [selectedLoaders, setSelectedLoaders] = useState([])
+  const [excludedLoaders, setExcludedLoaders] = useState([])
+  const [selectedPlatforms, setSelectedPlatforms] = useState([])
+  const [excludedPlatforms, setExcludedPlatforms] = useState([])
+  const [selectedCategories, setSelectedCategories] = useState([])
+  const [excludedCategories, setExcludedCategories] = useState([])
+  const [openSourceState, setOpenSourceState] = useState('none')
   const [showAllVersions, setShowAllVersions] = useState(false)
   const [versionSearch, setVersionSearch] = useState('')
 
+  useEffect(() => {
+    const parsedFilters = parseFacets()
+    setSelectedLoaders(parsedFilters.loaders)
+    setExcludedLoaders(parsedFilters.excludedLoaders)
+    setSelectedPlatforms(parsedFilters.platforms)
+    setExcludedPlatforms(parsedFilters.excludedPlatforms)
+    setSelectedCategories(parsedFilters.categories)
+    setExcludedCategories(parsedFilters.excludedCategories)
+    setOpenSourceState(parsedFilters.openSourceState)
+  }, [])
+
+  const parseFacets = () => {
+    const loaders = []
+    const excludedLoaders = []
+    const platforms = []
+    const excludedPlatforms = []
+    const categories = []
+    const excludedCategories = []
+    let openSourceState = 'none'
+
+    const platformIds = ['bungeecord', 'waterfall', 'velocity']
+
+    const gParams = searchParams.getAll('g')
+    gParams.forEach(param => {
+      const decoded = decodeURIComponent(param)
+      if (decoded.startsWith('categories!=')) {
+        const id = decoded.substring(12)
+        if (platformIds.includes(id)) {
+          if (!excludedPlatforms.includes(id)) {
+            excludedPlatforms.push(id)
+          }
+        } else {
+          if (!excludedLoaders.includes(id)) {
+            excludedLoaders.push(id)
+          }
+        }
+      } else if (decoded.startsWith('categories:')) {
+        const id = decoded.substring(11)
+        if (platformIds.includes(id)) {
+          if (!platforms.includes(id)) {
+            platforms.push(id)
+          }
+        } else {
+          if (!loaders.includes(id)) {
+            loaders.push(id)
+          }
+        }
+      }
+    })
+
+    const fParams = searchParams.getAll('f')
+    fParams.forEach(param => {
+      const decoded = decodeURIComponent(param)
+      if (decoded.startsWith('categories!=')) {
+        const catId = decoded.substring(12)
+        if (!excludedCategories.includes(catId)) {
+          excludedCategories.push(catId)
+        }
+      } else if (decoded.startsWith('categories:')) {
+        const catId = decoded.substring(11)
+        if (!categories.includes(catId)) {
+          categories.push(catId)
+        }
+      }
+    })
+
+    const lParams = searchParams.getAll('l')
+    lParams.forEach(param => {
+      const decoded = decodeURIComponent(param)
+      if (decoded === 'open_source:true') {
+        openSourceState = 'selected'
+      } else if (decoded === 'open_source!=true') {
+        openSourceState = 'excluded'
+      }
+    })
+
+    return { loaders, excludedLoaders, platforms, excludedPlatforms, categories, excludedCategories, openSourceState }
+  }
+
   const updateFilters = (updates) => {
-    const params = new URLSearchParams(searchParams)
-    
-    params.delete('f')
+    const params = new URLSearchParams()
     
     if (updates.q !== undefined) {
       if (updates.q) params.set('q', updates.q)
-      else params.delete('q')
+    } else if (searchQuery) {
+      params.set('q', searchQuery)
     }
     
     if (updates.v !== undefined) {
       if (updates.v) params.set('v', updates.v)
-      else params.delete('v')
-    }
-    
-    if (updates.l !== undefined) {
-      if (updates.l.length > 0) params.set('l', updates.l.join(','))
-      else params.delete('l')
-    }
-    
-    if (updates.p !== undefined) {
-      if (updates.p.length > 0) params.set('p', updates.p.join(','))
-      else params.delete('p')
-    }
-    
-    if (updates.c !== undefined) {
-      if (updates.c.length > 0) params.set('c', updates.c.join(','))
-      else params.delete('c')
+    } else if (selectedVersion) {
+      params.set('v', selectedVersion)
     }
 
-    params.delete('page')
+    const finalLoaders = updates.l !== undefined ? updates.l : selectedLoaders
+    const finalExcludedLoaders = updates.le !== undefined ? updates.le : excludedLoaders
+    const finalPlatforms = updates.p !== undefined ? updates.p : selectedPlatforms
+    const finalExcludedPlatforms = updates.pe !== undefined ? updates.pe : excludedPlatforms
+    
+    finalLoaders.forEach(loader => {
+      params.append('g', `categories:${loader}`)
+    })
+    finalPlatforms.forEach(platform => {
+      params.append('g', `categories:${platform}`)
+    })
+    finalExcludedLoaders.forEach(loader => {
+      params.append('g', `categories!=${loader}`)
+    })
+    finalExcludedPlatforms.forEach(platform => {
+      params.append('g', `categories!=${platform}`)
+    })
+
+    const finalCategories = updates.c !== undefined ? updates.c : selectedCategories
+    const finalExcludedCategories = updates.ce !== undefined ? updates.ce : excludedCategories
+    finalCategories.forEach(cat => {
+      params.append('f', `categories:${cat}`)
+    })
+    finalExcludedCategories.forEach(cat => {
+      params.append('f', `categories!=${cat}`)
+    })
+
+    const finalOpenSource = updates.os !== undefined ? updates.os : openSourceState
+    if (finalOpenSource === 'selected') {
+      params.append('l', 'open_source:true')
+    } else if (finalOpenSource === 'excluded') {
+      params.append('l', 'open_source!=true')
+    }
     
     router.push(`/plugins?${params.toString()}`)
     onFilterChange?.()
   }
 
   const toggleLoader = (loaderId) => {
-    const newLoaders = selectedLoaders.includes(loaderId)
-      ? selectedLoaders.filter(l => l !== loaderId)
-      : [...selectedLoaders, loaderId]
+    let newLoaders = [...selectedLoaders]
+    let newExcludedLoaders = [...excludedLoaders]
+
+    if (newLoaders.includes(loaderId)) {
+      newLoaders = newLoaders.filter(l => l !== loaderId)
+    } else {
+      newLoaders.push(loaderId)
+      newExcludedLoaders = newExcludedLoaders.filter(l => l !== loaderId)
+    }
+
     setSelectedLoaders(newLoaders)
-    updateFilters({ l: newLoaders })
+    setExcludedLoaders(newExcludedLoaders)
+    updateFilters({ l: newLoaders, le: newExcludedLoaders })
+  }
+
+  const toggleLoaderExclude = (loaderId) => {
+    let newLoaders = [...selectedLoaders]
+    let newExcludedLoaders = [...excludedLoaders]
+
+    if (newExcludedLoaders.includes(loaderId)) {
+      newExcludedLoaders = newExcludedLoaders.filter(l => l !== loaderId)
+    } else {
+      newExcludedLoaders.push(loaderId)
+      newLoaders = newLoaders.filter(l => l !== loaderId)
+    }
+
+    setSelectedLoaders(newLoaders)
+    setExcludedLoaders(newExcludedLoaders)
+    updateFilters({ l: newLoaders, le: newExcludedLoaders })
   }
 
   const togglePlatform = (platformId) => {
-    const newPlatforms = selectedPlatforms.includes(platformId)
-      ? selectedPlatforms.filter(p => p !== platformId)
-      : [...selectedPlatforms, platformId]
+    let newPlatforms = [...selectedPlatforms]
+    let newExcludedPlatforms = [...excludedPlatforms]
+
+    if (newPlatforms.includes(platformId)) {
+      newPlatforms = newPlatforms.filter(p => p !== platformId)
+    } else {
+      newPlatforms.push(platformId)
+      newExcludedPlatforms = newExcludedPlatforms.filter(p => p !== platformId)
+    }
+
     setSelectedPlatforms(newPlatforms)
-    updateFilters({ p: newPlatforms })
+    setExcludedPlatforms(newExcludedPlatforms)
+    updateFilters({ p: newPlatforms, pe: newExcludedPlatforms })
+  }
+
+  const togglePlatformExclude = (platformId) => {
+    let newPlatforms = [...selectedPlatforms]
+    let newExcludedPlatforms = [...excludedPlatforms]
+
+    if (newExcludedPlatforms.includes(platformId)) {
+      newExcludedPlatforms = newExcludedPlatforms.filter(p => p !== platformId)
+    } else {
+      newExcludedPlatforms.push(platformId)
+      newPlatforms = newPlatforms.filter(p => p !== platformId)
+    }
+
+    setSelectedPlatforms(newPlatforms)
+    setExcludedPlatforms(newExcludedPlatforms)
+    updateFilters({ p: newPlatforms, pe: newExcludedPlatforms })
   }
 
   const toggleCategory = (categoryId) => {
-    const newCategories = selectedCategories.includes(categoryId)
-      ? selectedCategories.filter(c => c !== categoryId)
-      : [...selectedCategories, categoryId]
+    let newCategories = [...selectedCategories]
+    let newExcluded = [...excludedCategories]
+
+    if (newCategories.includes(categoryId)) {
+      newCategories = newCategories.filter(c => c !== categoryId)
+    } else {
+      newCategories.push(categoryId)
+      newExcluded = newExcluded.filter(c => c !== categoryId)
+    }
+
     setSelectedCategories(newCategories)
-    updateFilters({ c: newCategories })
+    setExcludedCategories(newExcluded)
+    updateFilters({ c: newCategories, ce: newExcluded })
+  }
+
+  const toggleCategoryExclude = (categoryId) => {
+    let newCategories = [...selectedCategories]
+    let newExcluded = [...excludedCategories]
+
+    if (newExcluded.includes(categoryId)) {
+      newExcluded = newExcluded.filter(c => c !== categoryId)
+    } else {
+      newExcluded.push(categoryId)
+      newCategories = newCategories.filter(c => c !== categoryId)
+    }
+
+    setSelectedCategories(newCategories)
+    setExcludedCategories(newExcluded)
+    updateFilters({ c: newCategories, ce: newExcluded })
   }
 
   const handleSearch = (e) => {
@@ -149,8 +260,70 @@ export default function PluginSidebarFilters({ onFilterChange, isMobile = false 
   }
 
   return (
-    <div className={isMobile ? "w-full" : "hidden lg:block w-80 flex-shrink-0 sticky top-4 h-fit max-h-[calc(100vh-2rem)] overflow-y-auto custom-scrollbar"}>
+    <div className={isMobile ? "w-full" : "hidden lg:block w-80 flex-shrink-0"}>
       <div className="space-y-4">
+        <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
+          <h3 className="text-sm font-semibold text-gray-300 mb-3">Категории</h3>
+          <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
+            {PLUGIN_CATEGORIES.map(cat => {
+              const isSelected = selectedCategories.includes(cat.id)
+              const isExcluded = excludedCategories.includes(cat.id)
+              
+              return (
+                <div key={cat.id} className="group flex gap-1 items-center">
+                  <button
+                    onClick={() => toggleCategory(cat.id)}
+                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                      isExcluded
+                        ? 'text-white hover:brightness-125'
+                        : isSelected
+                          ? 'text-white hover:brightness-125'
+                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                    }`}
+                    style={
+                      isExcluded
+                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
+                        : isSelected
+                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                          : undefined
+                    }
+                  >
+                    <div className="h-4 w-4">
+                      {cat.icon}
+                    </div>
+                    <span className="truncate text-sm flex-1">{cat.name}</span>
+                    <svg 
+                      className={`h-4 w-4 flex-shrink-0 transition-opacity ${
+                        isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      }`}
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => toggleCategoryExclude(cat.id)}
+                    title="Исключить"
+                    className={`flex items-center justify-center gap-2 rounded-xl bg-transparent px-2 py-1 text-sm font-semibold text-gray-400 transition-all hover:bg-gray-800 hover:text-red-400 active:scale-[0.96] ${
+                      isExcluded ? 'opacity-100 text-red-400' : 'opacity-0 group-hover:opacity-100'
+                    }`}
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="m4.9 4.9 14.2 14.2"/>
+                    </svg>
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
         <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,92 +406,200 @@ export default function PluginSidebarFilters({ onFilterChange, isMobile = false 
         </div>
 
         <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-            </svg>
-            Загрузчик
-          </h3>
-          <div className="space-y-2">
-            {LOADERS.map(loader => (
-              <button
-                key={loader.id}
-                onClick={() => toggleLoader(loader.id)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-                  selectedLoaders.includes(loader.id)
-                    ? `${loader.color} text-white shadow-lg`
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
-                }`}
-              >
-                <div className={`w-2 h-2 rounded-full ${
-                  selectedLoaders.includes(loader.id) ? 'bg-white' : 'bg-gray-600'
-                }`}></div>
-                {loader.name}
-              </button>
-            ))}
+          <h3 className="text-sm font-semibold text-gray-300 mb-3">Загрузчик</h3>
+          <div className="space-y-1.5">
+            {PLUGIN_LOADERS.map(loader => {
+              const isSelected = selectedLoaders.includes(loader.id)
+              const isExcluded = excludedLoaders.includes(loader.id)
+              
+              return (
+                <div key={loader.id} className="group flex gap-1 items-center">
+                  <button
+                    onClick={() => toggleLoader(loader.id)}
+                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                      isExcluded
+                        ? 'text-white hover:brightness-125'
+                        : isSelected
+                          ? 'text-white hover:brightness-125'
+                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                    }`}
+                    style={
+                      isExcluded
+                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
+                        : isSelected
+                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                          : undefined
+                    }
+                  >
+                    <div className="h-4 w-4">
+                      {loader.icon}
+                    </div>
+                    <span className="truncate text-sm flex-1">{loader.name}</span>
+                    <svg 
+                      className={`h-4 w-4 flex-shrink-0 transition-opacity ${
+                        isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      }`}
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => toggleLoaderExclude(loader.id)}
+                    title="Исключить"
+                    className={`flex items-center justify-center gap-2 rounded-xl bg-transparent px-2 py-1 text-sm font-semibold text-gray-400 transition-all hover:bg-gray-800 hover:text-red-400 active:scale-[0.96] ${
+                      isExcluded ? 'opacity-100 text-red-400' : 'opacity-0 group-hover:opacity-100'
+                    }`}
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="m4.9 4.9 14.2 14.2"/>
+                    </svg>
+                  </button>
+                </div>
+              )
+            })}
           </div>
         </div>
 
         <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
-            </svg>
-            Платформа
-          </h3>
-          <div className="space-y-2">
-            {PLATFORMS.map(platform => (
-              <button
-                key={platform.id}
-                onClick={() => togglePlatform(platform.id)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-                  selectedPlatforms.includes(platform.id)
-                    ? `${platform.color} text-white shadow-lg`
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
-                }`}
-              >
-                <div className={`w-2 h-2 rounded-full ${
-                  selectedPlatforms.includes(platform.id) ? 'bg-white' : 'bg-gray-600'
-                }`}></div>
-                {platform.name}
-              </button>
-            ))}
+          <h3 className="text-sm font-semibold text-gray-300 mb-3">Платформа</h3>
+          <div className="space-y-1.5">
+            {PLUGIN_PLATFORMS.map(platform => {
+              const isSelected = selectedPlatforms.includes(platform.id)
+              const isExcluded = excludedPlatforms.includes(platform.id)
+              
+              return (
+                <div key={platform.id} className="group flex gap-1 items-center">
+                  <button
+                    onClick={() => togglePlatform(platform.id)}
+                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                      isExcluded
+                        ? 'text-white hover:brightness-125'
+                        : isSelected
+                          ? 'text-white hover:brightness-125'
+                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                    }`}
+                    style={
+                      isExcluded
+                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
+                        : isSelected
+                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                          : undefined
+                    }
+                  >
+                    <div className="h-4 w-4">
+                      {platform.icon}
+                    </div>
+                    <span className="truncate text-sm flex-1">{platform.name}</span>
+                    <svg 
+                      className={`h-4 w-4 flex-shrink-0 transition-opacity ${
+                        isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      }`}
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => togglePlatformExclude(platform.id)}
+                    title="Исключить"
+                    className={`flex items-center justify-center gap-2 rounded-xl bg-transparent px-2 py-1 text-sm font-semibold text-gray-400 transition-all hover:bg-gray-800 hover:text-red-400 active:scale-[0.96] ${
+                      isExcluded ? 'opacity-100 text-red-400' : 'opacity-0 group-hover:opacity-100'
+                    }`}
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="m4.9 4.9 14.2 14.2"/>
+                    </svg>
+                  </button>
+                </div>
+              )
+            })}
           </div>
         </div>
 
         <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-            </svg>
-            Категории
-          </h3>
-          <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => toggleCategory(cat.id)}
-                className={`w-full text-left px-3 py-1.5 rounded text-sm transition-all ${
-                  selectedCategories.includes(cat.id)
-                    ? 'bg-modrinth-green text-black font-semibold'
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+          <h3 className="text-sm font-semibold text-gray-300 mb-3">Прочее</h3>
+          <div className="flex gap-1 items-center group">
+            <button
+              onClick={() => {
+                const newState = openSourceState === 'selected' ? 'none' : 'selected'
+                setOpenSourceState(newState)
+                updateFilters({ os: newState })
+              }}
+              className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                openSourceState === 'excluded'
+                  ? 'text-white hover:brightness-125'
+                  : openSourceState === 'selected'
+                    ? 'text-white hover:brightness-125'
+                    : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+              }`}
+              style={
+                openSourceState === 'excluded'
+                  ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
+                  : openSourceState === 'selected'
+                    ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                    : undefined
+              }
+            >
+              <span className="truncate text-sm flex-1">Открытый исходный код</span>
+              <svg 
+                className={`h-4 w-4 flex-shrink-0 transition-opacity ${
+                  openSourceState === 'selected' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                 }`}
+                fill="none" 
+                stroke="currentColor" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                viewBox="0 0 24 24"
               >
-                {cat.name}
-              </button>
-            ))}
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </button>
+            <button
+              onClick={() => {
+                const newState = openSourceState === 'excluded' ? 'none' : 'excluded'
+                setOpenSourceState(newState)
+                updateFilters({ os: newState })
+              }}
+              title="Исключить"
+              className={`flex items-center justify-center gap-2 rounded-xl bg-transparent px-2 py-1 text-sm font-semibold text-gray-400 transition-all hover:bg-gray-800 hover:text-red-400 active:scale-[0.96] ${
+                openSourceState === 'excluded' ? 'opacity-100 text-red-400' : 'opacity-0 group-hover:opacity-100'
+              }`}
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m4.9 4.9 14.2 14.2"/>
+              </svg>
+            </button>
           </div>
         </div>
 
-        {(selectedVersion || selectedLoaders.length > 0 || selectedPlatforms.length > 0 || selectedCategories.length > 0 || searchQuery) && (
+        {(selectedVersion || selectedLoaders.length > 0 || excludedLoaders.length > 0 || selectedPlatforms.length > 0 || excludedPlatforms.length > 0 || selectedCategories.length > 0 || excludedCategories.length > 0 || openSourceState !== 'none' || searchQuery) && (
           <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-3">
             <button
               onClick={() => {
                 setSearchQuery('')
                 setSelectedVersion('')
                 setSelectedLoaders([])
+                setExcludedLoaders([])
                 setSelectedPlatforms([])
+                setExcludedPlatforms([])
                 setSelectedCategories([])
+                setExcludedCategories([])
+                setOpenSourceState('none')
                 router.push('/plugins')
               }}
               className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-red-600/30 flex items-center justify-center gap-1.5"
@@ -334,5 +615,3 @@ export default function PluginSidebarFilters({ onFilterChange, isMobile = false 
     </div>
   )
 }
-
-

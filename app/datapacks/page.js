@@ -11,24 +11,28 @@ export const metadata = {
 
 export default async function DatapacksPage({ searchParams }) {
   const query = searchParams.q || '';
-  let version = searchParams.v || '';
-  let categories = searchParams.c?.split(',').filter(Boolean) || [];
+  const version = searchParams.v || '';
+  const lParam = searchParams.l
+  const openSourceState = lParam === 'open_source:true' ? 'selected' : lParam === 'open_source:false' ? 'excluded' : 'none';
   const page = parseInt(searchParams.page || '1');
   const limit = 20;
   const offset = (page - 1) * limit;
 
-  if (searchParams.f) {
-    const facets = searchParams.f.split(',');
-    
-    facets.forEach(facet => {
-      const [type, value] = facet.split(':');
-      if (type === 'categories') {
-        if (!categories.includes(value)) categories.push(value);
-      } else if (type === 'versions' && !version) {
-        version = value;
-      }
-    });
-  }
+  const fParams = Array.isArray(searchParams.f) ? searchParams.f : (searchParams.f ? [searchParams.f] : []);
+  
+  let categories = [];
+  let excludedCategories = [];
+  
+  fParams.forEach(param => {
+    const decoded = decodeURIComponent(param);
+    if (decoded.includes('categories:')) {
+      const value = decoded.replace('categories:', '');
+      categories.push(value);
+    } else if (decoded.includes('categories!=')) {
+      const value = decoded.replace('categories!=', '');
+      excludedCategories.push(value);
+    }
+  });
 
   const facets = [['project_type:datapack']];
   
@@ -37,7 +41,11 @@ export default async function DatapacksPage({ searchParams }) {
   }
   
   if (categories.length > 0) {
-    facets.push(categories.map(c => `categories:${c}`));
+    categories.forEach(c => facets.push([`categories:${c}`]));
+  }
+  
+  if (openSourceState === 'selected') {
+    facets.push(['open_source:true']);
   }
 
   let data, blockedCount = 0, blockedByProject = 0, blockedByOrganization = 0;
@@ -63,7 +71,10 @@ export default async function DatapacksPage({ searchParams }) {
     const params = new URLSearchParams();
     if (query) params.set('q', query);
     if (version) params.set('v', version);
-    if (categories.length > 0) params.set('c', categories.join(','));
+    categories.forEach(c => params.append('f', `categories:${c}`));
+    excludedCategories.forEach(c => params.append('f', `categories!=${c}`));
+    if (openSourceState === 'selected') params.set('l', 'open_source:true');
+    else if (openSourceState === 'excluded') params.set('l', 'open_source:false');
     params.set('page', newPage.toString());
     return `/datapacks?${params.toString()}`;
   };

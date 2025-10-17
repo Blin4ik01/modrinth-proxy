@@ -11,33 +11,47 @@ export const metadata = {
 
 export default async function ResourcepacksPage({ searchParams }) {
   const query = searchParams.q || '';
-  let version = searchParams.v || '';
-  let categories = searchParams.c?.split(',').filter(Boolean) || [];
-  let features = searchParams.f?.split(',').filter(Boolean) || [];
-  const resolutions = searchParams.r?.split(',').filter(Boolean) || [];
+  const version = searchParams.v || '';
   const page = parseInt(searchParams.page || '1');
   const limit = 20;
   const offset = (page - 1) * limit;
 
-  if (searchParams.f) {
-    const rawFeatures = searchParams.f.split(',');
-    const parsedFeatures = [];
+  const fParams = Array.isArray(searchParams.f) ? searchParams.f : (searchParams.f ? [searchParams.f] : []);
+  const gParams = Array.isArray(searchParams.g) ? searchParams.g : (searchParams.g ? [searchParams.g] : []);
+
+  let categories = [];
+  let excludedCategories = [];
+  let features = [];
+  let excludedFeatures = [];
+  let resolutions = [];
+  let excludedResolutions = [];
+
+  const CATEGORY_IDS = ['combat', 'cursed', 'decoration', 'modded', 'realistic', 'simplistic', 'themed', 'tweaks', 'utility', 'vanilla-like'];
+  const FEATURE_IDS = ['audio', 'blocks', 'core-shaders', 'entities', 'environment', 'equipment', 'fonts', 'gui', 'items', 'locale', 'models'];
+  const RESOLUTION_IDS = ['8x-', '16x', '32x', '48x', '64x', '128x', '256x', '512x+'];
+
+  const processParam = (param) => {
+    let decoded = decodeURIComponent(param);
     
-    rawFeatures.forEach(item => {
-      if (item.includes(':')) {
-        const [type, value] = item.split(':');
-        if (type === 'categories') {
-          if (!categories.includes(value)) categories.push(value);
-        } else if (type === 'versions' && !version) {
-          version = value;
-        }
-      } else {
-        parsedFeatures.push(item);
+    if (decoded.includes('categories:') || decoded.includes('categories!=')) {
+      const isExcluded = decoded.includes('categories!=');
+      const value = decoded.replace('categories:', '').replace('categories!=', '');
+      
+      if (CATEGORY_IDS.includes(value)) {
+        if (isExcluded) excludedCategories.push(value);
+        else categories.push(value);
+      } else if (FEATURE_IDS.includes(value)) {
+        if (isExcluded) excludedFeatures.push(value);
+        else features.push(value);
+      } else if (RESOLUTION_IDS.includes(value)) {
+        if (isExcluded) excludedResolutions.push(value);
+        else resolutions.push(value);
       }
-    });
-    
-    features = parsedFeatures;
-  }
+    }
+  };
+
+  fParams.forEach(processParam);
+  gParams.forEach(processParam);
 
   const facets = [['project_type:resourcepack']];
   
@@ -46,15 +60,15 @@ export default async function ResourcepacksPage({ searchParams }) {
   }
   
   if (categories.length > 0) {
-    facets.push(categories.map(c => `categories:${c}`));
+    categories.forEach(c => facets.push([`categories:${c}`]));
   }
   
   if (features.length > 0) {
-    facets.push(features.map(f => `categories:${f}`));
+    features.forEach(f => facets.push([`categories:${f}`]));
   }
   
   if (resolutions.length > 0) {
-    facets.push(resolutions.map(r => `categories:${r}`));
+    resolutions.forEach(r => facets.push([`categories:${r}`]));
   }
 
   let data, blockedCount = 0, blockedByProject = 0, blockedByOrganization = 0;
@@ -80,7 +94,12 @@ export default async function ResourcepacksPage({ searchParams }) {
     const params = new URLSearchParams();
     if (query) params.set('q', query);
     if (version) params.set('v', version);
-    if (categories.length > 0) params.set('c', categories.join(','));
+    categories.forEach(c => params.append('f', `categories:${c}`));
+    excludedCategories.forEach(c => params.append('f', `categories!=${c}`));
+    features.forEach(f => params.append('f', `categories:${f}`));
+    excludedFeatures.forEach(f => params.append('f', `categories!=${f}`));
+    resolutions.forEach(r => params.append('f', `categories:${r}`));
+    excludedResolutions.forEach(r => params.append('f', `categories!=${r}`));
     params.set('page', newPage.toString());
     return `/resourcepacks?${params.toString()}`;
   };
