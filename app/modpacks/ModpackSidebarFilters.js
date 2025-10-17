@@ -17,39 +17,28 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   const [selectedVersion, setSelectedVersion] = useState(searchParams.get('v') || '')
   const [selectedLoaders, setSelectedLoaders] = useState([])
-  const [excludedLoaders, setExcludedLoaders] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
-  const [excludedCategories, setExcludedCategories] = useState([])
   const [environment, setEnvironment] = useState(searchParams.get('e') || '')
-  const [openSourceState, setOpenSourceState] = useState('none')
+  const [openSource, setOpenSource] = useState(false)
   const [showAllVersions, setShowAllVersions] = useState(false)
   const [versionSearch, setVersionSearch] = useState('')
 
   useEffect(() => {
     const parsedFilters = parseFacets()
     setSelectedLoaders(parsedFilters.loaders)
-    setExcludedLoaders(parsedFilters.excludedLoaders)
     setSelectedCategories(parsedFilters.categories)
-    setExcludedCategories(parsedFilters.excludedCategories)
-    setOpenSourceState(parsedFilters.openSourceState)
+    setOpenSource(parsedFilters.openSource)
   }, [])
 
   const parseFacets = () => {
     const loaders = []
-    const excludedLoaders = []
     const categories = []
-    const excludedCategories = []
-    let openSourceState = 'none'
+    let openSource = false
 
     const gParams = searchParams.getAll('g')
     gParams.forEach(param => {
       const decoded = decodeURIComponent(param)
-      if (decoded.startsWith('categories!=')) {
-        const loaderId = decoded.substring(12)
-        if (!excludedLoaders.includes(loaderId)) {
-          excludedLoaders.push(loaderId)
-        }
-      } else if (decoded.startsWith('categories:')) {
+      if (decoded.startsWith('categories:')) {
         const loaderId = decoded.substring(11)
         if (!loaders.includes(loaderId)) {
           loaders.push(loaderId)
@@ -60,12 +49,7 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
     const fParams = searchParams.getAll('f')
     fParams.forEach(param => {
       const decoded = decodeURIComponent(param)
-      if (decoded.startsWith('categories!=')) {
-        const catId = decoded.substring(12)
-        if (!excludedCategories.includes(catId)) {
-          excludedCategories.push(catId)
-        }
-      } else if (decoded.startsWith('categories:')) {
+      if (decoded.startsWith('categories:')) {
         const catId = decoded.substring(11)
         if (!categories.includes(catId)) {
           categories.push(catId)
@@ -77,13 +61,11 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
     lParams.forEach(param => {
       const decoded = decodeURIComponent(param)
       if (decoded === 'open_source:true') {
-        openSourceState = 'selected'
-      } else if (decoded === 'open_source!=true') {
-        openSourceState = 'excluded'
+        openSource = true
       }
     })
 
-    return { loaders, excludedLoaders, categories, excludedCategories, openSourceState }
+    return { loaders, categories, openSource }
   }
 
   const updateFilters = (updates) => {
@@ -102,21 +84,13 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
     }
 
     const finalLoaders = updates.l !== undefined ? updates.l : selectedLoaders
-    const finalExcludedLoaders = updates.le !== undefined ? updates.le : excludedLoaders
     finalLoaders.forEach(loader => {
       params.append('g', `categories:${loader}`)
     })
-    finalExcludedLoaders.forEach(loader => {
-      params.append('g', `categories!=${loader}`)
-    })
 
     const finalCategories = updates.c !== undefined ? updates.c : selectedCategories
-    const finalExcludedCategories = updates.ce !== undefined ? updates.ce : excludedCategories
     finalCategories.forEach(cat => {
       params.append('f', `categories:${cat}`)
-    })
-    finalExcludedCategories.forEach(cat => {
-      params.append('f', `categories!=${cat}`)
     })
 
     const finalEnv = updates.e !== undefined ? updates.e : environment
@@ -124,11 +98,9 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
       params.set('e', finalEnv)
     }
 
-    const finalOpenSource = updates.os !== undefined ? updates.os : openSourceState
-    if (finalOpenSource === 'selected') {
+    const finalOpenSource = updates.os !== undefined ? updates.os : openSource
+    if (finalOpenSource) {
       params.append('l', 'open_source:true')
-    } else if (finalOpenSource === 'excluded') {
-      params.append('l', 'open_source!=true')
     }
     
     router.push(`/modpacks?${params.toString()}`)
@@ -136,67 +108,19 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
   }
 
   const toggleLoader = (loaderId) => {
-    let newLoaders = [...selectedLoaders]
-    let newExcludedLoaders = [...excludedLoaders]
-
-    if (newLoaders.includes(loaderId)) {
-      newLoaders = newLoaders.filter(l => l !== loaderId)
-    } else {
-      newLoaders.push(loaderId)
-      newExcludedLoaders = newExcludedLoaders.filter(l => l !== loaderId)
-    }
-
+    const newLoaders = selectedLoaders.includes(loaderId)
+      ? selectedLoaders.filter(l => l !== loaderId)
+      : [...selectedLoaders, loaderId]
     setSelectedLoaders(newLoaders)
-    setExcludedLoaders(newExcludedLoaders)
-    updateFilters({ l: newLoaders, le: newExcludedLoaders })
-  }
-
-  const toggleLoaderExclude = (loaderId) => {
-    let newLoaders = [...selectedLoaders]
-    let newExcludedLoaders = [...excludedLoaders]
-
-    if (newExcludedLoaders.includes(loaderId)) {
-      newExcludedLoaders = newExcludedLoaders.filter(l => l !== loaderId)
-    } else {
-      newExcludedLoaders.push(loaderId)
-      newLoaders = newLoaders.filter(l => l !== loaderId)
-    }
-
-    setSelectedLoaders(newLoaders)
-    setExcludedLoaders(newExcludedLoaders)
-    updateFilters({ l: newLoaders, le: newExcludedLoaders })
+    updateFilters({ l: newLoaders })
   }
 
   const toggleCategory = (categoryId) => {
-    let newCategories = [...selectedCategories]
-    let newExcluded = [...excludedCategories]
-
-    if (newCategories.includes(categoryId)) {
-      newCategories = newCategories.filter(c => c !== categoryId)
-    } else {
-      newCategories.push(categoryId)
-      newExcluded = newExcluded.filter(c => c !== categoryId)
-    }
-
+    const newCategories = selectedCategories.includes(categoryId)
+      ? selectedCategories.filter(c => c !== categoryId)
+      : [...selectedCategories, categoryId]
     setSelectedCategories(newCategories)
-    setExcludedCategories(newExcluded)
-    updateFilters({ c: newCategories, ce: newExcluded })
-  }
-
-  const toggleCategoryExclude = (categoryId) => {
-    let newCategories = [...selectedCategories]
-    let newExcluded = [...excludedCategories]
-
-    if (newExcluded.includes(categoryId)) {
-      newExcluded = newExcluded.filter(c => c !== categoryId)
-    } else {
-      newExcluded.push(categoryId)
-      newCategories = newCategories.filter(c => c !== categoryId)
-    }
-
-    setSelectedCategories(newCategories)
-    setExcludedCategories(newExcluded)
-    updateFilters({ c: newCategories, ce: newExcluded })
+    updateFilters({ c: newCategories })
   }
 
   const handleSearch = (e) => {
@@ -212,58 +136,30 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
           <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
             {MODPACK_CATEGORIES.map(cat => {
               const isSelected = selectedCategories.includes(cat.id)
-              const isExcluded = excludedCategories.includes(cat.id)
               
               return (
-                <div key={cat.id} className="group flex gap-1 items-center">
-                  <button
-                    onClick={() => toggleCategory(cat.id)}
-                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : isSelected
-                          ? 'text-white hover:brightness-125'
-                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-                    }`}
-                    style={
-                      isExcluded
-                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                        : isSelected
-                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                          : undefined
-                    }
-                  >
-                    <div className="h-4 w-4">
-                      {cat.icon}
-                    </div>
-                    <span className="truncate text-sm flex-1">{cat.name}</span>
-                    <svg 
-                      className={`h-4 w-4 flex-shrink-0 transition-opacity ${
-                        isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                      }`}
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      viewBox="0 0 24 24"
-                    >
+                <button
+                  key={cat.id}
+                  onClick={() => toggleCategory(cat.id)}
+                  className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'text-white hover:brightness-125'
+                      : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                      : undefined
+                  }
+                >
+                  <div className="h-4 w-4">{cat.icon}</div>
+                  <span className="truncate text-sm flex-1">{cat.name}</span>
+                  {isSelected && (
+                    <svg className="h-4 w-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                  </button>
-                  <button
-                    onClick={() => toggleCategoryExclude(cat.id)}
-                    title="Исключить"
-                    className={`flex items-center justify-center gap-2 rounded-xl bg-transparent px-2 py-1 text-sm font-semibold text-gray-400 transition-all hover:bg-gray-800 hover:text-red-400 active:scale-[0.96] ${
-                      isExcluded ? 'opacity-100 text-red-400' : 'opacity-0 group-hover:opacity-100'
-                    }`}
-                  >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10"/>
-                      <path d="m4.9 4.9 14.2 14.2"/>
-                    </svg>
-                  </button>
-                </div>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -415,58 +311,30 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
           <div className="space-y-1.5">
             {MODPACK_LOADERS.map(loader => {
               const isSelected = selectedLoaders.includes(loader.id)
-              const isExcluded = excludedLoaders.includes(loader.id)
               
               return (
-                <div key={loader.id} className="group flex gap-1 items-center">
-                  <button
-                    onClick={() => toggleLoader(loader.id)}
-                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : isSelected
-                          ? 'text-white hover:brightness-125'
-                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-                    }`}
-                    style={
-                      isExcluded
-                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                        : isSelected
-                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                          : undefined
-                    }
-                  >
-                    <div className="h-4 w-4">
-                      {loader.icon}
-                    </div>
-                    <span className="truncate text-sm flex-1">{loader.name}</span>
-                    <svg 
-                      className={`h-4 w-4 flex-shrink-0 transition-opacity ${
-                        isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                      }`}
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      viewBox="0 0 24 24"
-                    >
+                <button
+                  key={loader.id}
+                  onClick={() => toggleLoader(loader.id)}
+                  className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'text-white hover:brightness-125'
+                      : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                      : undefined
+                  }
+                >
+                  <div className="h-4 w-4">{loader.icon}</div>
+                  <span className="truncate text-sm flex-1">{loader.name}</span>
+                  {isSelected && (
+                    <svg className="h-4 w-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                  </button>
-                  <button
-                    onClick={() => toggleLoaderExclude(loader.id)}
-                    title="Исключить"
-                    className={`flex items-center justify-center gap-2 rounded-xl bg-transparent px-2 py-1 text-sm font-semibold text-gray-400 transition-all hover:bg-gray-800 hover:text-red-400 active:scale-[0.96] ${
-                      isExcluded ? 'opacity-100 text-red-400' : 'opacity-0 group-hover:opacity-100'
-                    }`}
-                  >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10"/>
-                      <path d="m4.9 4.9 14.2 14.2"/>
-                    </svg>
-                  </button>
-                </div>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -474,74 +342,42 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
 
         <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-gray-300 mb-3">Прочее</h3>
-          <div className="flex gap-1 items-center group">
-            <button
-              onClick={() => {
-                const newState = openSourceState === 'selected' ? 'none' : 'selected'
-                setOpenSourceState(newState)
-                updateFilters({ os: newState })
-              }}
-              className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                openSourceState === 'excluded'
-                  ? 'text-white hover:brightness-125'
-                  : openSourceState === 'selected'
-                    ? 'text-white hover:brightness-125'
-                    : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-              style={
-                openSourceState === 'excluded'
-                  ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                  : openSourceState === 'selected'
-                    ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                    : undefined
-              }
-            >
-              <span className="truncate text-sm flex-1">Открытый исходный код</span>
-              <svg 
-                className={`h-4 w-4 flex-shrink-0 transition-opacity ${
-                  openSourceState === 'selected' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                }`}
-                fill="none" 
-                stroke="currentColor" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                viewBox="0 0 24 24"
-              >
+          <button
+            onClick={() => {
+              const newOpenSource = !openSource
+              setOpenSource(newOpenSource)
+              updateFilters({ os: newOpenSource })
+            }}
+            className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+              openSource
+                ? 'text-white hover:brightness-125'
+                : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+            }`}
+            style={
+              openSource
+                ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                : undefined
+            }
+          >
+            <span className="truncate text-sm flex-1">Открытый исходный код</span>
+            {openSource && (
+              <svg className="h-4 w-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                 <path d="M20 6 9 17l-5-5" />
               </svg>
-            </button>
-            <button
-              onClick={() => {
-                const newState = openSourceState === 'excluded' ? 'none' : 'excluded'
-                setOpenSourceState(newState)
-                updateFilters({ os: newState })
-              }}
-              title="Исключить"
-              className={`flex items-center justify-center gap-2 rounded-xl bg-transparent px-2 py-1 text-sm font-semibold text-gray-400 transition-all hover:bg-gray-800 hover:text-red-400 active:scale-[0.96] ${
-                openSourceState === 'excluded' ? 'opacity-100 text-red-400' : 'opacity-0 group-hover:opacity-100'
-              }`}
-            >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="m4.9 4.9 14.2 14.2"/>
-              </svg>
-            </button>
-          </div>
+            )}
+          </button>
         </div>
 
-        {(selectedVersion || selectedLoaders.length > 0 || excludedLoaders.length > 0 || selectedCategories.length > 0 || excludedCategories.length > 0 || environment || openSourceState !== 'none' || searchQuery) && (
+        {(selectedVersion || selectedLoaders.length > 0 || selectedCategories.length > 0 || environment || openSource || searchQuery) && (
           <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-3">
             <button
               onClick={() => {
                 setSearchQuery('')
                 setSelectedVersion('')
                 setSelectedLoaders([])
-                setExcludedLoaders([])
                 setSelectedCategories([])
-                setExcludedCategories([])
                 setEnvironment('')
-                setOpenSourceState('none')
+                setOpenSource(false)
                 router.push('/modpacks')
               }}
               className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-red-600/30 flex items-center justify-center gap-1.5"

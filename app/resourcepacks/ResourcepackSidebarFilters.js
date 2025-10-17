@@ -35,14 +35,10 @@ export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = 
   
   const parseFacets = () => {
     const fParams = searchParams.getAll('f')
-    const gParams = searchParams.getAll('g')
     
     const categories = []
-    const excludedCategories = []
     const features = []
-    const excludedFeatures = []
     const resolutions = []
-    const excludedResolutions = []
     
     const categoryIds = CATEGORIES.map(c => c.id)
     const featureIds = RESOURCEPACK_CATEGORIES.map(f => f.id)
@@ -51,49 +47,38 @@ export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = 
     const processParam = (param) => {
       let decoded = decodeURIComponent(param)
       
-      if (decoded.includes('categories:') || decoded.includes('categories!=')) {
-        const isExcluded = decoded.includes('categories!=')
-        const value = decoded.replace('categories:', '').replace('categories!=', '')
+      if (decoded.includes('categories:')) {
+        const value = decoded.replace('categories:', '')
         
         if (categoryIds.includes(value)) {
-          if (isExcluded) excludedCategories.push(value)
-          else categories.push(value)
+          categories.push(value)
         } else if (featureIds.includes(value)) {
-          if (isExcluded) excludedFeatures.push(value)
-          else features.push(value)
+          features.push(value)
         } else if (resolutionIds.includes(value)) {
-          if (isExcluded) excludedResolutions.push(value)
-          else resolutions.push(value)
+          resolutions.push(value)
         }
       }
     }
     
     fParams.forEach(processParam)
-    gParams.forEach(processParam)
     
     const version = searchParams.get('v') || ''
     
-    return { categories, excludedCategories, features, excludedFeatures, resolutions, excludedResolutions, version }
+    return { categories, features, resolutions, version }
   }
   
   const { 
     categories: initialCategories, 
-    excludedCategories: initialExcludedCategories,
     features: initialFeatures, 
-    excludedFeatures: initialExcludedFeatures,
     resolutions: initialResolutions,
-    excludedResolutions: initialExcludedResolutions,
     version: initialVersion 
   } = parseFacets()
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   const [selectedVersion, setSelectedVersion] = useState(initialVersion)
   const [selectedCategories, setSelectedCategories] = useState(initialCategories)
-  const [excludedCategories, setExcludedCategories] = useState(initialExcludedCategories)
   const [selectedFeatures, setSelectedFeatures] = useState(initialFeatures)
-  const [excludedFeatures, setExcludedFeatures] = useState(initialExcludedFeatures)
   const [selectedResolutions, setSelectedResolutions] = useState(initialResolutions)
-  const [excludedResolutions, setExcludedResolutions] = useState(initialExcludedResolutions)
   const [showAllVersions, setShowAllVersions] = useState(false)
   const [versionSearch, setVersionSearch] = useState('')
 
@@ -115,144 +100,42 @@ export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = 
     }
     
     const currentCategories = updates.c !== undefined ? updates.c : selectedCategories
-    const currentExcludedCategories = updates.ce !== undefined ? updates.ce : excludedCategories
     const currentFeatures = updates.feat !== undefined ? updates.feat : selectedFeatures
-    const currentExcludedFeatures = updates.fe !== undefined ? updates.fe : excludedFeatures
     const currentResolutions = updates.r !== undefined ? updates.r : selectedResolutions
-    const currentExcludedResolutions = updates.re !== undefined ? updates.re : excludedResolutions
     
     currentCategories.forEach(c => params.append('f', `categories:${c}`))
-    currentExcludedCategories.forEach(c => params.append('f', `categories!=${c}`))
     currentFeatures.forEach(f => params.append('f', `categories:${f}`))
-    currentExcludedFeatures.forEach(f => params.append('f', `categories!=${f}`))
     currentResolutions.forEach(r => params.append('f', `categories:${r}`))
-    currentExcludedResolutions.forEach(r => params.append('f', `categories!=${r}`))
     
     router.push(`/resourcepacks?${params.toString()}`)
     onFilterChange?.()
   }
 
   const toggleCategory = (categoryId) => {
-    const isSelected = selectedCategories.includes(categoryId)
-    const isExcluded = excludedCategories.includes(categoryId)
-    let newCategories = [...selectedCategories]
-    let newExcluded = [...excludedCategories]
-    
-    if (isSelected) {
-      newCategories = newCategories.filter(c => c !== categoryId)
-    } else {
-      newCategories.push(categoryId)
-      if (isExcluded) {
-        newExcluded = newExcluded.filter(c => c !== categoryId)
-      }
-    }
+    const newCategories = selectedCategories.includes(categoryId)
+      ? selectedCategories.filter(c => c !== categoryId)
+      : [...selectedCategories, categoryId]
     
     setSelectedCategories(newCategories)
-    setExcludedCategories(newExcluded)
-    updateFilters({ c: newCategories, ce: newExcluded })
-  }
-
-  const toggleCategoryExclude = (categoryId, e) => {
-    e.stopPropagation()
-    const isExcluded = excludedCategories.includes(categoryId)
-    const isSelected = selectedCategories.includes(categoryId)
-    let newExcluded = [...excludedCategories]
-    let newCategories = [...selectedCategories]
-    
-    if (isExcluded) {
-      newExcluded = newExcluded.filter(c => c !== categoryId)
-    } else {
-      newExcluded.push(categoryId)
-      if (isSelected) {
-        newCategories = newCategories.filter(c => c !== categoryId)
-      }
-    }
-    
-    setExcludedCategories(newExcluded)
-    setSelectedCategories(newCategories)
-    updateFilters({ c: newCategories, ce: newExcluded })
+    updateFilters({ c: newCategories })
   }
 
   const toggleFeature = (featureId) => {
-    const isSelected = selectedFeatures.includes(featureId)
-    const isExcluded = excludedFeatures.includes(featureId)
-    let newFeatures = [...selectedFeatures]
-    let newExcluded = [...excludedFeatures]
-    
-    if (isSelected) {
-      newFeatures = newFeatures.filter(f => f !== featureId)
-    } else {
-      newFeatures.push(featureId)
-      if (isExcluded) {
-        newExcluded = newExcluded.filter(f => f !== featureId)
-      }
-    }
+    const newFeatures = selectedFeatures.includes(featureId)
+      ? selectedFeatures.filter(f => f !== featureId)
+      : [...selectedFeatures, featureId]
     
     setSelectedFeatures(newFeatures)
-    setExcludedFeatures(newExcluded)
-    updateFilters({ feat: newFeatures, fe: newExcluded })
-  }
-
-  const toggleFeatureExclude = (featureId, e) => {
-    e.stopPropagation()
-    const isExcluded = excludedFeatures.includes(featureId)
-    const isSelected = selectedFeatures.includes(featureId)
-    let newExcluded = [...excludedFeatures]
-    let newFeatures = [...selectedFeatures]
-    
-    if (isExcluded) {
-      newExcluded = newExcluded.filter(f => f !== featureId)
-    } else {
-      newExcluded.push(featureId)
-      if (isSelected) {
-        newFeatures = newFeatures.filter(f => f !== featureId)
-      }
-    }
-    
-    setExcludedFeatures(newExcluded)
-    setSelectedFeatures(newFeatures)
-    updateFilters({ f: newFeatures, fe: newExcluded })
+    updateFilters({ feat: newFeatures })
   }
 
   const toggleResolution = (resolutionId) => {
-    const isSelected = selectedResolutions.includes(resolutionId)
-    const isExcluded = excludedResolutions.includes(resolutionId)
-    let newResolutions = [...selectedResolutions]
-    let newExcluded = [...excludedResolutions]
-    
-    if (isSelected) {
-      newResolutions = newResolutions.filter(r => r !== resolutionId)
-    } else {
-      newResolutions.push(resolutionId)
-      if (isExcluded) {
-        newExcluded = newExcluded.filter(r => r !== resolutionId)
-      }
-    }
+    const newResolutions = selectedResolutions.includes(resolutionId)
+      ? selectedResolutions.filter(r => r !== resolutionId)
+      : [...selectedResolutions, resolutionId]
     
     setSelectedResolutions(newResolutions)
-    setExcludedResolutions(newExcluded)
-    updateFilters({ r: newResolutions, re: newExcluded })
-  }
-
-  const toggleResolutionExclude = (resolutionId, e) => {
-    e.stopPropagation()
-    const isExcluded = excludedResolutions.includes(resolutionId)
-    const isSelected = selectedResolutions.includes(resolutionId)
-    let newExcluded = [...excludedResolutions]
-    let newResolutions = [...selectedResolutions]
-    
-    if (isExcluded) {
-      newExcluded = newExcluded.filter(r => r !== resolutionId)
-    } else {
-      newExcluded.push(resolutionId)
-      if (isSelected) {
-        newResolutions = newResolutions.filter(r => r !== resolutionId)
-      }
-    }
-    
-    setExcludedResolutions(newExcluded)
-    setSelectedResolutions(newResolutions)
-    updateFilters({ r: newResolutions, re: newExcluded })
+    updateFilters({ r: newResolutions })
   }
 
   return (
@@ -268,48 +151,29 @@ export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = 
           <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
             {CATEGORIES.map(cat => {
               const isSelected = selectedCategories.includes(cat.id)
-              const isExcluded = excludedCategories.includes(cat.id)
               
               return (
-                <div key={cat.id} className="flex gap-1 items-center group">
-                  <button
-                    onClick={() => toggleCategory(cat.id)}
-                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : isSelected
-                          ? 'text-white hover:brightness-125'
-                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-                    }`}
-                    style={
-                      isExcluded
-                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                        : isSelected
-                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                          : undefined
-                    }
-                  >
-                    <span className="truncate text-sm flex-1">{cat.name}</span>
-                    <svg className={`w-4 h-4 flex-shrink-0 ml-auto transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                <button
+                  key={cat.id}
+                  onClick={() => toggleCategory(cat.id)}
+                  className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'text-white hover:brightness-125'
+                      : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                      : undefined
+                  }
+                >
+                  <span className="truncate text-sm flex-1">{cat.name}</span>
+                  {isSelected && (
+                    <svg className="w-4 h-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                  </button>
-                  <button
-                    onClick={(e) => toggleCategoryExclude(cat.id, e)}
-                    title="Исключить"
-                    className={`flex items-center justify-center rounded-xl px-2 py-1 text-sm font-semibold transition-all ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-red-400'
-                    } ${isExcluded ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                    style={isExcluded ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' } : undefined}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="m4.9 4.9 14.2 14.2" />
-                    </svg>
-                  </button>
-                </div>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -325,49 +189,30 @@ export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = 
           <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
             {RESOURCEPACK_CATEGORIES.map(feature => {
               const isSelected = selectedFeatures.includes(feature.id)
-              const isExcluded = excludedFeatures.includes(feature.id)
               
               return (
-                <div key={feature.id} className="flex gap-1 items-center group">
-                  <button
-                    onClick={() => toggleFeature(feature.id)}
-                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : isSelected
-                          ? 'text-white hover:brightness-125'
-                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-                    }`}
-                    style={
-                      isExcluded
-                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                        : isSelected
-                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                          : undefined
-                    }
-                  >
-                    <div className="h-4 w-4 flex-shrink-0">{feature.icon}</div>
-                    <span className="truncate text-sm flex-1">{feature.name}</span>
-                    <svg className={`w-4 h-4 flex-shrink-0 ml-auto transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                <button
+                  key={feature.id}
+                  onClick={() => toggleFeature(feature.id)}
+                  className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'text-white hover:brightness-125'
+                      : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                      : undefined
+                  }
+                >
+                  <div className="h-4 w-4 flex-shrink-0">{feature.icon}</div>
+                  <span className="truncate text-sm flex-1">{feature.name}</span>
+                  {isSelected && (
+                    <svg className="w-4 h-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                  </button>
-                  <button
-                    onClick={(e) => toggleFeatureExclude(feature.id, e)}
-                    title="Исключить"
-                    className={`flex items-center justify-center rounded-xl px-2 py-1 text-sm font-semibold transition-all ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-red-400'
-                    } ${isExcluded ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                    style={isExcluded ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' } : undefined}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="m4.9 4.9 14.2 14.2" />
-                    </svg>
-                  </button>
-                </div>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -383,48 +228,29 @@ export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = 
           <div className="space-y-1.5">
             {RESOLUTIONS.map(res => {
               const isSelected = selectedResolutions.includes(res.id)
-              const isExcluded = excludedResolutions.includes(res.id)
               
               return (
-                <div key={res.id} className="flex gap-1 items-center group">
-                  <button
-                    onClick={() => toggleResolution(res.id)}
-                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : isSelected
-                          ? 'text-white hover:brightness-125'
-                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-                    }`}
-                    style={
-                      isExcluded
-                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                        : isSelected
-                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                          : undefined
-                    }
-                  >
-                    <span className="truncate text-sm flex-1">{res.name}</span>
-                    <svg className={`w-4 h-4 flex-shrink-0 ml-auto transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                <button
+                  key={res.id}
+                  onClick={() => toggleResolution(res.id)}
+                  className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'text-white hover:brightness-125'
+                      : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                      : undefined
+                  }
+                >
+                  <span className="truncate text-sm flex-1">{res.name}</span>
+                  {isSelected && (
+                    <svg className="w-4 h-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                  </button>
-                  <button
-                    onClick={(e) => toggleResolutionExclude(res.id, e)}
-                    title="Исключить"
-                    className={`flex items-center justify-center rounded-xl px-2 py-1 text-sm font-semibold transition-all ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-red-400'
-                    } ${isExcluded ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                    style={isExcluded ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' } : undefined}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="m4.9 4.9 14.2 14.2" />
-                    </svg>
-                  </button>
-                </div>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -511,18 +337,15 @@ export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = 
           </div>
         </div>
 
-        {(selectedVersion || selectedCategories.length > 0 || excludedCategories.length > 0 || selectedFeatures.length > 0 || excludedFeatures.length > 0 || selectedResolutions.length > 0 || excludedResolutions.length > 0 || searchQuery) && (
+        {(selectedVersion || selectedCategories.length > 0 || selectedFeatures.length > 0 || selectedResolutions.length > 0 || searchQuery) && (
           <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-3">
             <button
               onClick={() => {
                 setSearchQuery('')
                 setSelectedVersion('')
                 setSelectedCategories([])
-                setExcludedCategories([])
                 setSelectedFeatures([])
-                setExcludedFeatures([])
                 setSelectedResolutions([])
-                setExcludedResolutions([])
                 router.push('/resourcepacks')
               }}
               className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-red-600/30 flex items-center justify-center gap-1.5"

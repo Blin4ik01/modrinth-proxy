@@ -15,13 +15,9 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
     const gParams = searchParams.getAll('g')
     
     const styles = []
-    const excludedStyles = []
     const features = []
-    const excludedFeatures = []
     const performance = []
-    const excludedPerformance = []
     const loaders = []
-    const excludedLoaders = []
     
     const styleIds = SHADER_STYLES.map(s => s.id)
     const featureIds = SHADER_FEATURES.map(f => f.id)
@@ -30,19 +26,15 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
     const processParam = (param) => {
       let decoded = decodeURIComponent(param)
       
-      if (decoded.includes('categories:') || decoded.includes('categories!=')) {
-        const isExcluded = decoded.includes('categories!=')
-        const value = decoded.replace('categories:', '').replace('categories!=', '')
+      if (decoded.includes('categories:')) {
+        const value = decoded.replace('categories:', '')
         
         if (styleIds.includes(value)) {
-          if (isExcluded) excludedStyles.push(value)
-          else styles.push(value)
+          styles.push(value)
         } else if (featureIds.includes(value)) {
-          if (isExcluded) excludedFeatures.push(value)
-          else features.push(value)
+          features.push(value)
         } else if (performanceIds.includes(value)) {
-          if (isExcluded) excludedPerformance.push(value)
-          else performance.push(value)
+          performance.push(value)
         }
       }
     }
@@ -54,32 +46,25 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
       if (decoded.includes('categories:')) {
         const value = decoded.replace('categories:', '')
         loaders.push(value)
-      } else if (decoded.includes('categories!=')) {
-        const value = decoded.replace('categories!=', '')
-        excludedLoaders.push(value)
       }
     })
     
     const version = searchParams.get('v') || ''
     const lParam = searchParams.get('l')
-    const openSourceState = lParam === 'open_source:true' ? 'selected' : lParam === 'open_source:false' ? 'excluded' : 'none'
+    const openSource = lParam === 'open_source:true'
     
-    return { styles, excludedStyles, features, excludedFeatures, performance, excludedPerformance, loaders, excludedLoaders, version, openSourceState }
+    return { styles, features, performance, loaders, version, openSource }
   }
   
-  const { styles: initialStyles, excludedStyles: initialExcludedStyles, features: initialFeatures, excludedFeatures: initialExcludedFeatures, performance: initialPerformance, excludedPerformance: initialExcludedPerformance, loaders: initialLoaders, excludedLoaders: initialExcludedLoaders, version: initialVersion, openSourceState: initialOpenSourceState } = parseFacets()
+  const { styles: initialStyles, features: initialFeatures, performance: initialPerformance, loaders: initialLoaders, version: initialVersion, openSource: initialOpenSource } = parseFacets()
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   const [selectedVersion, setSelectedVersion] = useState(initialVersion)
   const [selectedStyles, setSelectedStyles] = useState(initialStyles)
-  const [excludedStyles, setExcludedStyles] = useState(initialExcludedStyles)
   const [selectedFeatures, setSelectedFeatures] = useState(initialFeatures)
-  const [excludedFeatures, setExcludedFeatures] = useState(initialExcludedFeatures)
   const [selectedPerformance, setSelectedPerformance] = useState(initialPerformance)
-  const [excludedPerformance, setExcludedPerformance] = useState(initialExcludedPerformance)
   const [selectedLoaders, setSelectedLoaders] = useState(initialLoaders)
-  const [excludedLoaders, setExcludedLoaders] = useState(initialExcludedLoaders)
-  const [openSourceState, setOpenSourceState] = useState(initialOpenSourceState)
+  const [openSource, setOpenSource] = useState(initialOpenSource)
   const [showAllVersions, setShowAllVersions] = useState(false)
   const [versionSearch, setVersionSearch] = useState('')
 
@@ -96,189 +81,52 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
     if (currentVersion) params.set('v', currentVersion)
     
     const currentStyles = updates.s !== undefined ? updates.s : selectedStyles
-    const currentExcludedStyles = updates.se !== undefined ? updates.se : excludedStyles
     const currentFeatures = updates.feat !== undefined ? updates.feat : selectedFeatures
-    const currentExcludedFeatures = updates.fe !== undefined ? updates.fe : excludedFeatures
     const currentPerformance = updates.p !== undefined ? updates.p : selectedPerformance
-    const currentExcludedPerformance = updates.pe !== undefined ? updates.pe : excludedPerformance
     const currentLoaders = updates.l !== undefined ? updates.l : selectedLoaders
-    const currentExcludedLoaders = updates.le !== undefined ? updates.le : excludedLoaders
     
     currentStyles.forEach(s => params.append('f', `categories:${s}`))
-    currentExcludedStyles.forEach(s => params.append('f', `categories!=${s}`))
     currentFeatures.forEach(f => params.append('f', `categories:${f}`))
-    currentExcludedFeatures.forEach(f => params.append('f', `categories!=${f}`))
     currentPerformance.forEach(p => params.append('f', `categories:${p}`))
-    currentExcludedPerformance.forEach(p => params.append('f', `categories!=${p}`))
     currentLoaders.forEach(l => params.append('g', `categories:${l}`))
-    currentExcludedLoaders.forEach(l => params.append('g', `categories!=${l}`))
     
-    const currentOpenSourceState = updates.os !== undefined ? updates.os : openSourceState
-    if (currentOpenSourceState === 'selected') params.set('l', 'open_source:true')
-    else if (currentOpenSourceState === 'excluded') params.set('l', 'open_source:false')
+    const currentOpenSource = updates.os !== undefined ? updates.os : openSource
+    if (currentOpenSource) params.set('l', 'open_source:true')
     
     router.push(`/shaders?${params.toString()}`)
     onFilterChange?.()
   }
 
   const toggleStyle = (styleId) => {
-    const isSelected = selectedStyles.includes(styleId)
-    const isExcluded = excludedStyles.includes(styleId)
-    let newStyles = [...selectedStyles]
-    let newExcludedStyles = [...excludedStyles]
-    
-    if (isSelected) {
-      newStyles = newStyles.filter(s => s !== styleId)
-    } else {
-      newStyles.push(styleId)
-      if (isExcluded) {
-        newExcludedStyles = newExcludedStyles.filter(s => s !== styleId)
-      }
-    }
-    
+    const newStyles = selectedStyles.includes(styleId)
+      ? selectedStyles.filter(s => s !== styleId)
+      : [...selectedStyles, styleId]
     setSelectedStyles(newStyles)
-    setExcludedStyles(newExcludedStyles)
-    updateFilters({ s: newStyles, se: newExcludedStyles })
-  }
-
-  const toggleStyleExclude = (styleId) => {
-    const isSelected = selectedStyles.includes(styleId)
-    const isExcluded = excludedStyles.includes(styleId)
-    let newStyles = [...selectedStyles]
-    let newExcludedStyles = [...excludedStyles]
-    
-    if (isExcluded) {
-      newExcludedStyles = newExcludedStyles.filter(s => s !== styleId)
-    } else {
-      newExcludedStyles.push(styleId)
-      if (isSelected) {
-        newStyles = newStyles.filter(s => s !== styleId)
-      }
-    }
-    
-    setSelectedStyles(newStyles)
-    setExcludedStyles(newExcludedStyles)
-    updateFilters({ s: newStyles, se: newExcludedStyles })
+    updateFilters({ s: newStyles })
   }
 
   const toggleFeature = (featureId) => {
-    const isSelected = selectedFeatures.includes(featureId)
-    const isExcluded = excludedFeatures.includes(featureId)
-    let newFeatures = [...selectedFeatures]
-    let newExcludedFeatures = [...excludedFeatures]
-    
-    if (isSelected) {
-      newFeatures = newFeatures.filter(f => f !== featureId)
-    } else {
-      newFeatures.push(featureId)
-      if (isExcluded) {
-        newExcludedFeatures = newExcludedFeatures.filter(f => f !== featureId)
-      }
-    }
-    
+    const newFeatures = selectedFeatures.includes(featureId)
+      ? selectedFeatures.filter(f => f !== featureId)
+      : [...selectedFeatures, featureId]
     setSelectedFeatures(newFeatures)
-    setExcludedFeatures(newExcludedFeatures)
-    updateFilters({ feat: newFeatures, fe: newExcludedFeatures })
-  }
-
-  const toggleFeatureExclude = (featureId) => {
-    const isSelected = selectedFeatures.includes(featureId)
-    const isExcluded = excludedFeatures.includes(featureId)
-    let newFeatures = [...selectedFeatures]
-    let newExcludedFeatures = [...excludedFeatures]
-    
-    if (isExcluded) {
-      newExcludedFeatures = newExcludedFeatures.filter(f => f !== featureId)
-    } else {
-      newExcludedFeatures.push(featureId)
-      if (isSelected) {
-        newFeatures = newFeatures.filter(f => f !== featureId)
-      }
-    }
-    
-    setSelectedFeatures(newFeatures)
-    setExcludedFeatures(newExcludedFeatures)
-    updateFilters({ feat: newFeatures, fe: newExcludedFeatures })
+    updateFilters({ feat: newFeatures })
   }
 
   const togglePerformance = (performanceId) => {
-    const isSelected = selectedPerformance.includes(performanceId)
-    const isExcluded = excludedPerformance.includes(performanceId)
-    let newPerformance = [...selectedPerformance]
-    let newExcludedPerformance = [...excludedPerformance]
-    
-    if (isSelected) {
-      newPerformance = newPerformance.filter(p => p !== performanceId)
-    } else {
-      newPerformance.push(performanceId)
-      if (isExcluded) {
-        newExcludedPerformance = newExcludedPerformance.filter(p => p !== performanceId)
-      }
-    }
-    
+    const newPerformance = selectedPerformance.includes(performanceId)
+      ? selectedPerformance.filter(p => p !== performanceId)
+      : [...selectedPerformance, performanceId]
     setSelectedPerformance(newPerformance)
-    setExcludedPerformance(newExcludedPerformance)
-    updateFilters({ p: newPerformance, pe: newExcludedPerformance })
-  }
-
-  const togglePerformanceExclude = (performanceId) => {
-    const isSelected = selectedPerformance.includes(performanceId)
-    const isExcluded = excludedPerformance.includes(performanceId)
-    let newPerformance = [...selectedPerformance]
-    let newExcludedPerformance = [...excludedPerformance]
-    
-    if (isExcluded) {
-      newExcludedPerformance = newExcludedPerformance.filter(p => p !== performanceId)
-    } else {
-      newExcludedPerformance.push(performanceId)
-      if (isSelected) {
-        newPerformance = newPerformance.filter(p => p !== performanceId)
-      }
-    }
-    
-    setSelectedPerformance(newPerformance)
-    setExcludedPerformance(newExcludedPerformance)
-    updateFilters({ p: newPerformance, pe: newExcludedPerformance })
+    updateFilters({ p: newPerformance })
   }
 
   const toggleLoader = (loaderId) => {
-    const isSelected = selectedLoaders.includes(loaderId)
-    const isExcluded = excludedLoaders.includes(loaderId)
-    let newLoaders = [...selectedLoaders]
-    let newExcludedLoaders = [...excludedLoaders]
-    
-    if (isSelected) {
-      newLoaders = newLoaders.filter(l => l !== loaderId)
-    } else {
-      newLoaders.push(loaderId)
-      if (isExcluded) {
-        newExcludedLoaders = newExcludedLoaders.filter(l => l !== loaderId)
-      }
-    }
-    
+    const newLoaders = selectedLoaders.includes(loaderId)
+      ? selectedLoaders.filter(l => l !== loaderId)
+      : [...selectedLoaders, loaderId]
     setSelectedLoaders(newLoaders)
-    setExcludedLoaders(newExcludedLoaders)
-    updateFilters({ l: newLoaders, le: newExcludedLoaders })
-  }
-
-  const toggleLoaderExclude = (loaderId) => {
-    const isSelected = selectedLoaders.includes(loaderId)
-    const isExcluded = excludedLoaders.includes(loaderId)
-    let newLoaders = [...selectedLoaders]
-    let newExcludedLoaders = [...excludedLoaders]
-    
-    if (isExcluded) {
-      newExcludedLoaders = newExcludedLoaders.filter(l => l !== loaderId)
-    } else {
-      newExcludedLoaders.push(loaderId)
-      if (isSelected) {
-        newLoaders = newLoaders.filter(l => l !== loaderId)
-      }
-    }
-    
-    setSelectedLoaders(newLoaders)
-    setExcludedLoaders(newExcludedLoaders)
-    updateFilters({ l: newLoaders, le: newExcludedLoaders })
+    updateFilters({ l: newLoaders })
   }
 
   return (
@@ -289,52 +137,30 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
           <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
             {SHADER_STYLES.map(style => {
               const isSelected = selectedStyles.includes(style.id)
-              const isExcluded = excludedStyles.includes(style.id)
               
               return (
-                <div key={style.id} className="flex gap-1 items-center group">
-                  <button
-                    onClick={() => toggleStyle(style.id)}
-                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : isSelected
-                          ? 'text-white hover:brightness-125'
-                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-                    }`}
-                    style={
-                      isExcluded
-                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                        : isSelected
-                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                          : undefined
-                    }
-                  >
-                    <div className="h-4 w-4">{style.icon}</div>
-                    <span className="truncate text-sm flex-1">{style.name}</span>
-                    <svg className={`w-4 h-4 flex-shrink-0 ml-auto transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                <button
+                  key={style.id}
+                  onClick={() => toggleStyle(style.id)}
+                  className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'text-white hover:brightness-125'
+                      : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                      : undefined
+                  }
+                >
+                  <div className="h-4 w-4">{style.icon}</div>
+                  <span className="truncate text-sm flex-1">{style.name}</span>
+                  {isSelected && (
+                    <svg className="w-4 h-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      toggleStyleExclude(style.id)
-                    }}
-                    title="Исключить"
-                    className={`flex items-center justify-center rounded-xl px-2 py-1 text-sm font-semibold transition-all ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-red-400'
-                    } ${isExcluded ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                    style={isExcluded ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' } : undefined}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="m4.9 4.9 14.2 14.2" />
-                    </svg>
-                  </button>
-                </div>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -345,52 +171,30 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
           <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
             {SHADER_FEATURES.map(feature => {
               const isSelected = selectedFeatures.includes(feature.id)
-              const isExcluded = excludedFeatures.includes(feature.id)
               
               return (
-                <div key={feature.id} className="flex gap-1 items-center group">
-                  <button
-                    onClick={() => toggleFeature(feature.id)}
-                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : isSelected
-                          ? 'text-white hover:brightness-125'
-                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-                    }`}
-                    style={
-                      isExcluded
-                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                        : isSelected
-                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                          : undefined
-                    }
-                  >
-                    <div className="h-4 w-4">{feature.icon}</div>
-                    <span className="truncate text-sm flex-1">{feature.name}</span>
-                    <svg className={`w-4 h-4 flex-shrink-0 ml-auto transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                <button
+                  key={feature.id}
+                  onClick={() => toggleFeature(feature.id)}
+                  className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'text-white hover:brightness-125'
+                      : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                      : undefined
+                  }
+                >
+                  <div className="h-4 w-4">{feature.icon}</div>
+                  <span className="truncate text-sm flex-1">{feature.name}</span>
+                  {isSelected && (
+                    <svg className="w-4 h-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      toggleFeatureExclude(feature.id)
-                    }}
-                    title="Исключить"
-                    className={`flex items-center justify-center rounded-xl px-2 py-1 text-sm font-semibold transition-all ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-red-400'
-                    } ${isExcluded ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                    style={isExcluded ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' } : undefined}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="m4.9 4.9 14.2 14.2" />
-                    </svg>
-                  </button>
-                </div>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -401,52 +205,30 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
           <div className="space-y-1.5">
             {SHADER_PERFORMANCE.map(perf => {
               const isSelected = selectedPerformance.includes(perf.id)
-              const isExcluded = excludedPerformance.includes(perf.id)
               
               return (
-                <div key={perf.id} className="flex gap-1 items-center group">
-                  <button
-                    onClick={() => togglePerformance(perf.id)}
-                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : isSelected
-                          ? 'text-white hover:brightness-125'
-                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-                    }`}
-                    style={
-                      isExcluded
-                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                        : isSelected
-                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                          : undefined
-                    }
-                  >
-                    <div className="h-4 w-4">{perf.icon}</div>
-                    <span className="truncate text-sm flex-1">{perf.name}</span>
-                    <svg className={`w-4 h-4 flex-shrink-0 ml-auto transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                <button
+                  key={perf.id}
+                  onClick={() => togglePerformance(perf.id)}
+                  className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'text-white hover:brightness-125'
+                      : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                      : undefined
+                  }
+                >
+                  <div className="h-4 w-4">{perf.icon}</div>
+                  <span className="truncate text-sm flex-1">{perf.name}</span>
+                  {isSelected && (
+                    <svg className="w-4 h-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      togglePerformanceExclude(perf.id)
-                    }}
-                    title="Исключить"
-                    className={`flex items-center justify-center rounded-xl px-2 py-1 text-sm font-semibold transition-all ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-red-400'
-                    } ${isExcluded ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                    style={isExcluded ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' } : undefined}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="m4.9 4.9 14.2 14.2" />
-                    </svg>
-                  </button>
-                </div>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -537,52 +319,30 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
           <div className="space-y-1.5">
             {SHADER_LOADERS.map(loader => {
               const isSelected = selectedLoaders.includes(loader.id)
-              const isExcluded = excludedLoaders.includes(loader.id)
               
               return (
-                <div key={loader.id} className="flex gap-1 items-center group">
-                  <button
-                    onClick={() => toggleLoader(loader.id)}
-                    className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : isSelected
-                          ? 'text-white hover:brightness-125'
-                          : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-                    }`}
-                    style={
-                      isExcluded
-                        ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                        : isSelected
-                          ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                          : undefined
-                    }
-                  >
-                    <div className="h-4 w-4">{loader.icon}</div>
-                    <span className="truncate text-sm flex-1">{loader.name}</span>
-                    <svg className={`w-4 h-4 flex-shrink-0 ml-auto transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+                <button
+                  key={loader.id}
+                  onClick={() => toggleLoader(loader.id)}
+                  className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'text-white hover:brightness-125'
+                      : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                      : undefined
+                  }
+                >
+                  <div className="h-4 w-4">{loader.icon}</div>
+                  <span className="truncate text-sm flex-1">{loader.name}</span>
+                  {isSelected && (
+                    <svg className="w-4 h-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                       <path d="M20 6 9 17l-5-5" />
-            </svg>
-                  </button>
-              <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      toggleLoaderExclude(loader.id)
-                    }}
-                    title="Исключить"
-                    className={`flex items-center justify-center rounded-xl px-2 py-1 text-sm font-semibold transition-all ${
-                      isExcluded
-                        ? 'text-white hover:brightness-125'
-                        : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-red-400'
-                    } ${isExcluded ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                    style={isExcluded ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' } : undefined}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="m4.9 4.9 14.2 14.2" />
                     </svg>
-              </button>
-                </div>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -590,71 +350,43 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
 
         <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-gray-300 mb-3">Прочее</h3>
-          <div className="flex gap-1 items-center group">
-              <button
-              onClick={() => {
-                const newState = openSourceState === 'selected' ? 'none' : 'selected'
-                setOpenSourceState(newState)
-                updateFilters({ os: newState })
-              }}
-              className={`flex-1 text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                openSourceState === 'excluded'
-                  ? 'text-white hover:brightness-125'
-                  : openSourceState === 'selected'
-                    ? 'text-white hover:brightness-125'
-                    : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-              style={
-                openSourceState === 'excluded'
-                  ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' }
-                  : openSourceState === 'selected'
-                    ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
-                    : undefined
-              }
-            >
-              <span className="truncate text-sm flex-1">Открытый исходный код</span>
-              <svg className={`w-4 h-4 flex-shrink-0 ml-auto transition-opacity ${openSourceState === 'selected' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+          <button
+            onClick={() => {
+              const newOpenSource = !openSource
+              setOpenSource(newOpenSource)
+              updateFilters({ os: newOpenSource })
+            }}
+            className={`w-full text-left px-2 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+              openSource
+                ? 'text-white hover:brightness-125'
+                : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+            }`}
+            style={
+              openSource
+                ? { backgroundColor: 'rgba(27, 217, 106, 0.25)' }
+                : undefined
+            }
+          >
+            <span className="truncate text-sm flex-1">Открытый исходный код</span>
+            {openSource && (
+              <svg className="w-4 h-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
                 <path d="M20 6 9 17l-5-5" />
-            </svg>
-            </button>
-              <button
-              onClick={(e) => {
-                e.stopPropagation()
-                const newState = openSourceState === 'excluded' ? 'none' : 'excluded'
-                setOpenSourceState(newState)
-                updateFilters({ os: newState })
-              }}
-              title="Исключить"
-              className={`flex items-center justify-center rounded-xl px-2 py-1 text-sm font-semibold transition-all ${
-                openSourceState === 'excluded'
-                  ? 'text-white hover:brightness-125'
-                  : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-red-400'
-              } ${openSourceState === 'excluded' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-              style={openSourceState === 'excluded' ? { backgroundColor: 'rgba(255, 73, 110, 0.25)' } : undefined}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <path d="m4.9 4.9 14.2 14.2" />
               </svg>
-              </button>
-          </div>
+            )}
+          </button>
         </div>
 
-        {(selectedVersion || selectedStyles.length > 0 || excludedStyles.length > 0 || selectedFeatures.length > 0 || excludedFeatures.length > 0 || selectedPerformance.length > 0 || excludedPerformance.length > 0 || selectedLoaders.length > 0 || excludedLoaders.length > 0 || openSourceState !== 'none' || searchQuery) && (
+        {(selectedVersion || selectedStyles.length > 0 || selectedFeatures.length > 0 || selectedPerformance.length > 0 || selectedLoaders.length > 0 || openSource || searchQuery) && (
           <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-3">
           <button
             onClick={() => {
               setSearchQuery('')
               setSelectedVersion('')
-                setSelectedStyles([])
-                setExcludedStyles([])
+              setSelectedStyles([])
               setSelectedFeatures([])
-                setExcludedFeatures([])
               setSelectedPerformance([])
-                setExcludedPerformance([])
               setSelectedLoaders([])
-                setExcludedLoaders([])
-                setOpenSourceState('none')
+              setOpenSource(false)
               router.push('/shaders')
             }}
               className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-red-600/30 flex items-center justify-center gap-1.5"
