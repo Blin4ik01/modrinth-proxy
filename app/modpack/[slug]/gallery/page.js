@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { getMod, getModVersions } from '@/lib/modrinth'
 import { isProjectBlocked, isOrganizationBlocked, filterGalleryImages } from '@/lib/contentFilter'
 import ContentNavigation from '@/app/components/ContentNavigation'
-import ModSidebar from '@/app/components/ModSidebar'
+import ResourceSidebar from '@/app/components/ResourceSidebar'
 import ResourceHeader from '@/app/components/ResourceHeader'
 import GalleryGrid from '@/app/components/GalleryGrid'
 
@@ -98,7 +98,7 @@ export default async function ModpackGalleryPage({ params }) {
         </div>
         
         <div className="lg:sticky lg:top-4 lg:self-start">
-          <ModSidebar mod={modpack} teamMembers={[]} />
+          <ResourceSidebar resource={modpack} teamMembers={[]} />
         </div>
       </div>
     </div>

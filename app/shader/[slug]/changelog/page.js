@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getMod, getModVersions, getTeamMembers, formatDate } from '@/lib/modrinth'
 import { filterModContent, filterTeamMembers, isProjectBlocked, isOrganizationBlocked, filterVersionChangelog } from '@/lib/contentFilter'
-import ModSidebar from '@/app/components/ModSidebar'
+import ResourceSidebar from '@/app/components/ResourceSidebar'
 import ContentNavigation from '@/app/components/ContentNavigation'
 import ResourceHeader from '@/app/components/ResourceHeader'
 import ReactMarkdown from 'react-markdown'
@@ -60,7 +60,7 @@ export default async function ShaderChangelogPage({ params }) {
           </div>
         </div>
         <div className="lg:sticky lg:top-4 lg:self-start">
-          <ModSidebar mod={shader} teamMembers={teamMembers} />
+          <ResourceSidebar resource={shader} teamMembers={teamMembers} />
         </div>
       </div>
     </div>

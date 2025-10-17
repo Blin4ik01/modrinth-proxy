@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { compressVersionRanges } from '@/lib/modrinth'
+import { LOADERS } from '@/lib/loaders'
 import VersionsDropdown from './VersionsDropdown'
 import LoadersDropdown from './LoadersDropdown'
 import ChannelsDropdown from './ChannelsDropdown'
@@ -208,15 +209,26 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                             {range}
                           </span>
                         ))}
-                        {version.loaders.slice(0, 2).map((loader) => (
-                          <span 
-                            key={loader}
-                            className="px-2 py-1 text-xs font-semibold rounded-full capitalize inline-flex items-center gap-1"
-                            style={{ backgroundColor: '#34363c', color: '#80878f' }}
-                          >
-                            {loader}
-                          </span>
-                        ))}
+                        {version.loaders.filter(l => l !== 'minecraft').slice(0, 2).map((loaderId) => {
+                          const loaderData = LOADERS.find(l => l.id === loaderId)
+                          if (!loaderData) return null
+                          
+                          return (
+                            <span 
+                              key={loaderId}
+                              className="px-2 py-1 text-xs font-semibold rounded-full capitalize inline-flex items-center gap-1"
+                              style={{ 
+                                backgroundColor: '#34363c', 
+                                color: loaderData.color || '#80878f' 
+                              }}
+                            >
+                              <div className="w-3 h-3 flex-shrink-0" style={{ color: loaderData.color || '#80878f' }}>
+                                {loaderData.icon}
+                              </div>
+                              {loaderData.name}
+                            </span>
+                          )
+                        })}
                       </div>
 
                       <div className="relative z-10 hidden sm:flex xl:hidden flex-col gap-1 text-xs text-gray-400 font-medium">
@@ -262,20 +274,26 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                       </div>
 
                       <div className="relative z-10 hidden xl:flex flex-wrap gap-1 items-start content-start max-h-20 overflow-hidden">
-                        {version.loaders.map((loader) => (
-                          <span 
-                            key={loader}
-                            className="px-2 py-1 text-xs font-semibold rounded-full hover:underline cursor-pointer capitalize inline-flex items-center gap-1"
-                            style={{ backgroundColor: '#34363c', color: '#80878f' }}
-                          >
-                            {loader === 'fabric' && (
-                              <svg className="w-3 h-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                              </svg>
-                            )}
-                            {loader}
-                          </span>
-                        ))}
+                        {version.loaders.filter(l => l !== 'minecraft').map((loaderId) => {
+                          const loaderData = LOADERS.find(l => l.id === loaderId)
+                          if (!loaderData) return null
+                          
+                          return (
+                            <span 
+                              key={loaderId}
+                              className="px-2 py-1 text-xs font-semibold rounded-full hover:underline cursor-pointer capitalize inline-flex items-center gap-1"
+                              style={{ 
+                                backgroundColor: '#34363c', 
+                                color: loaderData.color || '#80878f' 
+                              }}
+                            >
+                              <div className="w-3 h-3 flex-shrink-0" style={{ color: loaderData.color || '#80878f' }}>
+                                {loaderData.icon}
+                              </div>
+                              {loaderData.name}
+                            </span>
+                          )
+                        })}
                       </div>
 
                       <div className="relative z-10 pointer-events-none hidden xl:flex items-center gap-1 text-xs text-gray-400 font-medium">
@@ -311,9 +329,26 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                             ))}
                           </div>
                           <div className="flex flex-wrap gap-1 max-[390px]:justify-center">
-                            {version.loaders.slice(0, 3).map((loader) => (
-                              <span key={loader} className="px-2 py-0.5 text-xs rounded-full capitalize" style={{ backgroundColor: '#34363c', color: '#80878f' }}>{loader}</span>
-                            ))}
+                            {version.loaders.filter(l => l !== 'minecraft').slice(0, 3).map((loaderId) => {
+                              const loaderData = LOADERS.find(l => l.id === loaderId)
+                              if (!loaderData) return null
+                              
+                              return (
+                                <span 
+                                  key={loaderId} 
+                                  className="px-2 py-0.5 text-xs rounded-full capitalize inline-flex items-center gap-1" 
+                                  style={{ 
+                                    backgroundColor: '#34363c', 
+                                    color: loaderData.color || '#80878f' 
+                                  }}
+                                >
+                                  <div className="w-3 h-3 flex-shrink-0" style={{ color: loaderData.color || '#80878f' }}>
+                                    {loaderData.icon}
+                                  </div>
+                                  {loaderData.name}
+                                </span>
+                              )
+                            })}
                           </div>
                           <div className="flex gap-2 max-[390px]:justify-center">
                             <span>{(() => {

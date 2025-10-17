@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getMod, getModVersions, getTeamMembers } from '@/lib/modrinth'
 import { filterModContent, filterTeamMembers, isProjectBlocked, isOrganizationBlocked } from '@/lib/contentFilter'
-import ModSidebar from '@/app/components/ModSidebar'
+import ResourceSidebar from '@/app/components/ResourceSidebar'
 import ContentNavigation from '@/app/components/ContentNavigation'
 import ResourceHeader from '@/app/components/ResourceHeader'
 import VersionsList from '@/app/components/VersionsList'
@@ -46,7 +46,7 @@ export default async function ModpackVersionsPage({ params, searchParams }) {
         </div>
 
         <div className="lg:sticky lg:top-4 lg:self-start">
-          <ModSidebar mod={modpack} teamMembers={teamMembers} />
+          <ResourceSidebar resource={modpack} teamMembers={teamMembers} />
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { LOADERS } from '@/lib/loaders'
 
 export default function LoadersDropdown({ loaders, selectedLoaders, onLoadersChange }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -31,7 +32,10 @@ export default function LoadersDropdown({ loaders, selectedLoaders, onLoadersCha
 
   const getLabel = () => {
     if (selectedLoaders.length === 0) return 'Платформы'
-    if (selectedLoaders.length === 1) return selectedLoaders[0]
+    if (selectedLoaders.length === 1) {
+      const loaderData = LOADERS.find(l => l.id === selectedLoaders[0])
+      return loaderData ? loaderData.name : selectedLoaders[0]
+    }
     return `${selectedLoaders.length} выбрано`
   }
 
@@ -55,21 +59,31 @@ export default function LoadersDropdown({ loaders, selectedLoaders, onLoadersCha
         <div className="absolute top-full left-0 mt-2 w-64 bg-gray-800 border border-gray-700 shadow-2xl z-50 overflow-hidden animate-fade-in" style={{ borderRadius: '0.75rem' }}>
           <div className="p-2 max-h-96 overflow-y-auto custom-scrollbar">
             <div className="flex flex-col gap-1">
-              {loaders.map(loader => (
-                <button
-                  key={loader}
-                  onClick={() => toggleLoader(loader)}
-                  className="flex items-center justify-between px-3 py-2 text-sm text-white hover:bg-gray-700 transition text-left capitalize"
-                  style={{ borderRadius: '0.75rem' }}
-                >
-                  <span>{loader}</span>
-                  {selectedLoaders.includes(loader) && (
-                    <svg className="w-5 h-5 text-modrinth-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 6L9 17l-5-5" />
-                    </svg>
-                  )}
-                </button>
-              ))}
+              {loaders.filter(l => l !== 'minecraft').map(loaderId => {
+                const loaderData = LOADERS.find(l => l.id === loaderId)
+                if (!loaderData) return null
+                
+                return (
+                  <button
+                    key={loaderId}
+                    onClick={() => toggleLoader(loaderId)}
+                    className="flex items-center justify-between px-3 py-2 text-sm hover:bg-gray-700 transition text-left"
+                    style={{ borderRadius: '0.75rem', color: loaderData.color || '#ffffff' }}
+                  >
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 flex-shrink-0">
+                        {loaderData.icon}
+                      </div>
+                      {loaderData.name}
+                    </span>
+                    {selectedLoaders.includes(loaderId) && (
+                      <svg className="w-5 h-5 text-modrinth-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 6L9 17l-5-5" />
+                      </svg>
+                    )}
+                  </button>
+                )
+              })}
             </div>
           </div>
         </div>

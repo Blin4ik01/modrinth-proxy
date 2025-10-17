@@ -4,6 +4,7 @@ import { filterVersionChangelog, filterAvatar } from '@/lib/contentFilter'
 import { CATEGORIES } from '@/lib/categories'
 import { RESOURCEPACK_CATEGORIES } from '@/lib/resourcepackCategories'
 import { SHADER_STYLES, SHADER_FEATURES, SHADER_PERFORMANCE } from '@/lib/shaderCategories'
+import { LOADERS } from '@/lib/loaders'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
@@ -74,11 +75,23 @@ class VersionMetadata {
             label="Загрузчики"
             value={
               <div className="flex flex-wrap gap-1.5">
-                {this.version.loaders.map(loader => (
-                  <span key={loader} className="capitalize text-sm">
-                    {loader}
-                  </span>
-                ))}
+                {this.version.loaders.filter(l => l !== 'minecraft').map(loaderId => {
+                  const loaderData = LOADERS.find(l => l.id === loaderId)
+                  if (!loaderData) return null
+                  
+                  return (
+                    <span 
+                      key={loaderId} 
+                      className="inline-flex items-center gap-1.5 text-sm font-medium"
+                      style={{ color: loaderData.color || '#d1d5db' }}
+                    >
+                      <div className="w-4 h-4 flex-shrink-0">
+                        {loaderData.icon}
+                      </div>
+                      {loaderData.name}
+                    </span>
+                  )
+                })}
               </div>
             }
           />

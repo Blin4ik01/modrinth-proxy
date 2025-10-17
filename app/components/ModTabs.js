@@ -5,6 +5,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { formatDate } from '@/lib/modrinth'
 import { filterVersionChangelog } from '@/lib/contentFilter'
+import { LOADERS } from '@/lib/loaders'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
@@ -345,19 +346,23 @@ export default function ModTabs({ mod, versions, initialTab = 'description', ini
                               {v}
                             </span>
                           ))}
-                          {version.loaders.map((loader) => (
-                            <span 
-                              key={loader}
-                              className="px-2 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-semibold hover:underline cursor-pointer capitalize inline-flex items-center gap-1"
-                            >
-                              {loader === 'fabric' && (
-                                <svg className="w-3 h-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                                </svg>
-                              )}
-                              {loader}
-                            </span>
-                          ))}
+                          {version.loaders.filter(l => l !== 'minecraft').map((loaderId) => {
+                            const loaderData = LOADERS.find(l => l.id === loaderId)
+                            if (!loaderData) return null
+                            
+                            return (
+                              <span 
+                                key={loaderId}
+                                className="px-2 py-1 bg-gray-800 rounded-full text-xs font-semibold hover:underline cursor-pointer capitalize inline-flex items-center gap-1"
+                                style={{ color: loaderData.color || '#d1d5db' }}
+                              >
+                                <div className="w-3 h-3 flex-shrink-0">
+                                  {loaderData.icon}
+                                </div>
+                                {loaderData.name}
+                              </span>
+                            )
+                          })}
                         </div>
 
                         <div className="relative z-10 pointer-events-none flex items-center gap-3 text-xs text-gray-400 font-medium">
