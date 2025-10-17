@@ -151,7 +151,7 @@ export default function PluginSidebarFilters({ isMobile = false, onFilterChange 
       <div className="space-y-4">
         <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-gray-300 mb-3">Категории</h3>
-          <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
+          <div className="space-y-1.5 pr-2">
             {PLUGIN_CATEGORIES.map(cat => {
               const isSelected = selectedCategories.includes(cat.id)
               

@@ -83,7 +83,7 @@ export default function DatapackSidebarFilters({ onFilterChange, isMobile = fals
             </svg>
             Категории
           </h3>
-          <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
+          <div className="space-y-1.5 pr-2">
             {CATEGORIES.map(cat => {
               const isSelected = selectedCategories.includes(cat.id)
               

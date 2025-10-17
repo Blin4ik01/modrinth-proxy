@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { formatDownloads, formatDate, formatFileSize } from '@/lib/modrinth'
 import { filterVersionChangelog, filterAvatar } from '@/lib/contentFilter'
+import { CATEGORIES } from '@/lib/categories'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
@@ -293,16 +294,22 @@ export default function VersionPage({ project, version, author, contentType, plu
                   <span className="font-semibold text-white">{formatDownloads(project.followers)}</span>
                 </div>
                 <div className="hidden sm:flex flex-wrap gap-1.5">
-                  {project.categories.slice(0, 4).map((cat) => (
-                    <Link
-                      key={cat}
-                      href={`/${pluralName}?f=categories:${cat}`}
-                      className="px-2 py-0.5 text-xs font-semibold rounded-full hover:underline transition-all"
-                      style={{ backgroundColor: '#34363c', color: '#80878f' }}
-                    >
-                      {cat}
-                    </Link>
-                  ))}
+                  {project.categories.slice(0, 4).map((catId) => {
+                    const category = CATEGORIES.find(c => c.id === catId)
+                    if (!category) return null
+                    
+                    return (
+                      <Link
+                        key={catId}
+                        href={`/${pluralName}?f=categories:${catId}`}
+                        className="px-2 py-1 text-xs font-semibold rounded-lg hover:brightness-110 transition-all flex items-center gap-1.5"
+                        style={{ backgroundColor: '#34363c', color: '#80878f' }}
+                      >
+                        <div className="h-3.5 w-3.5 flex-shrink-0">{category.icon}</div>
+                        <span>{category.name}</span>
+                      </Link>
+                    )
+                  })}
                 </div>
               </div>
             </div>

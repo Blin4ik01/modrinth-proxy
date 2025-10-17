@@ -257,7 +257,7 @@ export default function SidebarFilters({ onFilterChange, isMobile = false }) {
             </svg>
             Категории
           </h3>
-          <div className="max-h-52 overflow-y-auto custom-scrollbar flex flex-col gap-1 pr-2">
+          <div className="flex flex-col gap-1 pr-2">
             {CATEGORIES.map(cat => {
               const isSelected = selectedCategories.includes(cat.id)
               

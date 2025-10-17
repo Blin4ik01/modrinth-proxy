@@ -7,6 +7,7 @@ import MobileDownloadButton from '@/app/components/MobileDownloadButton'
 import ModSidebar from '@/app/components/ModSidebar'
 import ContentNavigation from '@/app/components/ContentNavigation'
 import VersionsList from '@/app/components/VersionsList'
+import { CATEGORIES } from '@/lib/categories'
 
 export async function generateMetadata({ params }) {
   try {
@@ -143,16 +144,22 @@ export default async function ModVersionsPage({ params, searchParams }) {
                   <span className="font-semibold text-white">{formatDownloads(mod.followers)}</span>
                 </div>
                 <div className="hidden sm:flex flex-wrap gap-1.5">
-                  {mod.categories.slice(0, 4).map((cat) => (
-                    <Link
-                      key={cat}
-                      href={`/mods?f=categories:${cat}`}
-                      className="px-2 py-0.5 text-xs font-semibold rounded-full hover:underline transition-all"
-                      style={{ backgroundColor: '#34363c', color: '#80878f' }}
-                    >
-                      {cat}
-                    </Link>
-                  ))}
+                  {mod.categories.slice(0, 4).map((catId) => {
+                    const category = CATEGORIES.find(c => c.id === catId)
+                    if (!category) return null
+                    
+                    return (
+                      <Link
+                        key={catId}
+                        href={`/mods?f=categories:${catId}`}
+                        className="px-2 py-1 text-xs font-semibold rounded-lg hover:brightness-110 transition-all flex items-center gap-1.5"
+                        style={{ backgroundColor: '#34363c', color: '#80878f' }}
+                      >
+                        <div className="h-3.5 w-3.5 flex-shrink-0">{category.icon}</div>
+                        <span>{category.name}</span>
+                      </Link>
+                    )
+                  })}
                 </div>
               </div>
             </div>

@@ -134,7 +134,7 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
       <div className="space-y-4">
         <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-gray-300 mb-3">Категории</h3>
-          <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
+          <div className="space-y-1.5 pr-2">
             {SHADER_STYLES.map(style => {
               const isSelected = selectedStyles.includes(style.id)
               
@@ -168,7 +168,7 @@ export default function ShaderSidebarFilters({ onFilterChange, isMobile = false 
 
         <div className="bg-modrinth-dark border border-gray-800 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-gray-300 mb-3">Особенности</h3>
-          <div className="max-h-52 overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
+          <div className="space-y-1.5 pr-2">
             {SHADER_FEATURES.map(feature => {
               const isSelected = selectedFeatures.includes(feature.id)
               
