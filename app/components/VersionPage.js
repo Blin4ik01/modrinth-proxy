@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { formatDownloads, formatDate, formatFileSize } from '@/lib/modrinth'
 import { filterVersionChangelog, filterAvatar } from '@/lib/contentFilter'
 import { CATEGORIES } from '@/lib/categories'
+import { RESOURCEPACK_CATEGORIES } from '@/lib/resourcepackCategories'
+import { SHADER_STYLES, SHADER_FEATURES, SHADER_PERFORMANCE } from '@/lib/shaderCategories'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
@@ -233,6 +235,18 @@ export default function VersionPage({ project, version, author, contentType, plu
   const versionType = pageData.getVersionTypeInfo()
   const metadata = new VersionMetadata(version, author)
   const filesList = new FilesList(version.files)
+  
+  let allCategories = CATEGORIES
+  if (pluralName === 'resourcepacks') {
+    allCategories = [...CATEGORIES, ...RESOURCEPACK_CATEGORIES]
+  } else if (pluralName === 'shaders') {
+    allCategories = [...CATEGORIES, ...SHADER_STYLES, ...SHADER_FEATURES, ...SHADER_PERFORMANCE]
+  }
+  
+  const allProjectCategories = [
+    ...(project.categories || []),
+    ...(project.additional_categories || [])
+  ]
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -281,36 +295,47 @@ export default function VersionPage({ project, version, author, contentType, plu
               <p className="text-gray-300 mb-3 text-sm md:text-base">{project.description}</p>
               
               <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm">
-                <div className="flex items-center gap-1.5 text-gray-400">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  <span className="font-semibold text-white">{formatDownloads(project.downloads)}</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-gray-400">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                  </svg>
-                  <span className="font-semibold text-white">{formatDownloads(project.followers)}</span>
-                </div>
-                <div className="hidden sm:flex flex-wrap gap-1.5">
-                  {project.categories.slice(0, 4).map((catId) => {
-                    const category = CATEGORIES.find(c => c.id === catId)
-                    if (!category) return null
-                    
-                    return (
-                      <Link
-                        key={catId}
-                        href={`/${pluralName}?f=categories:${catId}`}
-                        className="px-2 py-1 text-xs font-semibold rounded-lg hover:brightness-110 transition-all flex items-center gap-1.5"
-                        style={{ backgroundColor: '#34363c', color: '#80878f' }}
-                      >
-                        <div className="h-3.5 w-3.5 flex-shrink-0">{category.icon}</div>
-                        <span>{category.name}</span>
-                      </Link>
-                    )
-                  })}
-                </div>
+                {project.downloads != null && (
+                  <div className="flex items-center gap-1.5 text-gray-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span className="font-semibold text-white">{formatDownloads(project.downloads)}</span>
+                  </div>
+                )}
+                {(project.followers != null || project.follows != null) && (
+                  <div className="flex items-center gap-1.5 text-gray-400">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span className="font-semibold text-white">{formatDownloads(project.followers || project.follows)}</span>
+                  </div>
+                )}
+                {allProjectCategories.length > 0 && (
+                  <div className="hidden sm:flex flex-wrap gap-1.5">
+                    {allProjectCategories.slice(0, 4).map((catId) => {
+                      try {
+                        if (!catId || typeof catId !== 'string') return null
+                        const category = allCategories.find(c => c.id === catId)
+                        if (!category || !category.icon || !category.name) return null
+                        
+                        return (
+                          <Link
+                            key={catId}
+                            href={`/${pluralName}?f=categories:${catId}`}
+                            className="px-2 py-1 text-xs font-semibold rounded-lg hover:brightness-110 transition-all flex items-center gap-1.5"
+                            style={{ backgroundColor: '#34363c', color: '#80878f' }}
+                          >
+                            <div className="h-3.5 w-3.5 flex-shrink-0">{category.icon}</div>
+                            <span>{category.name}</span>
+                          </Link>
+                        )
+                      } catch (e) {
+                        return null
+                      }
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -333,18 +358,22 @@ export default function VersionPage({ project, version, author, contentType, plu
                 
                 <div className="lg:hidden flex items-center gap-3 justify-between">
                   <div className="flex flex-col gap-2 text-xs">
-                    <div className="flex items-center gap-1.5 text-gray-400">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                      </svg>
-                      <span className="font-semibold text-white">{formatDownloads(project.downloads)}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-gray-400">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                      </svg>
-                      <span className="font-semibold text-white">{formatDownloads(project.followers)}</span>
-                    </div>
+                    {project.downloads != null && (
+                      <div className="flex items-center gap-1.5 text-gray-400">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span className="font-semibold text-white">{formatDownloads(project.downloads)}</span>
+                      </div>
+                    )}
+                    {(project.followers != null || project.follows != null) && (
+                      <div className="flex items-center gap-1.5 text-gray-400">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <span className="font-semibold text-white">{formatDownloads(project.followers || project.follows)}</span>
+                      </div>
+                    )}
                   </div>
                   
                   <a
