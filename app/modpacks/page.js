@@ -3,6 +3,7 @@ import { searchMods, formatDownloads } from '@/lib/modrinth'
 import { filterModsList } from '@/lib/contentFilter'
 import ModpackSidebarFilters from './ModpackSidebarFilters'
 import MobileMenu from './MobileMenu'
+import SortDropdown from '@/app/components/SortDropdown'
 
 export const metadata = {
   title: 'Модпаки для Minecraft - Скачать бесплатно | ModrinthProxy',
@@ -12,6 +13,7 @@ export const metadata = {
 export default async function ModpacksPage({ searchParams }) {
   const query = searchParams.q || '';
   const version = searchParams.v || '';
+  const sortBy = searchParams.sort || 'relevance';
   const environment = searchParams.e || '';
   const page = parseInt(searchParams.page || '1');
   const limit = 20;
@@ -92,7 +94,7 @@ export default async function ModpacksPage({ searchParams }) {
 
   let data, blockedCount = 0, blockedByProject = 0, blockedByOrganization = 0;
   try {
-    data = await searchMods({ query, facets, limit, offset });
+    data = await searchMods({ query, facets, limit, offset, index: sortBy });
     const filtered = filterModsList(data.hits);
     data.hits = filtered.hits;
     blockedCount = filtered.blockedCount;
@@ -135,6 +137,8 @@ export default async function ModpacksPage({ searchParams }) {
       params.append('l', 'open_source!=true')
     }
     
+    if (sortBy !== 'relevance') params.set('sort', sortBy);
+    
     params.set('page', newPage.toString());
     return `/modpacks?${params.toString()}`;
   };
@@ -145,36 +149,48 @@ export default async function ModpacksPage({ searchParams }) {
       <div className="flex gap-6">
         <ModpackSidebarFilters />
         <div className="flex-1 min-w-0">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">Minecraft модпаки</h1>
-              <p className="text-gray-400 text-sm md:text-base">
-                {data.total_hits.toLocaleString('ru-RU')} модпаков найдено
-                {blockedCount > 0 && (
-                  <span className="text-red-400 ml-2">
-                    (из них {blockedCount} заблокировано по требованиям РКН
-                    {blockedByProject > 0 && blockedByOrganization > 0 && (
-                      <>: {blockedByProject} по проекту, {blockedByOrganization} по организации</>
-                    )}
-                    )
-                  </span>
-                )}
-              </p>
-            </div>
-            <form action="/modpacks" method="GET" className="w-full md:flex-1 md:max-w-md">
-              <div className="relative">
-                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  type="text"
-                  name="q"
-                  defaultValue={query}
-                  placeholder="Поиск модпаков..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-modrinth-green transition-colors"
-                />
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold mb-2">Minecraft модпаки</h1>
+                <p className="text-gray-400 text-sm md:text-base">
+                  {data.total_hits.toLocaleString('ru-RU')} модпаков найдено
+                  {blockedCount > 0 && (
+                    <span className="text-red-400 ml-2">
+                      (из них {blockedCount} заблокировано по требованиям РКН
+                      {blockedByProject > 0 && blockedByOrganization > 0 && (
+                        <>: {blockedByProject} по проекту, {blockedByOrganization} по организации</>
+                      )}
+                      )
+                    </span>
+                  )}
+                </p>
               </div>
-            </form>
+              <form action="/modpacks" method="GET" className="w-full md:flex-1 md:max-w-md">
+                <div className="relative">
+                  <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    name="q"
+                    defaultValue={query}
+                    placeholder="Поиск модпаков..."
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-modrinth-green transition-colors"
+                  />
+                </div>
+              </form>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <SortDropdown 
+                currentSort={sortBy} 
+                query={query} 
+                version={version} 
+                categoryPath="modpacks"
+                searchParams={searchParams}
+              />
+            </div>
           </div>
 
       {data.hits.length === 0 ? (

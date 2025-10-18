@@ -107,6 +107,9 @@ export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = 
     currentFeatures.forEach(f => params.append('f', `categories:${f}`))
     currentResolutions.forEach(r => params.append('f', `categories:${r}`))
     
+    const sort = searchParams.get('sort')
+    if (sort) params.set('sort', sort)
+    
     router.push(`/resourcepacks?${params.toString()}`)
     onFilterChange?.()
   }
@@ -346,7 +349,8 @@ export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = 
                 setSelectedCategories([])
                 setSelectedFeatures([])
                 setSelectedResolutions([])
-                router.push('/resourcepacks')
+                const sort = searchParams.get('sort')
+                router.push(sort ? `/resourcepacks?sort=${sort}` : '/resourcepacks')
               }}
               className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-red-600/30 flex items-center justify-center gap-1.5"
             >

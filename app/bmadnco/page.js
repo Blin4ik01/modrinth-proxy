@@ -23,7 +23,6 @@ export default function AboutPage() {
 
         <div className="space-y-8 animate-fade-in-up">
           <section className="relative bg-gradient-to-br from-modrinth-green/10 via-gray-900/80 to-purple-900/20 rounded-2xl p-8 md:p-12 border border-modrinth-green/30 shadow-2xl overflow-hidden">
-            {/* Фоновые эффекты */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-modrinth-green/5 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/5 rounded-full blur-3xl"></div>
             
@@ -134,7 +133,6 @@ export default function AboutPage() {
             </h2>
             <div className="text-gray-300 space-y-4 leading-relaxed">
               <div className="flex flex-col md:flex-row items-center gap-4 my-8">
-                {/* Этап 1 */}
                 <TiltCardDirectional className="flex-1 relative group" direction="top">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600/30 to-cyan-600/30 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
                   <div className="relative bg-gradient-to-br from-blue-900/50 to-blue-800/30 rounded-2xl p-6 border border-blue-600/40 text-center">
@@ -148,7 +146,6 @@ export default function AboutPage() {
                   </div>
                 </TiltCardDirectional>
 
-                {/* Стрелка */}
                 <div className="hidden md:block">
                   <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -160,7 +157,6 @@ export default function AboutPage() {
                   </svg>
                 </div>
 
-                {/* Этап 2 */}
                 <TiltCardDirectional className="flex-1 relative group" direction="bottom">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-600/30 to-teal-600/30 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
                   <div className="relative bg-gradient-to-br from-cyan-900/50 to-cyan-800/30 rounded-2xl p-6 border border-cyan-600/40 text-center">
@@ -174,7 +170,6 @@ export default function AboutPage() {
                   </div>
                 </TiltCardDirectional>
 
-                {/* Стрелка */}
                 <div className="hidden md:block">
                   <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -186,7 +181,6 @@ export default function AboutPage() {
                   </svg>
                 </div>
 
-                {/* Этап 3 */}
                 <TiltCardDirectional className="flex-1 relative group" direction="top">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-600/30 to-green-600/30 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
                   <div className="relative bg-gradient-to-br from-teal-900/50 to-teal-800/30 rounded-2xl p-6 border border-teal-600/40 text-center">

@@ -103,6 +103,9 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
       params.append('l', 'open_source:true')
     }
     
+    const sort = searchParams.get('sort')
+    if (sort) params.set('sort', sort)
+    
     router.push(`/modpacks?${params.toString()}`)
     onFilterChange?.()
   }
@@ -378,7 +381,8 @@ export default function ModpackSidebarFilters({ isMobile = false, onFilterChange
                 setSelectedCategories([])
                 setEnvironment('')
                 setOpenSource(false)
-                router.push('/modpacks')
+                const sort = searchParams.get('sort')
+                router.push(sort ? `/modpacks?sort=${sort}` : '/modpacks')
               }}
               className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-red-600/30 flex items-center justify-center gap-1.5"
             >

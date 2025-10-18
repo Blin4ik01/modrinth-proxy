@@ -60,6 +60,9 @@ export default function DatapackSidebarFilters({ onFilterChange, isMobile = fals
     const currentOpenSource = updates.os !== undefined ? updates.os : openSource
     if (currentOpenSource) params.set('l', 'open_source:true')
     
+    const sort = searchParams.get('sort')
+    if (sort) params.set('sort', sort)
+    
     router.push(`/datapacks?${params.toString()}`)
     onFilterChange?.()
   }
@@ -232,7 +235,8 @@ export default function DatapackSidebarFilters({ onFilterChange, isMobile = fals
                 setSelectedVersion('')
                 setSelectedCategories([])
                 setOpenSource(false)
-                router.push('/datapacks')
+                const sort = searchParams.get('sort')
+                router.push(sort ? `/datapacks?sort=${sort}` : '/datapacks')
               }}
               className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-red-600/30 flex items-center justify-center gap-1.5"
             >
