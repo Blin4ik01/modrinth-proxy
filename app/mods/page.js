@@ -1,9 +1,10 @@
 import Link from 'next/link'
-import { searchMods, formatDownloads } from '@/lib/modrinth'
+import { searchMods } from '@/lib/modrinth'
 import { filterModsList } from '@/lib/contentFilter'
 import SidebarFilters from './SidebarFilters'
 import MobileMenu from './MobileMenu'
 import SortDropdown from '@/app/components/SortDropdown'
+import ResourceCard from '@/app/components/ResourceCard'
 
 export const metadata = {
   title: 'Моды для Minecraft - Скачать бесплатно | ModrinthProxy',
@@ -205,53 +206,7 @@ export default async function ModsPage({ searchParams }) {
 
           <div className="space-y-3">
             {data.hits.map((mod) => (
-              <Link
-                key={mod.project_id}
-                href={`/mod/${mod.slug}`}
-                className="bg-modrinth-dark border border-gray-800 rounded-lg p-3 md:p-4 card-hover flex items-start gap-3 md:gap-4"
-              >
-                {mod.icon_url && (
-                  <img
-                    src={mod.icon_url}
-                    alt={mod.title}
-                    className="w-12 h-12 md:w-16 md:h-16 rounded-lg object-cover flex-shrink-0"
-                  />
-                )}
-                
-                <div className="flex-1 min-w-0">
-                  <div className="mb-1 flex items-baseline gap-2 flex-wrap">
-                    <h3 className="text-lg md:text-xl font-bold">{mod.title}</h3>
-                    <span className="text-xs text-gray-500">от {mod.author}</span>
-                  </div>
-                  <p className="text-sm text-gray-400 mb-2">
-                    {mod.description}
-                  </p>
-                  <div className="flex items-center gap-2 text-sm flex-wrap">
-                    <span className="text-gray-400 flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                      </svg>
-                      {formatDownloads(mod.downloads)}
-                    </span>
-                    <span className="text-gray-400 flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                      </svg>
-                      {formatDownloads(mod.follows)}
-                    </span>
-                    <div className="hidden md:flex flex-wrap gap-1">
-                      {mod.categories.slice(0, 3).map((cat) => (
-                        <span
-                          key={cat}
-                          className="text-xs px-2 py-0.5 bg-gray-800 rounded-full"
-                        >
-                          {cat}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </Link>
+              <ResourceCard key={mod.project_id} resource={mod} type="mod" />
             ))}
           </div>
 
