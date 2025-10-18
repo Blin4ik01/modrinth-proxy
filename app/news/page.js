@@ -142,8 +142,8 @@ function getShortSha(sha) {
 }
 
 export const metadata = {
-  title: 'Новости и обновления | Modrinth Proxy',
-  description: 'Последние обновления и изменения Modrinth Proxy',
+  title: 'Новости и обновления | ModrinthProxy',
+  description: 'Последние обновления и изменения ModrinthProxy',
 }
 
 export default async function NewsPage() {

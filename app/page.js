@@ -30,7 +30,7 @@ export default function Home() {
           
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-4 md:mb-6 animate-fade-in-up animation-delay-200 px-4">
             <span className="bg-gradient-to-r from-modrinth-green via-green-400 to-blue-500 bg-clip-text text-transparent animate-gradient bg-300">
-              Modrinth Proxy
+              ModrinthProxy
             </span>
           </h1>
           
