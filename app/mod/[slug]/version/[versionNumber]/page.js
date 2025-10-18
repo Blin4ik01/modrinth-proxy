@@ -73,7 +73,8 @@ export default async function ModVersionPage({ params }) {
       contentType="mod"
       pluralName="mods"
       singularName="mod"
-      versionsCount={versions.length}
+      versions={versions}
+      galleryCount={mod.gallery?.length || 0}
     />
   )
 }

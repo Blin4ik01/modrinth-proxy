@@ -51,7 +51,7 @@ export default async function DatapackVersionsPage({ params, searchParams = {} }
     <div className="max-w-7xl mx-auto">
       <ResourceHeader resource={pack} contentType="datapack" versions={versions} />
       
-      <ContentNavigation slug={slug} contentType="datapack" versionsCount={versions.length} />
+      <ContentNavigation slug={slug} contentType="datapack" versionsCount={versions.length} galleryCount={pack.gallery?.length || 0} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="min-w-0">

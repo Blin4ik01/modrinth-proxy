@@ -73,7 +73,8 @@ export default async function ModpackVersionPage({ params }) {
       contentType="modpack"
       pluralName="modpacks"
       singularName="modpack"
-      versionsCount={versions.length}
+      versions={versions}
+      galleryCount={modpack.gallery?.length || 0}
     />
   )
 }

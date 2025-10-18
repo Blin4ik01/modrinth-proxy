@@ -73,7 +73,8 @@ export default async function ShaderVersionPage({ params }) {
       contentType="shader"
       pluralName="shaders"
       singularName="shader"
-      versionsCount={versions.length}
+      versions={versions}
+      galleryCount={shader.gallery?.length || 0}
     />
   )
 }

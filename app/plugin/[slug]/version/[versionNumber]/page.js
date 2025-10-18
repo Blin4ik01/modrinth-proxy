@@ -73,7 +73,8 @@ export default async function PluginVersionPage({ params }) {
       contentType="plugin"
       pluralName="plugins"
       singularName="plugin"
-      versionsCount={versions.length}
+      versions={versions}
+      galleryCount={plugin.gallery?.length || 0}
     />
   )
 }

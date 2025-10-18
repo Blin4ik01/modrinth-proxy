@@ -73,7 +73,8 @@ export default async function ResourcepackVersionPage({ params }) {
       contentType="resourcepack"
       pluralName="resourcepacks"
       singularName="resourcepack"
-      versionsCount={versions.length}
+      versions={versions}
+      galleryCount={resourcepack.gallery?.length || 0}
     />
   )
 }

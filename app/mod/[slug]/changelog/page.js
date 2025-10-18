@@ -105,7 +105,7 @@ export default async function ModChangelogPage({ params }) {
     <div className="max-w-7xl mx-auto">
       <ResourceHeader resource={mod} contentType="mod" versions={versions} />
       
-      <ContentNavigation slug={slug} contentType="mod" versionsCount={versions.length} />
+      <ContentNavigation slug={slug} contentType="mod" versionsCount={versions.length} galleryCount={mod.gallery?.length || 0} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="min-w-0">

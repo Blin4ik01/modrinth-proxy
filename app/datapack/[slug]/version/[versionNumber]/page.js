@@ -73,7 +73,8 @@ export default async function DatapackVersionPage({ params }) {
       contentType="datapack"
       pluralName="datapacks"
       singularName="datapack"
-      versionsCount={versions.length}
+      versions={versions}
+      galleryCount={datapack.gallery?.length || 0}
     />
   )
 }
