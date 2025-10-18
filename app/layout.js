@@ -3,6 +3,7 @@ import Link from 'next/link'
 import MobileNav from './components/MobileNav'
 import Navigation from './components/Navigation'
 import ExtensionBanner from './components/ExtensionBanner'
+import EmailCopyButton from './components/EmailCopyButton'
 
 export const metadata = {
   title: 'ModrinthProxy',
@@ -51,20 +52,31 @@ export default function RootLayout({ children }) {
           {children}
         </main>
         <MobileNav />
-        <footer className="border-t border-gray-800 mt-8 md:mt-16 mb-20 lg:mb-0 bg-gradient-to-b from-modrinth-darker to-black/50">
-          <div className="container mx-auto px-4 py-8 md:py-12">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <footer className="relative mt-8 md:mt-16 mb-20 lg:mb-0 overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-modrinth-green to-transparent opacity-50"></div>
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-modrinth-green/30 to-transparent blur-sm"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-modrinth-darker via-black to-black"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-modrinth-green/5 via-transparent to-purple-900/5"></div>
+          <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.04) 1px, transparent 0)', backgroundSize: '50px 50px', transform: 'skewY(-2deg) translateY(10px)'}}></div>
+          <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(26,230,109,0.03) 1px, transparent 0)', backgroundSize: '35px 35px', transform: 'skewX(3deg)'}}></div>
+          <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, rgba(147,51,234,0.02) 1.5px, transparent 0)', backgroundSize: '60px 45px', transform: 'rotate(1deg)'}}></div>
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-modrinth-green/10 rounded-full filter blur-3xl opacity-20"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full filter blur-3xl opacity-20"></div>
+          <div className="relative container mx-auto px-4 py-8 md:py-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
               <div className="text-center md:text-left">
                 <h3 className="text-lg font-bold bg-gradient-to-r from-modrinth-green to-green-400 bg-clip-text text-transparent mb-3 select-none">
                   ModrinthProxy
                 </h3>
                 <p className="text-gray-400 text-sm leading-relaxed">
-                  Удобный поиск и скачивание модификаций для Minecraft. 
-                  Современный интерфейс на русском языке.
+                  Делаем Minecraft лучше для каждого игрока. 
+                  Моды, шейдеры, плагины — всё, что нужно для идеальной игры.
+                  <br/>
+                  <span className="text-modrinth-green/80 font-medium">Minecraft в каждый дом. Приключения без границ.</span>
                 </p>
               </div>
 
-              <div className="text-center">
+              <div className="text-center md:text-left">
                 <h3 className="text-lg font-bold text-white mb-3">
                   Открытый код
                 </h3>
@@ -84,7 +96,7 @@ export default function RootLayout({ children }) {
                 </a>
               </div>
 
-              <div className="text-center md:text-right">
+              <div className="text-center md:text-left">
                 <h3 className="text-lg font-bold text-white mb-3">
                   Поддержка
                 </h3>
@@ -96,31 +108,48 @@ export default function RootLayout({ children }) {
                   </a>
                 </p>
               </div>
-            </div>
-
-            <div className="border-t border-gray-800 pt-6 space-y-4">
-              <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-center">
-                <Link href="/bmadnco" className="flex items-center gap-2 text-gray-400 hover:text-modrinth-green text-xs transition-colors group">
-                  <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="font-medium">О проекте и как это работает</span>
-                </Link>
-                
-                <div className="h-4 w-px bg-gray-700 hidden md:block"></div>
-                
-                <div className="flex items-center gap-2 text-gray-500 text-xs">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <span>Все права на Minecraft принадлежат Mojang Studios</span>
-                </div>
-              </div>
 
               <div className="text-center">
-                <p className="text-gray-600 text-xs font-semibold uppercase tracking-wider px-4 py-2 inline-block bg-gray-900/50 rounded-lg border border-gray-800">
-                  NOT AN OFFICIAL MINECRAFT SERVICE. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
+                <h3 className="text-lg font-bold text-white mb-3">
+                  Связаться с нами
+                </h3>
+                <p className="text-gray-400 text-sm leading-relaxed mb-3">
+                  Для официальных запросов
                 </p>
+                <div className="!text-center">
+                  <EmailCopyButton email="black-minecraft@proton.me" />
+                </div>
+                <div className="mt-4 flex justify-center">
+                  <Link href="/bmadnco" className="flex items-center gap-2 text-gray-400 hover:text-modrinth-green text-xs transition-colors group">
+                    <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="font-medium">О проекте и как это работает</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-800 pt-8 mt-8">
+              <div className="flex items-center justify-center">
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-modrinth-green/20 via-purple-500/20 to-modrinth-green/20 rounded-2xl opacity-20 group-hover:opacity-40 blur transition duration-500"></div>
+                  <div className="relative flex items-center gap-3 px-4 py-3 bg-black/40 backdrop-blur-sm rounded-2xl">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-modrinth-green/10 border border-modrinth-green/20">
+                      <svg className="w-5 h-5 text-modrinth-green/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">
+                        Disclaimer
+                      </p>
+                      <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">
+                        Not an official Minecraft service. Not approved by or associated with Mojang or Microsoft.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

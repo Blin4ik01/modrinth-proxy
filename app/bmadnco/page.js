@@ -1,4 +1,7 @@
-import { BLACKLIST_PROJECTS, BLACKLIST_ORGANIZATIONS, BLACKLIST_PATTERNS } from '@/lib/contentFilter'
+import { BLACKLIST_PROJECTS, BLACKLIST_ORGANIZATIONS, BLACKLIST_PATTERNS, BLACKLIST_AVATARS } from '@/lib/contentFilter'
+import EmailCopyButton from '@/app/components/EmailCopyButton'
+import TiltCard from '@/app/components/TiltCard'
+import TiltCardDirectional from '@/app/components/TiltCardDirectional'
 
 export const metadata = {
   title: 'О проекте - ModrinthProxy',
@@ -19,21 +22,105 @@ export default function AboutPage() {
         </div>
 
         <div className="space-y-8 animate-fade-in-up">
-          <section className="bg-gradient-to-br from-gray-900/80 to-gray-800/50 rounded-2xl p-8 border border-gray-700 shadow-2xl">
-            <h2 className="text-3xl font-bold mb-4 flex items-center gap-3">
-              <svg className="w-8 h-8 text-modrinth-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <section className="relative bg-gradient-to-br from-modrinth-green/10 via-gray-900/80 to-purple-900/20 rounded-2xl p-8 md:p-12 border border-modrinth-green/30 shadow-2xl overflow-hidden">
+            {/* Фоновые эффекты */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-modrinth-green/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/5 rounded-full blur-3xl"></div>
+            
+            <div className="relative">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 flex items-center gap-4">
+                <div className="p-3 bg-modrinth-green/20 rounded-xl border-2 border-modrinth-green/40">
+                  <svg className="w-10 h-10 text-modrinth-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
+                </div>
+                <span className="bg-gradient-to-r from-white via-modrinth-green to-white bg-clip-text text-transparent">
               Что это такое?
+                </span>
             </h2>
-            <div className="text-gray-300 space-y-4 leading-relaxed">
-              <p className="text-lg">
-                ModrinthProxy - это современный веб-интерфейс для удобного поиска и скачивания модификаций для Minecraft.
-              </p>
-              <p>
-                Наш сервис работает как <span className="font-semibold text-white">каталог модификаций</span>, предоставляя удобный доступ к информации из открытых источников. 
-                Мы не храним файлы модификаций - все ссылки ведут напрямую на <span className="font-semibold text-modrinth-green">официальные источники</span>.
-              </p>
+              
+              <div className="space-y-6">
+                <p className="text-xl md:text-2xl text-gray-200 leading-relaxed font-medium">
+                  ModrinthProxy — это <span className="text-modrinth-green font-bold">современная платформа</span> для поиска и скачивания модификаций для Minecraft. 
+                  Мы объединяем тысячи модов, плагинов, шейдеров и других материалов в одном удобном месте с русским интерфейсом.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-4 mt-8">
+                  <div className="group bg-gradient-to-br from-modrinth-green/5 to-transparent rounded-xl p-5 border border-modrinth-green/20 hover:border-modrinth-green/40 transition-all duration-300 hover:scale-[1.02] cursor-default select-none">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-modrinth-green/20 rounded-lg mt-1">
+                        <svg className="w-5 h-5 text-modrinth-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white mb-1">Каталог контента</h3>
+                        <p className="text-sm text-gray-400">Удобный доступ к информации из открытых источников. Мы собираем данные о модификациях и предоставляем их в структурированном виде.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="group bg-gradient-to-br from-blue-500/5 to-transparent rounded-xl p-5 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:scale-[1.02] cursor-default select-none">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-blue-500/20 rounded-lg mt-1">
+                        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white mb-1">Прямые ссылки</h3>
+                        <p className="text-sm text-gray-400">Мы не храним файлы модификаций на наших серверах. Все ссылки ведут напрямую на официальные источники от авторов.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="group bg-gradient-to-br from-purple-500/5 to-transparent rounded-xl p-5 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:scale-[1.02] cursor-default select-none">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-purple-500/20 rounded-lg mt-1">
+                        <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white mb-1">Русский интерфейс</h3>
+                        <p className="text-sm text-gray-400">Полностью переведенный интерфейс, удобная навигация и понятные категории для русскоязычных пользователей.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="group bg-gradient-to-br from-orange-500/5 to-transparent rounded-xl p-5 border border-orange-500/20 hover:border-orange-500/40 transition-all duration-300 hover:scale-[1.02] cursor-default select-none">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-orange-500/20 rounded-lg mt-1">
+                        <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white mb-1">Фильтрация контента</h3>
+                        <p className="text-sm text-gray-400">Применяем фильтры для соблюдения законодательства РФ. Блокировка запрещённого контента происходит автоматически.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 bg-gradient-to-r from-modrinth-green/10 via-blue-500/10 to-purple-500/10 border border-modrinth-green/30 rounded-xl p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-modrinth-green/20 rounded-full">
+                      <svg className="w-6 h-6 text-modrinth-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg text-white mb-2">Важная информация</h3>
+                      <p className="text-gray-300 leading-relaxed">
+                        Наш сервис является <span className="font-semibold text-modrinth-green">информационным агрегатором</span> — мы собираем данные о модификациях и предоставляем удобный доступ к ним. 
+                        Все файлы хранятся на серверах авторов модификаций, мы лишь предоставляем ссылки и описания. 
+                        Это значит, что вы всегда получаете оригинальные, проверенные файлы напрямую от создателей контента.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -46,22 +133,72 @@ export default function AboutPage() {
               Как это работает?
             </h2>
             <div className="text-gray-300 space-y-4 leading-relaxed">
-              <div className="grid md:grid-cols-3 gap-4 my-6">
-                <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-700">
-                  <div className="text-4xl mb-2">1️⃣</div>
-                  <h3 className="font-bold text-white mb-2">Запрос</h3>
-                  <p className="text-sm">Вы ищете мод на нашем сайте</p>
+              <div className="flex flex-col md:flex-row items-center gap-4 my-8">
+                {/* Этап 1 */}
+                <TiltCardDirectional className="flex-1 relative group" direction="top">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600/30 to-cyan-600/30 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+                  <div className="relative bg-gradient-to-br from-blue-900/50 to-blue-800/30 rounded-2xl p-6 border border-blue-600/40 text-center">
+                    <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-full bg-blue-500/20 border-2 border-blue-400 mx-auto">
+                      <svg className="w-7 h-7 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="font-bold text-xl text-white mb-2">Запрос</h3>
+                    <p className="text-sm text-gray-300">Вы ищете мод, плагин или шейдер на нашем сайте</p>
+                  </div>
+                </TiltCardDirectional>
+
+                {/* Стрелка */}
+                <div className="hidden md:block">
+                  <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
                 </div>
-                <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-700">
-                  <div className="text-4xl mb-2">2️⃣</div>
-                  <h3 className="font-bold text-white mb-2">Поиск</h3>
-                  <p className="text-sm">Система находит информацию в базах данных</p>
+                <div className="md:hidden">
+                  <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
                 </div>
-                <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-700">
-                  <div className="text-4xl mb-2">3️⃣</div>
-                  <h3 className="font-bold text-white mb-2">Результат</h3>
-                  <p className="text-sm">Вы получаете прямую ссылку на официальный файл</p>
+
+                {/* Этап 2 */}
+                <TiltCardDirectional className="flex-1 relative group" direction="bottom">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-600/30 to-teal-600/30 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+                  <div className="relative bg-gradient-to-br from-cyan-900/50 to-cyan-800/30 rounded-2xl p-6 border border-cyan-600/40 text-center">
+                    <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-full bg-cyan-500/20 border-2 border-cyan-400 mx-auto">
+                      <svg className="w-7 h-7 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                      </svg>
+                    </div>
+                    <h3 className="font-bold text-xl text-white mb-2">Поиск</h3>
+                    <p className="text-sm text-gray-300">Система находит информацию в базах данных</p>
+                  </div>
+                </TiltCardDirectional>
+
+                {/* Стрелка */}
+                <div className="hidden md:block">
+                  <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
                 </div>
+                <div className="md:hidden">
+                  <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </div>
+
+                {/* Этап 3 */}
+                <TiltCardDirectional className="flex-1 relative group" direction="top">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-600/30 to-green-600/30 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+                  <div className="relative bg-gradient-to-br from-teal-900/50 to-teal-800/30 rounded-2xl p-6 border border-teal-600/40 text-center">
+                    <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-full bg-green-500/20 border-2 border-green-400 mx-auto">
+                      <svg className="w-7 h-7 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="font-bold text-xl text-white mb-2">Результат</h3>
+                    <p className="text-sm text-gray-300">Прямая ссылка на официальный файл автора</p>
+                  </div>
+                </TiltCardDirectional>
               </div>
               <p>
                 Технически, наш сервис является <span className="font-semibold text-blue-400">промежуточным звеном</span> между пользователем и источниками данных. 
@@ -118,10 +255,10 @@ export default function AboutPage() {
                 </li>
               </ul>
 
-              <div className="mt-8 bg-gradient-to-br from-purple-950/50 to-indigo-950/50 border border-purple-600/50 rounded-xl p-6">
+              <div className="mt-8 bg-gradient-to-br from-purple-950/50 to-indigo-950/50 rounded-xl p-6">
                 <h3 className="text-xl font-bold text-purple-300 mb-6 text-center">Статистика фильтрации контента</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-xl p-6 border border-red-600/30 hover:border-red-500/60 transition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-red-500/20">
+                  <TiltCard className="bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-xl p-6 border border-red-600/30 hover:border-red-500/60 transition-all duration-500 select-none cursor-default" shadowColor="rgba(239, 68, 68, 0.2)">
                     <div className="text-center">
                       <div className="text-5xl font-bold text-red-400 mb-2 animate-pulse-slow">
                         {BLACKLIST_PROJECTS.length}
@@ -129,12 +266,15 @@ export default function AboutPage() {
                       <div className="text-sm text-gray-400 mb-1">Заблокированных</div>
                       <div className="text-lg font-semibold text-white">Проектов</div>
                       <div className="mt-3 pt-3 border-t border-red-800/50">
-                        <p className="text-xs text-red-300/80">Моды, плагины и другой контент</p>
+                        <p className="text-xs text-red-300/80 leading-relaxed">
+                          Отдельные моды, плагины, шейдеры, ресурспаки, датапаки и модпаки, содержащие запрещённый контент. 
+                          Эти материалы скрыты из поиска и каталога, доступ к их страницам ограничен.
+                        </p>
                       </div>
                     </div>
-                  </div>
+                  </TiltCard>
 
-                  <div className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 rounded-xl p-6 border border-orange-600/30 hover:border-orange-500/60 transition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/20">
+                  <TiltCard className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 rounded-xl p-6 border border-orange-600/30 hover:border-orange-500/60 transition-all duration-500 select-none cursor-default" shadowColor="rgba(249, 115, 22, 0.2)">
                     <div className="text-center">
                       <div className="text-5xl font-bold text-orange-400 mb-2 animate-pulse-slow" style={{ animationDelay: '0.2s' }}>
                         {BLACKLIST_ORGANIZATIONS.length}
@@ -142,23 +282,29 @@ export default function AboutPage() {
                       <div className="text-sm text-gray-400 mb-1">Заблокированных</div>
                       <div className="text-lg font-semibold text-white">Организаций</div>
                       <div className="mt-3 pt-3 border-t border-orange-800/50">
-                        <p className="text-xs text-orange-300/80">Разработчики с запрещенным контентом</p>
+                        <p className="text-xs text-orange-300/80 leading-relaxed">
+                          Разработчики и команды, все проекты которых полностью скрыты. 
+                          Их моды, ресурспаки, шейдеры и другие материалы не отображаются на сайте и учитываются отдельно от индивидуально заблокированных проектов.
+                        </p>
                       </div>
                     </div>
-                  </div>
+                  </TiltCard>
 
-                  <div className="bg-gradient-to-br from-yellow-900/40 to-yellow-800/20 rounded-xl p-6 border border-yellow-600/30 hover:border-yellow-500/60 transition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-yellow-500/20">
+                  <TiltCard className="bg-gradient-to-br from-yellow-900/40 to-yellow-800/20 rounded-xl p-6 border border-yellow-600/30 hover:border-yellow-500/60 transition-all duration-500 select-none cursor-default" shadowColor="rgba(234, 179, 8, 0.2)">
                     <div className="text-center">
                       <div className="text-5xl font-bold text-yellow-400 mb-2 animate-pulse-slow" style={{ animationDelay: '0.4s' }}>
-                        {BLACKLIST_PATTERNS.length}
+                        {BLACKLIST_PATTERNS.length + BLACKLIST_AVATARS.length}
                       </div>
                       <div className="text-sm text-gray-400 mb-1">Заблокированных</div>
                       <div className="text-lg font-semibold text-white">Медиафайлов</div>
                       <div className="mt-3 pt-3 border-t border-yellow-800/50">
-                        <p className="text-xs text-yellow-300/80">Изображения с запрещенной символикой</p>
+                        <p className="text-xs text-yellow-300/80 leading-relaxed">
+                          Изображения с запрещённой символикой: аватары авторов, иконки проектов, скриншоты в галереях и картинки в описаниях. 
+                          Заблокированные медиафайлы заменяются на нейтральные заглушки.
+                        </p>
                       </div>
                     </div>
-                  </div>
+                  </TiltCard>
                 </div>
               </div>
 
@@ -167,6 +313,28 @@ export default function AboutPage() {
                   Все фильтры работают автоматически на стороне нашего сервера. Мы регулярно обновляем списки 
                   блокировок в соответствии с требованиями законодательства.
                 </p>
+              </div>
+
+              <div className="mt-6 bg-gradient-to-br from-purple-900/20 via-indigo-900/20 to-purple-900/20 rounded-2xl p-4 md:p-5">
+                <div className="flex flex-col md:flex-row items-center gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="p-3 bg-purple-500/20 rounded-full border-2 border-purple-400/40">
+                      <svg className="w-6 h-6 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 text-center md:text-left">
+                    <h3 className="text-lg font-bold text-white mb-2">Связь с администрацией</h3>
+                    <p className="text-gray-300 text-sm leading-relaxed mb-3">
+                      Если у вас есть вопросы о блокировках, предложения по фильтрации контента или официальные запросы от РКН и других государственных органов — напишите нам на указанный email.
+                    </p>
+                    <div className="flex justify-center md:justify-start">
+                      <EmailCopyButton email="black-minecraft@proton.me" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -267,10 +435,6 @@ export default function AboutPage() {
               </svg>
             </a>
           </section>
-
-          <div className="text-center py-8 text-gray-500 text-sm">
-            <p>Если у вас есть вопросы или предложения - создайте Issue на GitHub</p>
-          </div>
         </div>
       </div>
     </div>
