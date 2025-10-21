@@ -10,6 +10,9 @@ export default function TopNav() {
           <a href="https://client.white-minecraft.net" className="top-nav-link">
             Клиент<span className="top-nav-separator">/</span>Сервер
           </a>
+          <a href="https://ping.white-minecraft.net" className="top-nav-link">
+            Пинг Серверов
+          </a>
           <a href="https://dm.white-minecraft.net" className="top-nav-link">
             Редактор DeluxeMenu
           </a>
