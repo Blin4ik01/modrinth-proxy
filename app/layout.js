@@ -8,14 +8,29 @@ import EmailCopyButton from './components/EmailCopyButton'
 export const metadata = {
   title: 'ModrinthProxy',
   description: 'Удобный поиск и скачивание модов, плагинов, шейдеров для Minecraft на русском языке',
+  manifest: '/manifest.json',
+  themeColor: '#1bd96a',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'ModrinthProxy',
+  },
   verification: {
     yandex: '79af01936dc8fd7f',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
   },
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="ru" className="scroll-smooth">
+      <head>
+        <link rel="apple-touch-icon" href="/icon.png" />
+      </head>
       <body className="transition-colors duration-300">
         <nav className="bg-modrinth-darker border-b border-gray-800 sticky top-0 z-30 backdrop-blur-lg bg-opacity-95 shadow-lg">
           <div className="container mx-auto px-4 py-3 md:py-4">
