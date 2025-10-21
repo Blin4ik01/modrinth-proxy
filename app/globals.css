@@ -2,6 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
+.top-nav {
+  background: #0a0f1e;
+}
+
+.top-nav-content {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.top-nav-desc {
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 500;
+  margin: 0;
+}
+
+.top-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.top-nav-link {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #999;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.top-nav-link:hover {
+  background: rgba(27, 217, 106, 0.08);
+  color: #1bd96a;
+}
+
+.top-nav-link-here {
+  background: rgba(27, 217, 106, 0.12);
+  color: #1bd96a;
+  font-weight: 600;
+}
+
+.top-nav-dot {
+  width: 6px;
+  height: 6px;
+  background: #1bd96a;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.top-nav-separator {
+  color: #1bd96a;
+  font-weight: 600;
+  margin: 0 0.2rem;
+}
+
 html {
   scroll-behavior: smooth;
 }

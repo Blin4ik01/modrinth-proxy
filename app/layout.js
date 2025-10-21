@@ -4,6 +4,7 @@ import MobileNav from './components/MobileNav'
 import Navigation from './components/Navigation'
 import ExtensionBanner from './components/ExtensionBanner'
 import EmailCopyButton from './components/EmailCopyButton'
+import TopNav from './components/TopNav'
 
 export const metadata = {
   title: 'ModrinthProxy',
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" href="/icon.png" />
       </head>
       <body className="transition-colors duration-300">
+        <TopNav />
         <nav className="bg-modrinth-darker border-b border-gray-800 sticky top-0 z-30 backdrop-blur-lg bg-opacity-95 shadow-lg">
           <div className="container mx-auto px-4 py-3 md:py-4">
             <div className="flex items-center gap-4 md:gap-6">
