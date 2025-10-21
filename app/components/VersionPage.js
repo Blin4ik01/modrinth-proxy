@@ -11,6 +11,7 @@ import rehypeRaw from 'rehype-raw'
 import CopyButton from './CopyButton'
 import ContentNavigation from './ContentNavigation'
 import ResourceHeader from './ResourceHeader'
+import RelativeTime from './RelativeTime'
 
 class VersionPageData {
   constructor(project, version) {
@@ -33,17 +34,6 @@ class VersionPageData {
       alpha: { color: 'red', label: 'Alpha' }
     }
     return types[this.version.version_type] || types.release
-  }
-
-  formatPublicationDate() {
-    const date = new Date(this.version.date_published)
-    return date.toLocaleString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
   }
 }
 
@@ -109,7 +99,7 @@ class VersionMetadata {
             }
           />
           <MetadataItem label="Загрузок" value={formatDownloads(this.version.downloads)} />
-          <MetadataItem label="Дата публикации" value={this.formatPublicationDate()} />
+          <MetadataItem label="Дата публикации" value={<RelativeTime dateString={this.version.date_published} />} />
           <MetadataItem
             label="Загрузил"
             value={
@@ -147,18 +137,6 @@ class VersionMetadata {
       alpha: { color: 'red', label: 'Alpha' }
     }
     return types[this.version.version_type] || types.release
-  }
-
-  formatPublicationDate() {
-    const date = new Date(this.version.date_published)
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    })
   }
 }
 
@@ -272,7 +250,7 @@ export default function VersionPage({ project, version, author, contentType, plu
           <span className={`px-3 py-1 rounded-full text-sm font-semibold bg-${versionType.color}-900 text-${versionType.color}-300`}>
             {versionType.label}
           </span>
-          <span className="text-gray-400 text-sm">{formatDate(version.date_published)}</span>
+          <RelativeTime dateString={version.date_published} className="text-gray-400 text-sm" />
         </div>
       </div>
 

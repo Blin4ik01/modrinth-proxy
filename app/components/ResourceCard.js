@@ -4,6 +4,7 @@ import { CATEGORIES } from '@/lib/categories'
 import { LOADERS } from '@/lib/loaders'
 import { RESOURCEPACK_CATEGORIES } from '@/lib/resourcepackCategories'
 import { SHADER_STYLES, SHADER_FEATURES, SHADER_PERFORMANCE } from '@/lib/shaderCategories'
+import RelativeTime from './RelativeTime'
 
 export default function ResourceCard({ resource, type = 'mod' }) {
   const typeMap = {
@@ -16,20 +17,6 @@ export default function ResourceCard({ resource, type = 'mod' }) {
   }
 
   const basePath = typeMap[type] || 'mod'
-
-  const getRelativeTime = (dateString) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now - date
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-    
-    if (diffDays === 0) return 'сегодня'
-    if (diffDays === 1) return 'вчера'
-    if (diffDays < 7) return `${diffDays} дн. назад`
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} нед. назад`
-    if (diffDays < 365) return `${Math.floor(diffDays / 30)} мес. назад`
-    return `${Math.floor(diffDays / 365)} г. назад`
-  }
 
   const getCategoryIcon = (categoryId) => {
     const allCategories = [
@@ -138,7 +125,7 @@ export default function ResourceCard({ resource, type = 'mod' }) {
               <path d="M1 4v6h6M23 20v-6h-6" />
               <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15" />
             </svg>
-            <p>{getRelativeTime(resource.date_modified)}</p>
+            <RelativeTime dateString={resource.date_modified} />
           </div>
         )}
       </div>

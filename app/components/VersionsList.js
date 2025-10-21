@@ -8,6 +8,7 @@ import { LOADERS } from '@/lib/loaders'
 import VersionsDropdown from './VersionsDropdown'
 import LoadersDropdown from './LoadersDropdown'
 import ChannelsDropdown from './ChannelsDropdown'
+import RelativeTime from './RelativeTime'
 
 export default function VersionsList({ versions, contentType, slug, initialLoader = 'all' }) {
   const router = useRouter()
@@ -236,19 +237,7 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                           <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2"></path>
                           </svg>
-                          {(() => {
-                            const date = new Date(version.date_published)
-                            const now = new Date()
-                            const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24))
-                            const diffHours = Math.floor((now - date) / (1000 * 60 * 60))
-                            
-                            if (diffHours < 1) return 'только что'
-                            if (diffHours < 24) return `${diffHours}ч назад`
-                            if (diffDays === 1) return 'вчера'
-                            if (diffDays < 7) return `${diffDays}д назад`
-                            if (diffDays < 30) return `${Math.floor(diffDays / 7)}нед назад`
-                            return `${Math.floor(diffDays / 30)}мес назад`
-                          })()}
+                          <RelativeTime dateString={version.date_published} />
                         </div>
                         <div className="flex items-center gap-1">
                           <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,20 +286,7 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                       </div>
 
                       <div className="relative z-10 pointer-events-none hidden xl:flex items-center gap-1 text-xs text-gray-400 font-medium">
-                        {(() => {
-                          const date = new Date(version.date_published)
-                          const now = new Date()
-                          const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24))
-                          const diffHours = Math.floor((now - date) / (1000 * 60 * 60))
-                          
-                          if (diffHours < 1) return 'только что'
-                          if (diffHours < 24) return `${diffHours} час${diffHours > 1 ? (diffHours < 5 ? 'а' : 'ов') : ''} назад`
-                          if (diffDays === 1) return 'вчера'
-                          if (diffDays < 7) return `${diffDays} дн${diffDays > 1 ? (diffDays < 5 ? 'я' : 'ей') : 'ь'} назад`
-                          if (diffDays < 30) return `${Math.floor(diffDays / 7)} нед назад`
-                          if (diffDays < 365) return `${Math.floor(diffDays / 30)} мес назад`
-                          return `${Math.floor(diffDays / 365)} год назад`
-                        })()}
+                        <RelativeTime dateString={version.date_published} />
                       </div>
 
                       <div className="relative z-10 pointer-events-none hidden xl:flex items-center gap-1 text-xs text-gray-400 font-medium">
@@ -351,15 +327,7 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                             })}
                           </div>
                           <div className="flex gap-2 max-[390px]:justify-center">
-                            <span>{(() => {
-                              const date = new Date(version.date_published)
-                              const now = new Date()
-                              const diffHours = Math.floor((now - date) / (1000 * 60 * 60))
-                              if (diffHours < 24) return `${diffHours}ч назад`
-                              const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24))
-                              if (diffDays < 7) return `${diffDays}д назад`
-                              return `${Math.floor(diffDays / 7)}нед назад`
-                            })()}</span>
+                            <RelativeTime dateString={version.date_published} />
                             <span>•</span>
                             <span>{version.downloads >= 1000 ? `${(version.downloads / 1000).toFixed(1)}k` : version.downloads}</span>
                           </div>
