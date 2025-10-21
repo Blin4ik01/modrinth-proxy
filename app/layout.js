@@ -32,7 +32,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="apple-touch-icon" href="/icon.png" />
       </head>
-      <body className="transition-colors duration-300">
+      <body style={{ backgroundColor: '#0a0f1e', minHeight: '100vh', margin: 0 }}>
         <TopNav />
         <nav className="bg-modrinth-darker border-b border-gray-800 sticky top-0 z-30 backdrop-blur-lg bg-opacity-95 shadow-lg">
           <div className="container mx-auto px-4 py-3 md:py-4">

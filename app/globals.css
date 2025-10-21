@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 .top-nav {
-  background: #0a0f1e;
+  background: linear-gradient(180deg, transparent 0%, rgba(10, 15, 30, 0.6) 40%, #0a0f1e 100%) !important;
+  width: 100% !important;
+  position: relative !important;
+  z-index: 50 !important;
 }
 
 .top-nav-content {
@@ -27,6 +30,7 @@
 .top-nav-links {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
   flex-wrap: wrap;
 }
@@ -43,6 +47,50 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  position: relative;
+  user-select: none;
+}
+
+.top-nav-link[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1d24;
+  color: #fff;
+  padding: 0.4rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+.top-nav-link[data-tooltip]:hover::before {
+  content: '';
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: #1a1d24;
+  z-index: 1001;
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .top-nav-link:hover {
