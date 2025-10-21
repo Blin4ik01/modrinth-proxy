@@ -3,7 +3,7 @@ export default function TopNav() {
     <nav className="top-nav">
       <div className="top-nav-content">
         <div className="top-nav-links">
-          <span className="top-nav-link top-nav-link-here" data-tooltip="Вы здесь">
+          <span className="top-nav-link top-nav-link-here" data-tooltip="Я здесь">
             <span className="top-nav-dot"></span>
             ModrinthProxy
           </span>
