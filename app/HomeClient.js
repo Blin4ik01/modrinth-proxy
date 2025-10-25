@@ -5,29 +5,15 @@ import { useEffect, useState } from 'react'
 
 export default function HomeClient() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
-  const [nextWordIndex, setNextWordIndex] = useState(1)
-  const [showNext, setShowNext] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
   const words = ['модов', 'плагинов', 'шейдеров', 'ресурспаков', 'датапаков']
   
-  const isIOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent || '')
-  
   useEffect(() => {
-    if (isIOS) return
-    
     const interval = setInterval(() => {
-      setIsAnimating(true)
-      setShowNext(true)
-      setTimeout(() => {
-        setCurrentWordIndex(nextWordIndex)
-        setNextWordIndex((prev) => (prev + 1) % words.length)
-        setShowNext(false)
-        setIsAnimating(false)
-      }, 600)
+      setCurrentWordIndex((prev) => (prev + 1) % words.length)
     }, 3000)
     
     return () => clearInterval(interval)
-  }, [nextWordIndex, isIOS])
+  }, [])
 
   return (
     <div className="relative min-h-screen">
@@ -52,16 +38,18 @@ export default function HomeClient() {
             </span>
           </h1>
            
-             <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl mb-2 sm:mb-3 md:mb-4 animate-fade-in-up animation-delay-400 font-black px-2 sm:px-4">
-             <span className="text-white drop-shadow-2xl">
-               МЕСТО ДЛЯ МАЙНКРАФТ
-             </span>
-           </div>
           
+          <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl mb-2 sm:mb-3 md:mb-4 animate-fade-in-up animation-delay-400 font-black px-2 sm:px-4">
+            <span className="text-white drop-shadow-2xl">
+              МЕСТО ДЛЯ МАЙНКРАФТ
+            </span>
+          </div>
+
           <div className="h-12 sm:h-14 md:h-16 flex items-center justify-center mb-3 sm:mb-4 overflow-hidden">
-            <div className="animated-text text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold relative">
-              <span 
-                className={`animated-word ${isAnimating ? 'exiting' : ''}`}
+            <div className="animated-text text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold">
+              <span
+                key={currentWordIndex}
+                className="animated-word"
                 style={{
                   WebkitBackgroundClip: 'text',
                   backgroundClip: 'text',
@@ -78,28 +66,6 @@ export default function HomeClient() {
               >
                 {words[currentWordIndex]}
               </span>
-              
-              {showNext && (
-                <span
-                  key={`next-${nextWordIndex}`}
-                  className="animated-word entering absolute top-0 left-0"
-                  style={{
-                    WebkitBackgroundClip: 'text',
-                    backgroundClip: 'text',
-                    backgroundColor: '#00bd3c',
-                    backgroundImage: 'linear-gradient(180deg, #a7d0ff 0%, #00bd3c 60%)',
-                    backgroundSize: '100%',
-                    fontWeight: 600,
-                    WebkitTextFillColor: 'transparent',
-                    MozTextFillColor: 'transparent',
-                    color: 'transparent',
-                    whiteSpace: 'nowrap',
-                    display: 'inline-block'
-                  }}
-                >
-                  {words[nextWordIndex]}
-                </span>
-              )}
             </div>
           </div>
           
@@ -110,7 +76,9 @@ export default function HomeClient() {
         </div>
 
         <div className="relative z-10 animate-fade-in-up animation-delay-2200">
+          {typeof window !== 'undefined' && !/iPad|iPhone|iPod/.test(navigator.userAgent || '') && (
           <AnimatedProjectCarousel />
+        )}
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 py-16">

@@ -52,9 +52,9 @@ const AnimatedProjectCarousel = () => {
     { id: 'survicadopack', name: 'OhioCraft Pack', description: 'Light adventure modpack made in Ohio', icon: 'https://cdn.modrinth.com/data/tIhfsDLv/4ee7356f59955b0614f353a86373fb0d08c4a408_96.webp', type: 'modpack', slug: 'survicadopack', color: 'from-teal-500 to-green-500' }
   ]
 
-  const manyRow1 = Array(20).fill(row1Projects).flat()
-  const manyRow2 = Array(20).fill(row2Projects).flat()
-  const manyRow3 = Array(20).fill(row3Projects).flat()
+  const manyRow1 = Array(3).fill(row1Projects).flat()
+  const manyRow2 = Array(3).fill(row2Projects).flat()
+  const manyRow3 = Array(3).fill(row3Projects).flat()
 
   return (
     <div className="relative py-12">
