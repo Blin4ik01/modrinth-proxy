@@ -5,9 +5,12 @@ import { useEffect, useState } from 'react'
 
 export default function HomeClient() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
+  const [isClient, setIsClient] = useState(false)
   const words = ['модов', 'плагинов', 'шейдеров', 'ресурспаков', 'датапаков']
   
   useEffect(() => {
+    setIsClient(true)
+    
     const interval = setInterval(() => {
       setCurrentWordIndex((prev) => (prev + 1) % words.length)
     }, 3000)
@@ -76,9 +79,9 @@ export default function HomeClient() {
         </div>
 
         <div className="relative z-10 animate-fade-in-up animation-delay-2200">
-          {typeof window !== 'undefined' && !/iPad|iPhone|iPod/.test(navigator.userAgent || '') && (
-          <AnimatedProjectCarousel />
-        )}
+          {isClient && !/iPad|iPhone|iPod/.test(navigator.userAgent || '') && (
+            <AnimatedProjectCarousel />
+          )}
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 py-16">
