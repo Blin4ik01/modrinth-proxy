@@ -5,12 +5,17 @@ import { useEffect, useState } from 'react'
 
 export default function HomeClient() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
   const words = ['модов', 'плагинов', 'шейдеров', 'ресурспаков', 'датапаков']
   
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentWordIndex((prev) => (prev + 1) % words.length)
-    }, 2000)
+      setIsAnimating(true)
+      setTimeout(() => {
+        setCurrentWordIndex((prev) => (prev + 1) % words.length)
+        setIsAnimating(false)
+      }, 300)
+    }, 3000)
     
     return () => clearInterval(interval)
   }, [])
@@ -43,11 +48,11 @@ export default function HomeClient() {
              </span>
            </div>
           
-          <div className="h-12 sm:h-14 md:h-16 flex items-center justify-center mb-3 sm:mb-4">
-            <div className="animated-text text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold">
+          <div className="h-12 sm:h-14 md:h-16 flex items-center justify-center mb-3 sm:mb-4 overflow-hidden">
+            <div className="animated-text text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold relative">
               <span 
                 key={currentWordIndex}
-                className="animated-word" 
+                className={`animated-word ${isAnimating ? 'exiting' : ''}`}
                 style={{
                   WebkitBackgroundClip: 'text',
                   backgroundClip: 'text',
@@ -58,7 +63,8 @@ export default function HomeClient() {
                   WebkitTextFillColor: 'transparent',
                   MozTextFillColor: 'transparent',
                   color: 'transparent',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  display: 'inline-block'
                 }}
               >
                 {words[currentWordIndex]}

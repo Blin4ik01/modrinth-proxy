@@ -2,19 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes slideUpFade {
+@keyframes bubbleUpNagliy {
   0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(120%) scale(0.5) rotateX(75deg);
+    filter: blur(10px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-15%) scale(1.15) rotateX(-15deg);
+    filter: blur(0px);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(3%) scale(0.98) rotateX(3deg);
+    filter: blur(0px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0%) scale(1) rotateX(0deg);
+    filter: blur(0px);
+  }
+}
+
+@keyframes bubbleOutNagliy {
+  0% {
+    opacity: 1;
+    transform: translateY(0%) scale(1) rotateX(0deg);
+    filter: blur(0px);
+  }
+  40% {
+    opacity: 0.7;
+    transform: translateY(-40%) scale(1.08) rotateX(-25deg);
+    filter: blur(2px);
+  }
+  80% {
+    opacity: 0.2;
+    transform: translateY(-90%) scale(0.4) rotateX(-70deg);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120%) scale(0.3) rotateX(-90deg);
+    filter: blur(15px);
   }
 }
 
 .animated-word {
-  animation: slideUpFade 0.6s ease-out;
+  animation: bubbleUpNagliy 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.animated-word.exiting {
+  animation: bubbleOutNagliy 0.6s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
 }
 
 .top-nav {
