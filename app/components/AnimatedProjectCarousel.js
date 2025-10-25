@@ -58,7 +58,6 @@ const AnimatedProjectCarousel = () => {
 
   return (
     <div className="relative py-12">
-    
       <div className="full-bleed overflow-hidden">
         <div className="flex animate-scroll-left gap-6">
           {manyRow1.map((project, index) => (

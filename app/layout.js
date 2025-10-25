@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
       </head>
       <body style={{ backgroundColor: '#0a0f1e', minHeight: '100vh', margin: 0 }}>
         <TopNav />
-        <nav className="bg-modrinth-darker border-b border-gray-800 sticky top-0 z-30 backdrop-blur-lg bg-opacity-95 shadow-lg">
+        <nav className="bg-modrinth-darker sticky top-0 z-30 backdrop-blur-lg bg-opacity-95 shadow-lg">
           <div className="container mx-auto px-4 py-3 md:py-4">
             <div className="flex items-center gap-4 md:gap-6">
               <Link href="/" className="flex items-center gap-2 md:gap-3 group flex-shrink-0 relative">
@@ -65,7 +65,7 @@ export default function RootLayout({ children }) {
             </div>
           </div>
         </nav>
-        <main className="container mx-auto px-4 py-4 md:py-8 pb-20 lg:pb-8">
+        <main className="container mx-auto">
           {children}
         </main>
         <MobileNav />
