@@ -44,7 +44,7 @@ export default function HomeClient() {
            
              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl mb-2 sm:mb-3 md:mb-4 animate-fade-in-up animation-delay-400 font-black px-2 sm:px-4">
              <span className="text-white drop-shadow-2xl">
-               МЕСТО МАЙНКРАФТ ДЛЯ
+               МЕСТО ДЛЯ МАЙНКРАФТ
              </span>
            </div>
           
