@@ -167,7 +167,6 @@ body {
   box-shadow: 0 10px 30px rgba(27, 217, 106, 0.2);
 }
 
-/* Анимации */
 @keyframes fade-in-up {
   from {
     opacity: 0;
@@ -420,7 +419,6 @@ body {
   background: #1bd96a;
 }
 
-/* Markdown стили */
 .prose {
   color: #d1d5db;
 }
@@ -691,4 +689,46 @@ button.text-white {
 
 .animate-slide-up {
   animation: slide-up 0.5s ease-out;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes scroll-right {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-scroll-left {
+  animation: scroll-left 45s linear infinite;
+  will-change: transform;
+}
+
+.animate-scroll-right {
+  animation: scroll-right 45s linear infinite;
+  will-change: transform;
+}
+
+.full-bleed:hover .animate-scroll-left,
+.full-bleed:hover .animate-scroll-right {
+  animation-play-state: paused;
+}
+
+.full-bleed {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
