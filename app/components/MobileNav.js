@@ -9,6 +9,7 @@ export default function MobileNav({ onFilterClick }) {
   const [isOpen, setIsOpen] = useState(false)
   
   const isActive = (path) => {
+    if (path === '/') return pathname === '/'
     if (path === '/mods') return pathname.startsWith('/mods')
     if (path === '/plugins') return pathname.startsWith('/plugins')
     if (path === '/shaders') return pathname.startsWith('/shaders')
@@ -20,6 +21,12 @@ export default function MobileNav({ onFilterClick }) {
   }
 
   const navItems = [
+    { 
+      href: '/', 
+      label: 'Главная', 
+      icon: <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9,22 9,12 15,12 15,22"></polyline></svg>,
+      color: 'from-modrinth-green to-green-500' 
+    },
     { 
       href: '/mods', 
       label: 'Моды', 
@@ -81,6 +88,17 @@ export default function MobileNav({ onFilterClick }) {
     <>
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 pb-safe">
         <div className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-900/90 backdrop-blur-lg border-t border-gray-800">
+          <Link
+            href="/"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs font-medium transition-all duration-200"
+          >
+            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9,22 9,12 15,12 15,22"></polyline>
+            </svg>
+            <span>Главная</span>
+          </Link>
+          
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs font-medium transition-all duration-200"
