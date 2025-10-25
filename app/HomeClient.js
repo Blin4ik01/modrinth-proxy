@@ -5,27 +5,29 @@ import { useEffect, useState } from 'react'
 
 export default function HomeClient() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
+  const [nextWordIndex, setNextWordIndex] = useState(1)
+  const [showNext, setShowNext] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
   const words = ['модов', 'плагинов', 'шейдеров', 'ресурспаков', 'датапаков']
   
+  const isIOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent || '')
+  
   useEffect(() => {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-    const safariVersion = navigator.userAgent.match(/Version\/(\d+)/)
-    
-    if (isIOS && safariVersion && parseInt(safariVersion[1]) >= 26) {
-      return
-    }
+    if (isIOS) return
     
     const interval = setInterval(() => {
       setIsAnimating(true)
+      setShowNext(true)
       setTimeout(() => {
-        setCurrentWordIndex((prev) => (prev + 1) % words.length)
+        setCurrentWordIndex(nextWordIndex)
+        setNextWordIndex((prev) => (prev + 1) % words.length)
+        setShowNext(false)
         setIsAnimating(false)
-      }, 300)
+      }, 600)
     }, 3000)
     
     return () => clearInterval(interval)
-  }, [])
+  }, [nextWordIndex, isIOS])
 
   return (
     <div className="relative min-h-screen">
@@ -33,6 +35,7 @@ export default function HomeClient() {
         className="relative w-screen bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: 'url(/landing.webp)',
+          backgroundAttachment: 'scroll',
           left: '50%',
           right: '50%',
           marginLeft: '-50vw',
@@ -58,7 +61,6 @@ export default function HomeClient() {
           <div className="h-12 sm:h-14 md:h-16 flex items-center justify-center mb-3 sm:mb-4 overflow-hidden">
             <div className="animated-text text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold relative">
               <span 
-                key={currentWordIndex}
                 className={`animated-word ${isAnimating ? 'exiting' : ''}`}
                 style={{
                   WebkitBackgroundClip: 'text',
@@ -76,6 +78,28 @@ export default function HomeClient() {
               >
                 {words[currentWordIndex]}
               </span>
+              
+              {showNext && (
+                <span
+                  key={`next-${nextWordIndex}`}
+                  className="animated-word entering absolute top-0 left-0"
+                  style={{
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    backgroundColor: '#00bd3c',
+                    backgroundImage: 'linear-gradient(180deg, #a7d0ff 0%, #00bd3c 60%)',
+                    backgroundSize: '100%',
+                    fontWeight: 600,
+                    WebkitTextFillColor: 'transparent',
+                    MozTextFillColor: 'transparent',
+                    color: 'transparent',
+                    whiteSpace: 'nowrap',
+                    display: 'inline-block'
+                  }}
+                >
+                  {words[nextWordIndex]}
+                </span>
+              )}
             </div>
           </div>
           
@@ -288,17 +312,18 @@ export default function HomeClient() {
 
       <div 
         className="relative w-screen bg-cover"
-        style={{
-          background: 'linear-gradient(0deg, #31375f, rgba(8, 14, 55, 0)), url(/landing-lower.webp)',
-          backgroundBlendMode: 'multiply',
-          backgroundSize: 'cover',
-          paddingBottom: '5rem',
-          paddingTop: '34px',
-          left: '50%',
-          right: '50%',
-          marginLeft: '-50vw',
-          marginRight: '-50vw'
-        }}
+          style={{
+            background: 'linear-gradient(0deg, #31375f, rgba(8, 14, 55, 0)), url(/landing-lower.webp)',
+            backgroundBlendMode: 'multiply',
+            backgroundSize: 'cover',
+            backgroundAttachment: 'scroll',
+            paddingBottom: '5rem',
+            paddingTop: '34px',
+            left: '50%',
+            right: '50%',
+            marginLeft: '-50vw',
+            marginRight: '-50vw'
+          }}
       >
         <div 
           className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
