@@ -50,7 +50,6 @@
 
 .animated-word {
   animation: bubbleUpNagliy 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform-style: preserve-3d;
 }
 
 .animated-word.exiting {

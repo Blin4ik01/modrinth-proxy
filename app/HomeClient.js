@@ -9,6 +9,13 @@ export default function HomeClient() {
   const words = ['модов', 'плагинов', 'шейдеров', 'ресурспаков', 'датапаков']
   
   useEffect(() => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    const safariVersion = navigator.userAgent.match(/Version\/(\d+)/)
+    
+    if (isIOS && safariVersion && parseInt(safariVersion[1]) >= 26) {
+      return
+    }
+    
     const interval = setInterval(() => {
       setIsAnimating(true)
       setTimeout(() => {
