@@ -173,7 +173,11 @@ export default function ResourceSidebar({ resource, teamMembers = [] }) {
           </h3>
           <div className="space-y-2">
             {teamMembers.map((member, idx) => (
-              <div key={idx} className="flex items-start gap-2">
+              <Link
+                key={idx}
+                href={`/user/${member.user.id}`}
+                className="flex items-start gap-2 p-2 rounded-lg hover:bg-gray-800 transition-colors group"
+              >
                 {member.user.avatar_url ? (
                   <img 
                     src={member.user.avatar_url} 
@@ -186,10 +190,10 @@ export default function ResourceSidebar({ resource, teamMembers = [] }) {
                   </div>
                 )}
                 <div>
-                  <p className="text-sm text-white font-medium">{member.user.username}</p>
+                  <p className="text-sm text-white font-medium group-hover:text-modrinth-green transition-colors">{member.user.username}</p>
                   <p className="text-xs text-gray-400">{translateRole(member.role)}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -2,6 +2,8 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
+  buildExcludes: [/middleware-manifest.json$/],
+  additionalManifestEntries: [],
 })
 
 /** @type {import('next').NextConfig} */

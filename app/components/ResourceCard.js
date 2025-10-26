@@ -114,18 +114,18 @@ export default function ResourceCard({ resource, type = 'mod' }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0" />
             </svg>
             <p className="text-sm">
-              <strong className="text-white">{formatDownloads(resource.follows)}</strong>
+              <strong className="text-white">{formatDownloads(resource.follows || resource.followers)}</strong>
             </p>
           </div>
         </div>
         
-        {resource.date_modified && (
+        {(resource.date_modified || resource.updated) && (
           <div className="flex items-center gap-1.5 text-gray-500 text-xs">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
               <path d="M1 4v6h6M23 20v-6h-6" />
               <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15" />
             </svg>
-            <RelativeTime dateString={resource.date_modified} />
+            <RelativeTime dateString={resource.date_modified || resource.updated} />
           </div>
         )}
       </div>
