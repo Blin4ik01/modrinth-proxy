@@ -106,7 +106,6 @@ export default function AuthorProjectTabs({ userId, currentType, typeStats, tota
           </Link>
         ))}
         
-        {/* Анимированный фон для активной вкладки */}
         {activeTabStyle.width > 0 && (
           <div 
             className="absolute h-[calc(100%-0.5rem)] rounded-full transition-all duration-300 ease-out pointer-events-none"

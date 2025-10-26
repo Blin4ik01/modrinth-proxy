@@ -62,9 +62,18 @@ export default async function AuthorPage({ params, searchParams }) {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="bg-modrinth-dark border border-gray-800 rounded-lg p-6 mb-6">
+      <div className="p-6 mb-6">
         <div className="flex flex-col lg:flex-row gap-6">
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-4 user-info-container">
+            <style dangerouslySetInnerHTML={{
+              __html: `
+                @media (min-width: 284px) {
+                  .user-info-container {
+                    flex-direction: row !important;
+                  }
+                }
+              `
+            }} />
             {author.avatar_url ? (
               <img 
                 src={author.avatar_url} 
@@ -77,10 +86,10 @@ export default async function AuthorPage({ params, searchParams }) {
               </div>
             )}
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-white">{author.username}</h1>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">{author.username}</h1>
                 {author.role && (
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeStyle(author.role)}`}>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium w-fit ${getRoleBadgeStyle(author.role)}`}>
                     {translateUserRole(author.role)}
                   </span>
                 )}
@@ -88,7 +97,7 @@ export default async function AuthorPage({ params, searchParams }) {
               {author.bio && (
                 <p className="text-gray-300 max-w-2xl">{author.bio}</p>
               )}
-              <div className="flex flex-wrap gap-4 text-sm">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 text-sm">
                 <div className="flex items-center gap-2 text-gray-400">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
@@ -108,7 +117,8 @@ export default async function AuthorPage({ params, searchParams }) {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2" />
                   </svg>
-                  <span>Присоединился {formatJoinDate(author.created)}</span>
+                  <span className="hidden sm:inline">Присоединился </span>
+                  <span>{formatJoinDate(author.created)}</span>
                 </div>
               </div>
             </div>
