@@ -116,16 +116,41 @@ export default function RootLayout({ children }) {
               </div>
 
               <div className="text-center md:text-left">
-                <h3 className="text-lg font-bold text-white mb-3">
-                  Поддержка
-                </h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  Нашли баг? Есть предложения? 
-                  <br/>
-                  <a href="https://github.com/b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0/modrinth-proxy/issues" target="_blank" rel="noopener noreferrer" className="text-modrinth-green hover:text-green-400 transition-colors font-medium">
-                    GitHub Issues
-                  </a>
-                </p>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-3">
+                      Поддержка
+                    </h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      Нашли баг? Есть предложения? 
+                      <br/>
+                      <a href="https://github.com/b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0/modrinth-proxy/issues" target="_blank" rel="noopener noreferrer" className="text-modrinth-green hover:text-green-400 transition-colors font-medium">
+                        GitHub Issues
+                      </a>
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-3">
+                      О проекте
+                    </h3>
+                    <div className="flex flex-col gap-2">
+                      <a href="/bmadnco" className="flex items-center gap-2 text-gray-400 hover:text-modrinth-green text-sm transition-colors group">
+                        <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="font-medium">Как это работает</span>
+                      </a>
+                      
+                      <a href="/extension" className="flex items-center gap-2 text-gray-400 hover:text-modrinth-green text-sm transition-colors group">
+                        <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        <span className="font-medium">Браузерное расширение</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="text-center">
@@ -137,14 +162,6 @@ export default function RootLayout({ children }) {
                 </p>
                 <div className="!text-center">
                   <EmailCopyButton email="black-minecraft@proton.me" />
-                </div>
-                <div className="mt-4 flex justify-center">
-                  <Link href="/bmadnco" className="flex items-center gap-2 text-gray-400 hover:text-modrinth-green text-xs transition-colors group">
-                    <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="font-medium">О проекте и как это работает</span>
-                  </Link>
                 </div>
               </div>
             </div>
