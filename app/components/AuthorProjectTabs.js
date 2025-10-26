@@ -10,6 +10,11 @@ export default function AuthorProjectTabs({ userId, currentType, typeStats, tota
   const searchParams = useSearchParams()
   const navRef = useRef(null)
   const [activeTabStyle, setActiveTabStyle] = useState({ width: 0, left: 0 })
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   
   const createUrl = (type) => {
     const params = new URLSearchParams(searchParams)
@@ -82,7 +87,7 @@ export default function AuthorProjectTabs({ userId, currentType, typeStats, tota
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  if (tabs.length <= 1) {
+  if (!mounted || tabs.length <= 1) {
     return null
   }
 
