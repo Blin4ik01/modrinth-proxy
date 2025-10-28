@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сайт недоступен - ModrinthProxy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 50%, #1a1a1a 100%);
+            color: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(31, 41, 55, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .icon-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 15px 40px rgba(239, 68, 68, 0.5);
+            }
+        }
+        
+        .icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ffffff 0%, #d1d5db 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 16px;
+            margin-bottom: 35px;
+            line-height: 1.5;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+            margin: 30px 0;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1bd96a;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: #1bd96a;
+            border-radius: 2px;
+        }
+        
+        .domains {
+            background: rgba(17, 24, 39, 0.5);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .domain-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(27, 217, 106, 0.05);
+            border: 1px solid rgba(27, 217, 106, 0.2);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .domain-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .domain-item:hover {
+            background: rgba(27, 217, 106, 0.1);
+            border-color: rgba(27, 217, 106, 0.4);
+            transform: translateX(5px);
+        }
+        
+        .domain-icon {
+            width: 10px;
+            height: 10px;
+            background: #1bd96a;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .domain-name {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #e5e7eb;
+            flex: 1;
+        }
+        
+        .tips {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .tip-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .tip-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 24px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-right: 12px;
+            font-size: 13px;
+        }
+        
+        .tip-text {
+            color: #d1d5db;
+            padding-top: 2px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1bd96a 0%, #16a34a 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(27, 217, 106, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(27, 217, 106, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .github-section {
+            background: rgba(88, 28, 135, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .github-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #c084fc;
+            margin-bottom: 12px;
+        }
+        
+        .github-section p {
+            color: #d1d5db;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 10px;
+            color: #e9d5ff;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+        
+        .github-link:hover {
+            background: rgba(168, 85, 247, 0.25);
+            border-color: rgba(168, 85, 247, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .github-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .domain-name {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon-wrapper">
+            <div class="icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3"/>
+                </svg>
+            </div>
+        </div>
+
+        <h1>Сайт недоступен</h1>
+        <p class="subtitle">РКН заблокировал хостинг-провайдера (Vercel, Railway) или проблемы с интернетом. Попробуйте другое зеркало.</p>
+
+        <div class="current-domain">
+            <div class="domain-badge">
+                <svg class="domain-globe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                </svg>
+                <span id="current-domain-text" class="domain-text">...</span>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-title">Доступные зеркала сайта</div>
+        <div class="domains">
+            <a href="https://modrinth.white-minecraft.net" class="domain-item">
+                <span class="domain-icon"></span>
+                <span class="domain-name">modrinth.white-minecraft.net</span>
+            </a>
+            <a href="https://modrinth.churka.pro" class="domain-item">
+                <span class="domain-icon"></span>
+                <span class="domain-name">modrinth.churka.pro</span>
+            </a>
+            <a href="https://modrinth.black" class="domain-item">
+                <span class="domain-icon"></span>
+                <span class="domain-name">modrinth.black</span>
+            </a>
+            <a href="https://m.modrinth.black" class="domain-item">
+                <span class="domain-icon"></span>
+                <span class="domain-name">m.modrinth.black</span>
+            </a>
+            <a href="https://nepidoras.ru" class="domain-item">
+                <span class="domain-icon"></span>
+                <span class="domain-name">nepidoras.ru</span>
+            </a>
+            <a href="https://modrinth-proxy-brown.vercel.app" class="domain-item">
+                <span class="domain-icon"></span>
+                <span class="domain-name">modrinth-proxy-brown.vercel.app</span>
+            </a>
+            <a href="https://modrinth-proxy-production.up.railway.app" class="domain-item">
+                <span class="domain-icon"></span>
+                <span class="domain-name">modrinth-proxy-production.up.railway.app</span>
+            </a>
+        </div>
+
+        <div class="github-section">
+            <h3>🚀 Запустите свою копию сайта</h3>
+            <p>Если все зеркала недоступны, вы можете запустить сайт локально на своём компьютере. Все инструкции есть на GitHub:</p>
+            <a href="https://github.com/b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0/modrinth-proxy" target="_blank" class="github-link">
+                <svg class="github-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                github.com/b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0/modrinth-proxy
+            </a>
+        </div>
+
+        <div class="buttons">
+            <button onclick="window.location.reload()" class="btn btn-primary">
+                Попробовать снова
+            </button>
+            <a href="/" class="btn btn-secondary">
+                На главную
+            </a>
+        </div>
+
+        <div class="footer">
+            РКН блокирует хостинг-провайдеры (Vercel, Railway), поэтому некоторые зеркала могут быть недоступны.<br>
+            Все зеркала ведут на один и тот же сайт с одинаковым контентом.
+        </div>
+    </div>
+</body>
+</html>
