@@ -4,16 +4,16 @@
 
 Все файлы качаются напрямую с CDN Modrinth. Мы не храним моды у себя - только делаем удобный интерфейс и кэшируем описания.
 
-**Сайт:** https://modrinth.white-minecraft.net/
+**Сайт:** https://modrinth.black/
 
 ## Быстрые ссылки
 
-- **[Моды](https://modrinth.white-minecraft.net/mods)** - модификации для Minecraft
-- **[Плагины](https://modrinth.white-minecraft.net/plugins)** - плагины для серверов
-- **[Модпаки](https://modrinth.white-minecraft.net/modpacks)** - готовые сборки модов
-- **[Шейдеры](https://modrinth.white-minecraft.net/shaders)** - графические улучшения
-- **[Ресурспаки](https://modrinth.white-minecraft.net/resourcepacks)** - текстуры и звуки
-- **[Датапаки](https://modrinth.white-minecraft.net/datapacks)** - игровая механика
+- **[Моды](https://modrinth.black/mods)** - модификации для Minecraft
+- **[Плагины](https://modrinth.black/plugins)** - плагины для серверов
+- **[Модпаки](https://modrinth.black/modpacks)** - готовые сборки модов
+- **[Шейдеры](https://modrinth.black/shaders)** - графические улучшения
+- **[Ресурспаки](https://modrinth.black/resourcepacks)** - текстуры и звуки
+- **[Датапаки](https://modrinth.black/datapacks)** - игровая механика
 
 ## О проекте
 

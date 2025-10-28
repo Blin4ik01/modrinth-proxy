@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 
 export default function CurrentDomain() {
-  const [domain, setDomain] = useState('modrinth.white-minecraft.net')
+  const [domain, setDomain] = useState('modrinth.black')
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
