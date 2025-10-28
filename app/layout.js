@@ -72,7 +72,7 @@ export default function RootLayout({ children }) {
           {children}
         </main>
         <MobileNav />
-        <footer className="relative mt-8 md:mt-16 mb-20 lg:mb-0 overflow-hidden">
+        <footer className="relative mb-20 lg:mb-0 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-modrinth-green to-transparent opacity-50"></div>
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-modrinth-green/30 to-transparent blur-sm"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-modrinth-darker via-black to-black"></div>
