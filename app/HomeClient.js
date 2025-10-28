@@ -90,7 +90,7 @@ export default function HomeClient() {
               Для игроков
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-              Откройте для себя более 75 001 творений
+              Откройте для себя более 75 000 творений
             </h2>
             <p className="text-lg text-gray-300 max-w-3xl mx-auto">
               От магических биомов до проклятых подземелий — вы обязательно найдете контент, который выведет ваш геймплей на новый уровень.
