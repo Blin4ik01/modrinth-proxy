@@ -759,3 +759,7 @@ button.text-white {
   margin-left: -50vw;
   margin-right: -50vw;
 }
+
+.container {
+  padding-bottom: 34px;
+}
