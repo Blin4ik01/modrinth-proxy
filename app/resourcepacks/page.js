@@ -31,7 +31,7 @@ export default async function ResourcepacksPage({ searchParams }) {
 
   const CATEGORY_IDS = ['combat', 'cursed', 'decoration', 'modded', 'realistic', 'simplistic', 'themed', 'tweaks', 'utility', 'vanilla-like'];
   const FEATURE_IDS = ['audio', 'blocks', 'core-shaders', 'entities', 'environment', 'equipment', 'fonts', 'gui', 'items', 'locale', 'models'];
-  const RESOLUTION_IDS = ['8x-', '16x', '32x', '48x', '64x', '128x', '256x', '512x+'];
+  const RESOLUTION_IDS = ['8x-', '16x', '32x', '48x', '64x', '128x', '256x'];
 
   const processParam = (param) => {
     let decoded = decodeURIComponent(param.replace(/\+/g, '%2B'));

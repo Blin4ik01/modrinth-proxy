@@ -26,7 +26,6 @@ const RESOLUTIONS = [
   { id: '64x', name: '64x' },
   { id: '128x', name: '128x' },
   { id: '256x', name: '256x' },
-  { id: '512x+', name: '512x или больше' },
 ]
 
 export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = false }) {
