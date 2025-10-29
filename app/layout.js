@@ -6,6 +6,14 @@ import ExtensionBanner from './components/ExtensionBanner'
 import EmailCopyButton from './components/EmailCopyButton'
 import TopNav from './components/TopNav'
 import CurrentDomain from './components/CurrentDomain'
+import { JetBrains_Mono } from 'next/font/google'
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+})
 
 export const metadata = {
   title: 'ModrinthProxy',
@@ -29,13 +37,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ru" className="scroll-smooth">
+    <html lang="ru" className={`scroll-smooth ${jetbrainsMono.variable}`}>
       <head>
         <link rel="apple-touch-icon" href="/icon.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body style={{ backgroundColor: '#0a0f1e', minHeight: '100vh', margin: 0 }}>
+      <body className={jetbrainsMono.className} style={{ backgroundColor: '#0a0f1e', minHeight: '100vh', margin: 0 }}>
         <TopNav />
         <nav className="bg-modrinth-darker sticky top-0 z-30 backdrop-blur-lg bg-opacity-95 shadow-lg hidden lg:block">
           <div className="container mx-auto px-4 py-3 md:py-4">
