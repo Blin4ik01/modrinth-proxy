@@ -761,5 +761,5 @@ button.text-white {
 }
 
 .container {
-  padding-bottom: 34px;
+  padding: 34px 0 34px 0;
 }

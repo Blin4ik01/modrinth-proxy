@@ -19,7 +19,7 @@ export default function HomeClient() {
   }, [])
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen" style={{ marginTop: '-34px', marginBottom: '-34px' }}>
       <div 
         className="relative w-screen bg-cover bg-center bg-no-repeat"
         style={{
