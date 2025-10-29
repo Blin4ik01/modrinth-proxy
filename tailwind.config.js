@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        black: 'var(--bg-black)',
         modrinth: {
           green: 'var(--color-green)',
           dark: 'var(--bg-secondary)',
@@ -19,6 +20,9 @@ module.exports = {
           400: 'var(--text-gray)',
           800: 'var(--border-color)',
         }
+      },
+      borderColor: {
+        DEFAULT: 'var(--border-color)',
       },
       keyframes: {
         shimmer: {

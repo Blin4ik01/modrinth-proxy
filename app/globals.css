@@ -11,9 +11,11 @@
   --bg-hover-alt: #2f3136;
   --bg-dark: #0f172a;
   --bg-darker: #020305;
+  --bg-black: #000000;
+  --bg-black-rgb: 0, 0, 0;
   --bg-tooltip: #1a1d24;
   --bg-code: #1e293b;
-  --bg-gradient-start: #060a1c;
+  --bg-gradient-start: #191c20;
   --bg-gradient-mid: #31375f;
   --bg-gradient-trans: 14, 16, 32;
   --bg-gradient-overlay: 8, 14, 55;

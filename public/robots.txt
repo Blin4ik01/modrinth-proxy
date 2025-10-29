@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /sw.js
+
+Sitemap: https://modrinth.black/sitemap.xml
+
+Clean-param: utm_source
+Clean-param: utm_medium
+Clean-param: utm_campaign
+Clean-param: utm_content
+Clean-param: utm_term
+Clean-param: ref
+Clean-param: fbclid
+Clean-param: gclid
+
+User-agent: Yandex
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
