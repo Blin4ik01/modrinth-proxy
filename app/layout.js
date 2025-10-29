@@ -19,7 +19,6 @@ export const metadata = {
   title: 'ModrinthProxy',
   description: 'Удобный поиск и скачивание модов, плагинов, шейдеров для Minecraft на русском языке',
   manifest: '/manifest.json',
-  themeColor: '#1bd96a',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -28,11 +27,13 @@ export const metadata = {
   verification: {
     yandex: '79af01936dc8fd7f',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#1bd96a',
 }
 
 export default function RootLayout({ children }) {
