@@ -73,7 +73,7 @@ export default function HomeClient() {
           </div>
           
             <p className="text-sm sm:text-base md:text-lg text-gray-200 max-w-4xl mx-auto mb-6 sm:mb-8 md:mb-12 animate-fade-in-up animation-delay-600 px-2 sm:px-4 drop-shadow-md font-light leading-relaxed">
-            Открывайте, играйте и делитесь контентом Minecraft через нашу платформу, созданную сообществом для сообщества.
+            Открывайте, играйте и делитесь контентом Minecraft через нашу платформу, созданную сообществом для сообщества!
           </p>
           </div>
         </div>
