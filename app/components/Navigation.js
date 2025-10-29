@@ -71,7 +71,7 @@ export default function Navigation() {
   }
 
   return (
-    <div ref={navRef} className="hidden lg:flex items-center gap-0.5 md:gap-1 flex-1 overflow-x-auto custom-scrollbar pb-1 relative">
+    <div ref={navRef} className="hidden lg:flex items-center gap-0.5 md:gap-1 flex-1 overflow-x-auto custom-scrollbar relative">
       <div 
         className={`absolute rounded-lg bg-gradient-to-r pointer-events-none ${getGradientClass(indicator.color)} ${hasAnimated ? 'transition-all duration-700 ease-out' : ''}`}
         style={{

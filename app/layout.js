@@ -44,7 +44,7 @@ export default function RootLayout({ children }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={`${jetbrainsMono.className} overflow-x-hidden`} style={{ backgroundColor: '#0a0f1e', minHeight: '100vh', margin: 0 }}>
+      <body className={`${jetbrainsMono.className} overflow-x-hidden min-h-screen m-0`}>
         <TopNav />
         <nav className="bg-modrinth-darker sticky top-0 z-30 backdrop-blur-lg bg-opacity-95 shadow-lg hidden lg:block">
           <div className="container mx-auto px-4 py-3 md:py-4">
@@ -75,7 +75,7 @@ export default function RootLayout({ children }) {
             </div>
           </div>
         </nav>
-        <main className="container mx-auto">
+        <main className="container">
           {children}
         </main>
         <MobileNav />

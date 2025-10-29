@@ -12,6 +12,9 @@ export default function AnimatedBackground() {
     const ctx = canvas.getContext('2d')
     let animationFrameId
     let particles = []
+    
+    const greenRgb = getComputedStyle(document.documentElement)
+      .getPropertyValue('--color-green-rgb').trim()
 
     const resize = () => {
       canvas.width = window.innerWidth
@@ -41,7 +44,7 @@ export default function AnimatedBackground() {
       }
 
       draw() {
-        ctx.fillStyle = `rgba(27, 217, 106, ${this.opacity})`
+        ctx.fillStyle = `rgba(${greenRgb}, ${this.opacity})`
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
         ctx.fill()
@@ -67,7 +70,7 @@ export default function AnimatedBackground() {
           const distance = Math.sqrt(dx * dx + dy * dy)
 
           if (distance < 100) {
-            ctx.strokeStyle = `rgba(27, 217, 106, ${0.15 * (1 - distance / 100)})`
+            ctx.strokeStyle = `rgba(${greenRgb}, ${0.15 * (1 - distance / 100)})`
             ctx.lineWidth = 0.5
             ctx.beginPath()
             ctx.moveTo(p1.x, p1.y)

@@ -205,7 +205,7 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                           <span 
                             key={i}
                             className="px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap"
-                            style={{ backgroundColor: '#34363c', color: '#80878f' }}
+                            style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}
                           >
                             {range}
                           </span>
@@ -219,11 +219,11 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                               key={loaderId}
                               className="px-2 py-1 text-xs font-semibold rounded-full capitalize inline-flex items-center gap-1"
                               style={{ 
-                                backgroundColor: '#34363c', 
-                                color: loaderData.color || '#80878f' 
+                                backgroundColor: 'var(--bg-tertiary)', 
+                                color: loaderData.color || 'var(--text-muted)' 
                               }}
                             >
-                              <div className="w-3 h-3 flex-shrink-0" style={{ color: loaderData.color || '#80878f' }}>
+                              <div className="w-3 h-3 flex-shrink-0" style={{ color: loaderData.color || 'var(--text-muted)' }}>
                                 {loaderData.icon}
                               </div>
                               {loaderData.name}
@@ -255,7 +255,7 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                           <span 
                             key={i}
                             className="px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap"
-                            style={{ backgroundColor: '#34363c', color: '#80878f' }}
+                            style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}
                           >
                             {range}
                           </span>
@@ -272,11 +272,11 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                               key={loaderId}
                               className="px-2 py-1 text-xs font-semibold rounded-full hover:underline cursor-pointer capitalize inline-flex items-center gap-1"
                               style={{ 
-                                backgroundColor: '#34363c', 
-                                color: loaderData.color || '#80878f' 
+                                backgroundColor: 'var(--bg-tertiary)', 
+                                color: loaderData.color || 'var(--text-muted)' 
                               }}
                             >
-                              <div className="w-3 h-3 flex-shrink-0" style={{ color: loaderData.color || '#80878f' }}>
+                              <div className="w-3 h-3 flex-shrink-0" style={{ color: loaderData.color || 'var(--text-muted)' }}>
                                 {loaderData.icon}
                               </div>
                               {loaderData.name}
@@ -299,7 +299,7 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                         <div className="relative z-10 sm:hidden flex flex-col gap-1 text-xs text-gray-400 font-medium mt-2 max-[390px]:items-center max-[390px]:justify-center min-[391px]:col-span-2">
                           <div className="flex flex-wrap gap-1 max-[390px]:justify-center">
                             {compressVersionRanges(version.game_versions).slice(0, 2).map((range, i) => (
-                              <span key={i} className="px-2 py-0.5 text-xs rounded-full whitespace-nowrap" style={{ backgroundColor: '#34363c', color: '#80878f' }}>
+                              <span key={i} className="px-2 py-0.5 text-xs rounded-full whitespace-nowrap" style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
                                 {range}
                               </span>
                             ))}
@@ -314,11 +314,11 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                                   key={loaderId} 
                                   className="px-2 py-0.5 text-xs rounded-full capitalize inline-flex items-center gap-1" 
                                   style={{ 
-                                    backgroundColor: '#34363c', 
-                                    color: loaderData.color || '#80878f' 
+                                    backgroundColor: 'var(--bg-tertiary)', 
+                                    color: loaderData.color || 'var(--text-muted)' 
                                   }}
                                 >
-                                  <div className="w-3 h-3 flex-shrink-0" style={{ color: loaderData.color || '#80878f' }}>
+                                  <div className="w-3 h-3 flex-shrink-0" style={{ color: loaderData.color || 'var(--text-muted)' }}>
                                     {loaderData.icon}
                                   </div>
                                   {loaderData.name}

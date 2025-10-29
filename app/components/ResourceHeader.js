@@ -59,7 +59,7 @@ export default function ResourceHeader({ resource, contentType, versions = [] })
         <span className="text-white font-semibold truncate">{resource.title}</span>
       </div>
 
-      <div className="border-b pb-4 md:pb-6 mb-6 md:mb-8" style={{ borderBottomColor: '#34363c' }}>
+      <div className="border-b pb-4 md:pb-6 mb-6 md:mb-8" style={{ borderBottomColor: 'var(--bg-tertiary)' }}>
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 lg:items-start">
           <div className="flex gap-3 md:gap-4 flex-1">
             {resource.icon_url && (
@@ -103,7 +103,7 @@ export default function ResourceHeader({ resource, contentType, versions = [] })
                             key={catId}
                             href={`/${contentTypeRoute}?f=categories:${catId}`}
                             className="px-2 py-1 text-xs font-semibold rounded-lg hover:brightness-110 transition-all flex items-center gap-1.5"
-                            style={{ backgroundColor: '#34363c', color: '#80878f' }}
+                            style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}
                           >
                             <div className="h-3.5 w-3.5 flex-shrink-0">{category.icon}</div>
                             <span>{category.name}</span>

@@ -9,9 +9,15 @@ module.exports = {
     extend: {
       colors: {
         modrinth: {
-          green: '#1bd96a',
-          dark: '#0f172a',
-          darker: '#0a0f1e',
+          green: 'var(--color-green)',
+          dark: 'var(--bg-secondary)',
+          darker: 'var(--bg-primary)',
+          darkest: 'var(--bg-darker)',
+          border: 'var(--border-color)',
+        },
+        gray: {
+          400: 'var(--text-gray)',
+          800: 'var(--border-color)',
         }
       },
       keyframes: {

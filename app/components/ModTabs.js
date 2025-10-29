@@ -354,7 +354,7 @@ export default function ModTabs({ mod, versions, initialTab = 'description', ini
                               <span 
                                 key={loaderId}
                                 className="px-2 py-1 bg-gray-800 rounded-full text-xs font-semibold hover:underline cursor-pointer capitalize inline-flex items-center gap-1"
-                                style={{ color: loaderData.color || '#d1d5db' }}
+                                style={{ color: loaderData.color || 'var(--text-secondary)' }}
                               >
                                 <div className="w-3 h-3 flex-shrink-0">
                                   {loaderData.icon}

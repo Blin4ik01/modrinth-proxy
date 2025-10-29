@@ -105,7 +105,7 @@ export default function AuthorProjectTabs({ userId, currentType, typeStats, tota
                 : 'text-gray-300 hover:text-white'
               }
             `}
-            style={tab.isActive ? { color: '#1bd96a' } : {}}
+            style={tab.isActive ? { color: 'var(--color-green)' } : {}}
           >
             <span>{tab.label}</span>
           </Link>

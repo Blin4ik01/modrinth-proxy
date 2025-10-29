@@ -68,7 +68,7 @@ export default function LoadersDropdown({ loaders, selectedLoaders, onLoadersCha
                     key={loaderId}
                     onClick={() => toggleLoader(loaderId)}
                     className="flex items-center justify-between px-3 py-2 text-sm hover:bg-gray-700 transition text-left"
-                    style={{ borderRadius: '0.75rem', color: loaderData.color || '#ffffff' }}
+                    style={{ borderRadius: '0.75rem', color: loaderData.color || 'var(--text-primary)' }}
                   >
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 flex-shrink-0">

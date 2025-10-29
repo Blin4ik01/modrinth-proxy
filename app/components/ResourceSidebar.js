@@ -56,13 +56,13 @@ export default function ResourceSidebar({ resource, teamMembers = [] }) {
                       >
                         <div 
                           className="w-4 h-4 flex-shrink-0" 
-                          style={loader.color ? { color: loader.color } : { color: '#d1d5db' }}
+                          style={loader.color ? { color: loader.color } : { color: 'var(--text-secondary)' }}
                         >
                           {loader.icon}
                         </div>
                         <span 
                           className="text-xs font-medium" 
-                          style={loader.color ? { color: loader.color } : { color: '#d1d5db' }}
+                          style={loader.color ? { color: loader.color } : { color: 'var(--text-secondary)' }}
                         >
                           {loader.name}
                         </span>
