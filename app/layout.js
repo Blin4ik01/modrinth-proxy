@@ -1,18 +1,18 @@
 import './globals.css'
+import { JetBrains_Mono } from "next/font/google"
 import Link from 'next/link'
 import MobileNav from './components/MobileNav'
 import Navigation from './components/Navigation'
 import ExtensionBanner from './components/ExtensionBanner'
 import EmailCopyButton from './components/EmailCopyButton'
-import TopNav from './components/TopNav'
 import CurrentDomain from './components/CurrentDomain'
-import { JetBrains_Mono } from 'next/font/google'
+import TopNav from "./components/TopNav"
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin', 'cyrillic'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-jetbrains-mono',
-  display: 'swap',
+  display: 'swap'
 })
 
 export const metadata = {
@@ -22,18 +22,18 @@ export const metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'ModrinthProxy',
+    title: 'ModrinthProxy'
   },
   verification: {
-    yandex: '79af01936dc8fd7f',
-  },
+    yandex: '79af01936dc8fd7f'
+  }
 }
 
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#1bd96a',
+  themeColor: '#1bd96a'
 }
 
 export default function RootLayout({ children }) {
@@ -44,20 +44,19 @@ export default function RootLayout({ children }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={jetbrainsMono.className} style={{ backgroundColor: '#0a0f1e', minHeight: '100vh', margin: 0 }}>
+      <body className={`${jetbrainsMono.className} overflow-x-hidden`} style={{ backgroundColor: '#0a0f1e', minHeight: '100vh', margin: 0 }}>
         <TopNav />
         <nav className="bg-modrinth-darker sticky top-0 z-30 backdrop-blur-lg bg-opacity-95 shadow-lg hidden lg:block">
           <div className="container mx-auto px-4 py-3 md:py-4">
             <div className="flex items-center gap-4 md:gap-6">
               <Link href="/" className="flex items-center gap-2 md:gap-3 group flex-shrink-0 relative">
-                <img 
-                  src="/icon.png" 
-                  alt="Logo" 
+                <img
+                  src="/icon.png"
+                  alt="Logo"
                   draggable="false"
                   className="w-8 h-8 md:w-9 md:h-9 object-contain drop-shadow-[0_0_8px_rgba(26,230,109,0.5)] transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 group-hover:drop-shadow-[0_0_12px_rgba(26,230,109,0.7)] select-none pointer-events-none"
                 />
                 <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-modrinth-green to-green-400 bg-clip-text text-transparent hidden sm:block group-hover:from-green-400 group-hover:to-modrinth-green transition-all select-none">ModrinthProxy</span>
-                
                 <div className="hidden sm:block absolute top-full left-1/2 -translate-x-1/2 mt-[2px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none z-50 select-none">
                   <div className="relative select-none">
                     <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-gray-800 select-none"></div>
@@ -72,7 +71,6 @@ export default function RootLayout({ children }) {
                   </div>
                 </div>
               </Link>
-              
               <Navigation />
             </div>
           </div>
@@ -151,7 +149,6 @@ export default function RootLayout({ children }) {
                         </svg>
                         <span className="font-medium">Как это работает</span>
                       </a>
-                      
                       <a href="/extension" className="flex items-center gap-2 text-gray-400 hover:text-modrinth-green text-sm transition-colors group">
                         <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -200,11 +197,8 @@ export default function RootLayout({ children }) {
             </div>
           </div>
         </footer>
-        
         <ExtensionBanner />
       </body>
     </html>
   )
 }
-
-

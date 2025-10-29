@@ -309,7 +309,7 @@ export default function HomeClient() {
         />
         <div className="relative z-10 max-w-7xl mx-auto px-4" style={{marginTop: '-46px'}}>
           <div className="text-center mb-16">
-            <div className="inline-block bg-orange-500/20 text-orange-400 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+            <div className="inline-block bg-yellow-500/20 text-orange-300 px-4 py-2 rounded-full text-sm font-semibold mb-4">
               Для создателей серверов
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
@@ -330,7 +330,7 @@ export default function HomeClient() {
               </p>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-yellow-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                     </svg>
@@ -338,7 +338,7 @@ export default function HomeClient() {
                   <span className="text-gray-300">Совместимость с Paper, Spigot, Bukkit</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-yellow-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                     </svg>
@@ -346,7 +346,7 @@ export default function HomeClient() {
                   <span className="text-gray-300">Поддержка современных платформ</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-yellow-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                     </svg>
