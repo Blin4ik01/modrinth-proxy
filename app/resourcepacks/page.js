@@ -34,7 +34,7 @@ export default async function ResourcepacksPage({ searchParams }) {
   const RESOLUTION_IDS = ['8x-', '16x', '32x', '48x', '64x', '128x', '256x', '512x+'];
 
   const processParam = (param) => {
-    let decoded = decodeURIComponent(param);
+    let decoded = decodeURIComponent(param.replace(/\+/g, '%2B'));
     
     if (decoded.includes('categories:') || decoded.includes('categories!=')) {
       const isExcluded = decoded.includes('categories!=');

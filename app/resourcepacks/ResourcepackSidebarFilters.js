@@ -45,7 +45,7 @@ export default function ResourcepackSidebarFilters({ onFilterChange, isMobile = 
     const resolutionIds = RESOLUTIONS.map(r => r.id)
     
     const processParam = (param) => {
-      let decoded = decodeURIComponent(param)
+      let decoded = decodeURIComponent(param.replace(/\+/g, '%2B'))
       
       if (decoded.includes('categories:')) {
         const value = decoded.replace('categories:', '')
