@@ -36,26 +36,13 @@ export default async function sitemap() {
 
   for (const type of resourceTypes) {
     try {
-      const allProjects = []
-      const totalToFetch = 1000
-      const batchSize = 100
+      const data = await searchMods({
+        facets: [['project_type:' + type.facet]],
+        limit: 100,
+        index: 'downloads',
+      })
 
-      for (let offset = 0; offset < totalToFetch; offset += batchSize) {
-        const data = await searchMods({
-          facets: [['project_type:' + type.facet]],
-          limit: batchSize,
-          offset: offset,
-          index: 'downloads',
-        })
-
-        if (data.hits.length === 0) break
-
-        allProjects.push(...data.hits)
-
-        if (data.hits.length < batchSize) break
-      }
-
-      const projects = allProjects.map((project) => ({
+      const projects = data.hits.map((project) => ({
         url: `${baseUrl}/${type.route}/${project.slug}`,
         lastModified: new Date(project.date_modified || project.date_created),
         changeFrequency: 'weekly',
