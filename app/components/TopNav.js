@@ -11,7 +11,7 @@ export default function TopNav() {
             Клиент<span className="top-nav-separator">/</span>Сервер
           </a>
           <a href="https://rp.modrinth.black" className="top-nav-link" data-tooltip="Перепаковка защищённых ресурспаков">
-            RPПерепак
+            RP Перепак
           </a>
           <a href="https://jar.modrinth.black" className="top-nav-link" data-tooltip="Перевод плагинов онлайн (InJarTranslator)">
             Перевод Плагинов
