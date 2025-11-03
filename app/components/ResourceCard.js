@@ -43,6 +43,48 @@ export default function ResourceCard({ resource, type = 'mod' }) {
     return true
   }
 
+  const getEnvironment = (clientSide, serverSide) => {
+    if (!clientSide && !serverSide) return null
+    
+    const client = clientSide === 'required' || clientSide === 'optional'
+    const server = serverSide === 'required' || serverSide === 'optional'
+    
+    if (client && server) return { type: 'both', label: 'Клиент или сервер' }
+    if (client) return { type: 'client', label: 'Клиент' }
+    if (server) return { type: 'server', label: 'Сервер' }
+    
+    return null
+  }
+
+  const getEnvironmentIcon = (envType) => {
+    if (envType === 'both') {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10"></path>
+        </svg>
+      )
+    }
+    if (envType === 'client') {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17 9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2"></path>
+        </svg>
+      )
+    }
+    if (envType === 'server') {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22 12H2M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11M6 16h.01M10 16h.01"></path>
+        </svg>
+      )
+    }
+    return null
+  }
+
+  const environment = getEnvironment(resource.client_side, resource.server_side)
+  const showEnvironment = ['mod', 'plugin', 'modpack'].includes(type) && environment
+
   return (
     <div className="bg-modrinth-dark border border-gray-800 rounded-lg p-3 md:p-4 flex items-start gap-3 md:gap-4">
       {resource.icon_url && (
@@ -65,7 +107,15 @@ export default function ResourceCard({ resource, type = 'mod' }) {
         <p className="text-sm text-gray-400 mb-2">
           {resource.description}
         </p>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 items-center">
+          {showEnvironment && (
+            <div className="flex items-center gap-1 px-2 py-0.5 text-gray-300">
+              <div className="w-4 h-4 flex items-center justify-center">
+                {getEnvironmentIcon(environment.type)}
+              </div>
+              <span className="text-xs font-semibold">{environment.label}</span>
+            </div>
+          )}
           {resource.categories && resource.categories
             .filter(shouldShowCategory)
             .slice(0, 4)
