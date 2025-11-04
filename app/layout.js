@@ -1,5 +1,6 @@
 import './globals.css'
 import { JetBrains_Mono } from "next/font/google"
+import { Suspense } from 'react'
 import MobileNav from './components/MobileNav'
 import Navigation from './components/Navigation'
 import ExtensionBanner from './components/ExtensionBanner'
@@ -48,7 +49,9 @@ export default function RootLayout({ children }) {
         <nav className="bg-modrinth-darker shadow-lg hidden lg:block">
           <div className="container mx-auto px-4 py-3 md:py-4">
             <div className="flex items-center gap-4 md:gap-6">
-              <Logo />
+              <Suspense fallback={<div className="w-9 h-9 flex-shrink-0"></div>}>
+                <Logo />
+              </Suspense>
               <Navigation />
             </div>
           </div>
