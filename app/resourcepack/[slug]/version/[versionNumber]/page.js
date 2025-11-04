@@ -6,7 +6,7 @@ export async function generateMetadata({ params }) {
   try {
     const resourcepack = await getMod(params.slug)
     const versions = await getModVersions(params.slug)
-    const version = versions.find(v => v.version_number === decodeURIComponent(params.versionNumber))
+    const version = versions.find(v => v.version_number === decodeURIComponent(params.versionNumber) || v.id === decodeURIComponent(params.versionNumber))
     
     if (!version) throw new Error('Version not found')
     
@@ -52,7 +52,7 @@ export default async function ResourcepackVersionPage({ params }) {
       getModVersions(params.slug)
     ])
     
-    version = versions.find(v => v.version_number === decodeURIComponent(params.versionNumber))
+    version = versions.find(v => v.version_number === decodeURIComponent(params.versionNumber) || v.id === decodeURIComponent(params.versionNumber))
     
     if (!version) {
       notFound()

@@ -35,16 +35,14 @@ export default function AuthorProjectTabs({ userId, currentType, typeStats, tota
     }
   ]
 
-  Object.entries(typeStats).forEach(([type, count]) => {
-    if (count > 0) {
+    Object.entries(typeStats).forEach(([type, count]) => {
       tabs.push({
         key: type,
         label: getProjectTypeDisplayName(type),
         count,
         isActive: currentType === type
       })
-    }
-  })
+    })
 
   useEffect(() => {
     const updateActiveTabStyle = () => {
@@ -87,7 +85,7 @@ export default function AuthorProjectTabs({ userId, currentType, typeStats, tota
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  if (!mounted || tabs.length <= 1) {
+  if (!mounted) {
     return null
   }
 

@@ -183,7 +183,7 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                 <div key={version.id}>
                   <div className="group relative">
                     <Link 
-                      href={`/${contentType}/${slug}/version/${encodeURIComponent(version.version_number)}`}
+                      href={`/${contentType}/${slug}/version/${version.id}`}
                       className="absolute before:absolute before:inset-0 before:transition-all before:content-[''] hover:before:backdrop-brightness-110"
                       style={{ inset: 'calc(-1rem - 2px) -2rem' }}
                     />

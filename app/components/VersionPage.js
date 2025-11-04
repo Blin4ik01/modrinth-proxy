@@ -102,25 +102,27 @@ class VersionMetadata {
           <MetadataItem label="Дата публикации" value={<RelativeTime dateString={this.version.date_published} />} />
           <MetadataItem
             label="Загрузил"
-            value={
-              <div className="flex items-center gap-2">
-                {this.author && (
-                  <>
-                    {this.author.avatar_url && (
-                      <img 
-                        src={this.author.avatar_url} 
-                        alt={this.author.username}
-                        className="w-6 h-6 rounded-full"
-                      />
-                    )}
-                    <span className="font-semibold">{this.author.username}</span>
-                  </>
-                )}
-                {!this.author && (
-                  <span className="text-gray-400">{this.version.author_id}</span>
-                )}
-              </div>
-            }
+                          value={
+                <div className="flex items-center gap-2">
+                  {this.author && (
+                    <>
+                      {this.author.avatar_url && (
+                        <img 
+                          src={this.author.avatar_url} 
+                          alt={this.author.username}
+                          className="w-6 h-6 rounded-full"
+                        />
+                      )}
+                      <Link href={`/user/${this.author.id}`} className="font-semibold hover:text-modrinth-green transition-colors">
+                        {this.author.username}
+                      </Link>
+                    </>
+                  )}
+                  {!this.author && (
+                    <span className="text-gray-400">{this.version.author_id}</span>
+                  )}
+                </div>
+              }
           />
           <MetadataItem label="ID версии" value={
             <CopyButton text={this.version.id} />
