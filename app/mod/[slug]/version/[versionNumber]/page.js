@@ -6,28 +6,29 @@ export async function generateMetadata({ params }) {
   try {
     const mod = await getMod(params.slug)
     const versions = await getModVersions(params.slug)
-    const version = versions.find(v => v.version_number === decodeURIComponent(params.versionNumber))
+    const version = versions.find(v => v.version_number === decodeURIComponent(params.versionNumber) || v.id === decodeURIComponent(params.versionNumber))
     
     if (!version) throw new Error('Version not found')
     
-    const url = `https://modrinth.white-minecraft.ru/mod/${params.slug}/version/${params.versionNumber}`
-    const description = version.changelog ? version.changelog.slice(0, 150) : `Скачать версию ${version.version_number} мода ${mod.title}`
+    const url = `https://modrinth.black/mod/${params.slug}/version/${params.versionNumber}`
+    const versionTitle = version.name || version.version_number
+    const description = version.changelog ? version.changelog.slice(0, 150) : `Скачать версию ${versionTitle} мода ${mod.title}`
     
     return {
-      title: `${version.version_number} - ${mod.title}`,
+      title: `${versionTitle} - ${mod.title}`,
       description: description,
       robots: 'all',
       openGraph: {
-        siteName: 'modrinth.white-minecraft',
+        siteName: 'modrinth.black',
         type: 'website',
         url: url,
-        title: `${version.version_number} - ${mod.title}`,
+        title: `${versionTitle} - ${mod.title}`,
         description: version.changelog ? version.changelog.slice(0, 150) : mod.description,
         images: mod.icon_url ? [{ url: mod.icon_url }] : [],
       },
       twitter: {
         card: 'summary',
-        title: `${version.version_number} - ${mod.title}`,
+        title: `${versionTitle} - ${mod.title}`,
         description: version.changelog ? version.changelog.slice(0, 150) : mod.description,
         images: mod.icon_url ? [mod.icon_url] : [],
       },
@@ -52,7 +53,7 @@ export default async function ModVersionPage({ params }) {
       getModVersions(params.slug)
     ])
     
-    version = versions.find(v => v.version_number === decodeURIComponent(params.versionNumber))
+    version = versions.find(v => v.version_number === decodeURIComponent(params.versionNumber) || v.id === decodeURIComponent(params.versionNumber))
     
     if (!version) {
       notFound()

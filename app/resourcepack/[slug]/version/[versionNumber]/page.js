@@ -10,7 +10,7 @@ export async function generateMetadata({ params }) {
     
     if (!version) throw new Error('Version not found')
     
-    const url = `https://modrinth.white-minecraft.ru/resourcepack/${params.slug}/version/${params.versionNumber}`
+    const url = `https://modrinth.black/resourcepack/${params.slug}/version/${params.versionNumber}`
     const description = version.changelog ? version.changelog.slice(0, 150) : `Скачать версию ${version.version_number} ресурспака ${resourcepack.title}`
     
     return {
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
       description: description,
       robots: 'all',
       openGraph: {
-        siteName: 'modrinth.white-minecraft',
+        siteName: 'modrinth.black',
         type: 'website',
         url: url,
         title: `${version.version_number} - ${resourcepack.title}`,
