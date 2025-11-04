@@ -5,6 +5,7 @@ import ShaderSidebarFilters from './ShaderSidebarFilters'
 import MobileMenu from './MobileMenu'
 import SortDropdown from '@/app/components/SortDropdown'
 import ResourceCard from '@/app/components/ResourceCard'
+import ReloadButton from '@/app/components/ReloadButton'
 
 export const metadata = {
   title: 'Шейдеры для Minecraft - Скачать бесплатно | ModrinthProxy',
@@ -94,7 +95,10 @@ export default async function ShadersPage({ searchParams }) {
     facets.push(['open_source:true']);
   }
 
-  let data, blockedCount = 0, blockedByProject = 0, blockedByOrganization = 0;
+  let data = null;
+  let blockedCount = 0, blockedByProject = 0, blockedByOrganization = 0;
+  let error = null;
+  
   try {
     data = await searchMods({ query, facets, limit, offset, index: sortBy });
     const filtered = filterModsList(data.hits);
@@ -102,16 +106,12 @@ export default async function ShadersPage({ searchParams }) {
     blockedCount = filtered.blockedCount;
     blockedByProject = filtered.blockedByProject;
     blockedByOrganization = filtered.blockedByOrganization;
-  } catch (error) {
-    return (
-      <div className="text-center py-16">
-        <h1 className="text-3xl font-bold text-red-500 mb-4">Ошибка</h1>
-        <p className="text-gray-400">{error.message}</p>
-      </div>
-    );
+  } catch (err) {
+    console.error('Failed to load shaders:', err);
+    error = err;
   }
 
-  const totalPages = Math.ceil(data.total_hits / limit);
+  const totalPages = data ? Math.ceil(data.total_hits / limit) : 0;
 
   const buildPageUrl = (newPage) => {
     const params = new URLSearchParams();
@@ -143,15 +143,21 @@ export default async function ShadersPage({ searchParams }) {
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold mb-2">Minecraft шейдеры</h1>
                 <p className="text-gray-400 text-sm md:text-base">
-                  {data.total_hits.toLocaleString('ru-RU')} шейдеров найдено
-                  {blockedCount > 0 && (
-                    <span className="text-red-400 ml-2">
-                      (из них {blockedCount} заблокировано по требованиям РКН
-                      {blockedByProject > 0 && blockedByOrganization > 0 && (
-                        <>: {blockedByProject} по проекту, {blockedByOrganization} по организации</>
+                  {data ? (
+                    <>
+                      {data.total_hits.toLocaleString('ru-RU')} шейдеров найдено
+                      {blockedCount > 0 && (
+                        <span className="text-red-400 ml-2">
+                          (из них {blockedCount} заблокировано по требованиям РКН
+                          {blockedByProject > 0 && blockedByOrganization > 0 && (
+                            <>: {blockedByProject} по проекту, {blockedByOrganization} по организации</>
+                          )}
+                          )
+                        </span>
                       )}
-                      )
-                    </span>
+                    </>
+                  ) : (
+                    'Загрузка...'
                   )}
                 </p>
               </div>
@@ -182,7 +188,18 @@ export default async function ShadersPage({ searchParams }) {
             </div>
           </div>
 
-      {data.hits.length === 0 ? (
+      {error ? (
+        <div className="text-center py-16">
+          <div className="max-w-md mx-auto">
+            <svg className="w-16 h-16 mx-auto text-orange-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h2 className="text-xl font-bold text-white mb-2">Не удалось загрузить шейдеры</h2>
+            <p className="text-gray-400 mb-6">Попробуйте обновить страницу через несколько секунд</p>
+            <ReloadButton />
+          </div>
+        </div>
+      ) : data && data.hits.length === 0 ? (
         <div className="text-center py-16">
           {blockedCount > 0 ? (
             <div className="max-w-2xl mx-auto">
