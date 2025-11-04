@@ -483,6 +483,9 @@ body {
 
 .prose {
   color: var(--text-secondary);
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
 }
 
 .prose h1 {
@@ -546,6 +549,9 @@ body {
   color: var(--color-green) !important;
   text-decoration: underline !important;
   text-underline-offset: 2px !important;
+  word-break: break-all !important;
+  overflow-wrap: anywhere !important;
+  hyphens: auto !important;
 }
 
 .prose a:hover {

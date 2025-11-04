@@ -208,7 +208,7 @@ export default async function NewsPage() {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <div className="prose prose-invert prose-sm max-w-none mb-3">
+                      <div className="prose prose-invert prose-sm max-w-none mb-3 break-words">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           rehypePlugins={[rehypeRaw]}
