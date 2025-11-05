@@ -124,7 +124,7 @@ export default function ResourceHeader({ resource, contentType, versions = [] })
               <DownloadModal mod={resource} versions={versions} contentType={contentTypeRoute} />
             </div>
             
-            <div className="lg:hidden flex items-center gap-3 justify-between">
+            <div className="block lg:hidden flex items-center gap-3 justify-between w-full">
               <div className="flex flex-col gap-2 text-xs">
                 {resource.downloads != null && (
                   <div className="flex items-center gap-1.5 text-gray-400">

@@ -836,6 +836,18 @@ button.text-white {
   white-space: nowrap;
 }
 
+@media (min-width: 1024px) {
+  .modrinth-download-button {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .modrinth-download-button {
+    display: none !important;
+  }
+}
+
 .modrinth-download-button:hover {
   scale: 1.02;
 }
