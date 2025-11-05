@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { MC_VERSIONS_RELEASE, MC_VERSIONS_FULL } from '@/lib/mcVersions'
+import { useMinecraftVersions } from '@/app/hooks/useMinecraftVersions'
 import { PLUGIN_LOADERS, PLUGIN_PLATFORMS } from '@/lib/loaders'
 import { CATEGORIES } from '@/lib/categories'
 
@@ -10,9 +10,12 @@ const PLUGIN_CATEGORIES = CATEGORIES.filter(cat =>
   ['adventure', 'cursed', 'decoration', 'economy', 'equipment', 'food', 'game-mechanics', 'library', 'magic', 'management', 'minigame', 'mobs', 'optimization', 'social', 'storage', 'technology', 'transportation', 'utility', 'worldgen'].includes(cat.id)
 )
 
-export default function PluginSidebarFilters({ isMobile = false, onFilterChange }) {
+export default function PluginSidebarFilters({ isMobile = false, onFilterChange, initialVersions = null }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const hookVersions = useMinecraftVersions()
+  const MC_VERSIONS_RELEASE = initialVersions?.release || hookVersions.release
+  const MC_VERSIONS_FULL = initialVersions?.full || hookVersions.full
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   const [selectedVersion, setSelectedVersion] = useState(searchParams.get('v') || '')

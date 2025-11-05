@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { searchMods } from '@/lib/modrinth'
+import { searchMods, getMinecraftVersions } from '@/lib/modrinth'
 import { filterModsList } from '@/lib/contentFilter'
 import ShaderSidebarFilters from './ShaderSidebarFilters'
 import MobileMenu from './MobileMenu'
@@ -19,6 +19,19 @@ export default async function ShadersPage({ searchParams }) {
   const page = parseInt(searchParams.page || '1');
   const limit = 20;
   const offset = (page - 1) * limit;
+  
+  let mcVersions = { release: [], full: [] };
+  try {
+    const apiVersions = await getMinecraftVersions();
+    const releaseVersions = apiVersions.filter(v => v.version_type === 'release').map(v => v.version);
+    const allVersions = apiVersions.map(v => v.version);
+    mcVersions = {
+      release: releaseVersions,
+      full: allVersions
+    };
+  } catch (error) {
+    console.error('Failed to load Minecraft versions:', error);
+  }
 
   const fParams = Array.isArray(searchParams.f) ? searchParams.f : (searchParams.f ? [searchParams.f] : []);
   const gParams = Array.isArray(searchParams.g) ? searchParams.g : (searchParams.g ? [searchParams.g] : []);
@@ -136,7 +149,7 @@ export default async function ShadersPage({ searchParams }) {
     <>
       <MobileMenu />
       <div className="flex gap-6">
-        <ShaderSidebarFilters />
+        <ShaderSidebarFilters initialVersions={mcVersions} />
         <div className="flex-1 min-w-0">
           <div className="flex flex-col gap-4 mb-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

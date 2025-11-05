@@ -7,6 +7,7 @@ import ExtensionBanner from './components/ExtensionBanner'
 import TopNav from "./components/TopNav"
 import Footer from './components/Footer'
 import Logo from './components/Logo'
+import VersionsPreloader from './components/VersionsPreloader'
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin', 'cyrillic'],
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className={`${jetbrainsMono.className} overflow-x-hidden min-h-screen m-0`}>
+        <VersionsPreloader />
         <TopNav />
         <nav className="bg-modrinth-darker shadow-lg hidden lg:block">
           <div className="container mx-auto px-4 py-3 md:py-4">

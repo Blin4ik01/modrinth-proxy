@@ -2,12 +2,15 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
-import { MC_VERSIONS_RELEASE, MC_VERSIONS_FULL } from '@/lib/mcVersions'
+import { useMinecraftVersions } from '@/app/hooks/useMinecraftVersions'
 import { CATEGORIES } from '@/lib/categories'
 
-export default function DatapackSidebarFilters({ onFilterChange, isMobile = false }) {
+export default function DatapackSidebarFilters({ onFilterChange, isMobile = false, initialVersions = null }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const hookVersions = useMinecraftVersions()
+  const MC_VERSIONS_RELEASE = initialVersions?.release || hookVersions.release
+  const MC_VERSIONS_FULL = initialVersions?.full || hookVersions.full
   
   const parseFacets = () => {
     const fParams = searchParams.getAll('f')

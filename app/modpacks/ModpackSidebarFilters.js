@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { MC_VERSIONS_RELEASE, MC_VERSIONS_FULL } from '@/lib/mcVersions'
+import { useMinecraftVersions } from '@/app/hooks/useMinecraftVersions'
 import { MODPACK_LOADERS } from '@/lib/loaders'
 import { CATEGORIES } from '@/lib/categories'
 
@@ -10,9 +10,12 @@ const MODPACK_CATEGORIES = CATEGORIES.filter(cat =>
   ['adventure', 'challenging', 'combat', 'kitchen-sink', 'lightweight', 'magic', 'multiplayer', 'optimization', 'quests', 'technology'].includes(cat.id)
 )
 
-export default function ModpackSidebarFilters({ isMobile = false, onFilterChange }) {
+export default function ModpackSidebarFilters({ isMobile = false, onFilterChange, initialVersions = null }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const hookVersions = useMinecraftVersions()
+  const MC_VERSIONS_RELEASE = initialVersions?.release || hookVersions.release
+  const MC_VERSIONS_FULL = initialVersions?.full || hookVersions.full
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   const [selectedVersion, setSelectedVersion] = useState(searchParams.get('v') || '')

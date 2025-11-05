@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { formatDownloads, formatDate, formatFileSize } from '@/lib/modrinth'
+import { formatDownloads, formatDate, formatFileSize, groupVersionsByMajor } from '@/lib/modrinth'
 import { filterVersionChangelog, filterAvatar } from '@/lib/contentFilter'
 import { CATEGORIES } from '@/lib/categories'
 import { RESOURCEPACK_CATEGORIES } from '@/lib/resourcepackCategories'
@@ -89,13 +89,9 @@ class VersionMetadata {
           <MetadataItem
             label="Версии игры"
             value={
-              <div className="flex flex-wrap gap-1.5">
-                {this.version.game_versions.map(v => (
-                  <span key={v} className="text-sm">
-                    {v}
-                  </span>
-                ))}
-              </div>
+              <span className="text-sm">
+                {formatVersionsCompact(this.version.game_versions)}
+              </span>
             }
           />
           <MetadataItem label="Загрузок" value={formatDownloads(this.version.downloads)} />
@@ -149,6 +145,52 @@ function MetadataItem({ label, value }) {
       <div className="text-white text-sm">{value}</div>
     </div>
   )
+}
+
+function formatVersionsCompact(versions) {
+  if (!versions || versions.length === 0) return ''
+  
+  const releaseVersions = versions.filter(v => {
+    return /^\d+\.\d+(\.\d+)?$/.test(v) && !v.includes('-')
+  }).sort((a, b) => {
+    const aParts = a.split('.').map(n => parseInt(n) || 0)
+    const bParts = b.split('.').map(n => parseInt(n) || 0)
+    for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+      const diff = (aParts[i] || 0) - (bParts[i] || 0)
+      if (diff !== 0) return diff
+    }
+    return 0
+  })
+  
+  const snapshotVersions = versions.filter(v => /^\d+w\d+[a-z]/.test(v)).sort((a, b) => {
+    const aMatch = a.match(/^(\d+)w(\d+)/)
+    const bMatch = b.match(/^(\d+)w(\d+)/)
+    if (aMatch && bMatch) {
+      const aYear = parseInt(aMatch[1])
+      const bYear = parseInt(bMatch[1])
+      if (aYear !== bYear) return bYear - aYear
+      return parseInt(bMatch[2]) - parseInt(aMatch[2])
+    }
+    return b.localeCompare(a)
+  })
+  
+  const parts = []
+  
+  if (releaseVersions.length > 0) {
+    const minVersion = releaseVersions[0]
+    const maxVersion = releaseVersions[releaseVersions.length - 1]
+    if (minVersion === maxVersion) {
+      parts.push(minVersion)
+    } else {
+      parts.push(`${minVersion}–${maxVersion}`)
+    }
+  }
+  
+  if (snapshotVersions.length > 0) {
+    parts.push(snapshotVersions[0])
+  }
+  
+  return parts.join(', ')
 }
 
 class FilesList {

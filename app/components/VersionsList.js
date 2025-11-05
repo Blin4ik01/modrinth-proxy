@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { compressVersionRanges } from '@/lib/modrinth'
+import { compressVersionRanges, groupVersionsByMajor } from '@/lib/modrinth'
 import { LOADERS } from '@/lib/loaders'
 import VersionsDropdown from './VersionsDropdown'
 import LoadersDropdown from './LoadersDropdown'
@@ -251,13 +251,13 @@ export default function VersionsList({ versions, contentType, slug, initialLoade
                       </div>
 
                       <div className="relative z-10 hidden xl:flex flex-wrap gap-1 items-start content-start">
-                        {compressVersionRanges(version.game_versions).map((range, i) => (
+                        {groupVersionsByMajor(version.game_versions).map((versionGroup, i) => (
                           <span 
                             key={i}
                             className="px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap"
                             style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}
                           >
-                            {range}
+                            {versionGroup}
                           </span>
                         ))}
                       </div>

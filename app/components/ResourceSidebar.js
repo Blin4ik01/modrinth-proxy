@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { LOADERS } from '@/lib/loaders'
+import { groupVersionsByMajor } from '@/lib/modrinth'
 
 export default function ResourceSidebar({ resource, teamMembers = [] }) {
   const gameVersions = resource.game_versions || []
   const loaders = (resource.loaders || []).filter(l => l !== 'minecraft')
   
-  const versionRanges = groupVersions(gameVersions)
+  const versionRanges = groupVersionsByMajor(gameVersions)
   
   const environment = getEnvironment(resource.client_side, resource.server_side)
 
@@ -26,9 +27,9 @@ export default function ResourceSidebar({ resource, teamMembers = [] }) {
             {gameVersions.length > 0 && (
               <div>
                 <h4 className="text-xs font-semibold text-gray-400 mb-2">Minecraft: Java Edition</h4>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1">
                   {versionRanges.map((version, idx) => (
-                    <span key={idx} className="text-xs px-2 py-1 bg-gray-800 text-gray-300 rounded-md hover:bg-gray-700 transition-colors">
+                    <span key={idx} className="text-xs px-2 py-1 font-semibold bg-gray-800 text-gray-300 rounded-full hover:bg-gray-700 transition-colors">
                       {version}
                     </span>
                   ))}
@@ -255,54 +256,6 @@ function translateDonationPlatform(platform) {
   return platforms[platform] || 'Донат'
 }
 
-function groupVersions(versions) {
-  if (!versions || versions.length === 0) return []
-  
-  const sorted = versions
-    .filter(v => v.match(/^\d+\.\d+/))
-    .sort((a, b) => {
-      const aParts = a.split('.').map(n => parseInt(n) || 0)
-      const bParts = b.split('.').map(n => parseInt(n) || 0)
-      for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
-        if ((bParts[i] || 0) !== (aParts[i] || 0)) {
-          return (bParts[i] || 0) - (aParts[i] || 0)
-        }
-      }
-      return 0
-    })
-
-  const ranges = []
-  let i = 0
-  
-  while (i < sorted.length) {
-    const current = sorted[i]
-    const major = current.split('.')[0]
-    const minor = current.split('.')[1]
-    
-    let rangeEnd = i
-    while (rangeEnd + 1 < sorted.length) {
-      const next = sorted[rangeEnd + 1]
-      const nextMajor = next.split('.')[0]
-      const nextMinor = next.split('.')[1]
-      
-      if (nextMajor === major && Math.abs(parseInt(minor) - parseInt(nextMinor)) <= 1) {
-        rangeEnd++
-      } else {
-        break
-      }
-    }
-    
-    if (rangeEnd > i) {
-      ranges.push(`${sorted[rangeEnd]}–${current}`)
-      i = rangeEnd + 1
-    } else {
-      ranges.push(current)
-      i++
-    }
-  }
-  
-  return ranges.slice(0, 15)
-}
 
 function getContentType(projectType) {
   const typeMap = {

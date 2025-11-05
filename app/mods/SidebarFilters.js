@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
-import { MC_VERSIONS_RELEASE, MC_VERSIONS_FULL } from '@/lib/mcVersions'
+import { useMinecraftVersions } from '@/app/hooks/useMinecraftVersions'
 import { MOD_LOADERS, MAIN_LOADERS_COUNT } from '@/lib/loaders'
 import { CATEGORIES } from '@/lib/categories'
 
@@ -11,9 +11,12 @@ const ENVIRONMENTS = [
   { id: 'server', name: 'Сервер' },
 ]
 
-export default function SidebarFilters({ onFilterChange, isMobile = false }) {
+export default function SidebarFilters({ onFilterChange, isMobile = false, initialVersions = null }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const hookVersions = useMinecraftVersions()
+  const MC_VERSIONS_RELEASE = initialVersions?.release || hookVersions.release
+  const MC_VERSIONS_FULL = initialVersions?.full || hookVersions.full
   
   const parseFacets = () => {
     const gParams = searchParams.getAll('g')
