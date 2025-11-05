@@ -808,3 +808,97 @@ button.text-white {
 .mobile-nav-spacing {
   padding-bottom: 15px;
 }
+
+.modrinth-download-button {
+  align-items: center;
+  background-color: var(--color-green);
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  box-shadow: inset 0 0 0 transparent;
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Roboto, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-weight: 900;
+  font-variation-settings: 'wght' 900;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.01em;
+  font-stretch: 100%;
+  gap: 0.5rem;
+  height: 3rem;
+  justify-content: center;
+  min-width: auto;
+  padding: 0.75rem calc(1rem - 0.125rem);
+  transition: scale 0.125s ease-in-out, background-color 0.25s ease-in-out, color 0.25s ease-in-out, filter 0.25s ease-in-out;
+  white-space: nowrap;
+}
+
+.modrinth-download-button:hover {
+  scale: 1.02;
+}
+
+.modrinth-download-button:active {
+  scale: 0.95;
+}
+
+.modrinth-download-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke-width: 2.5;
+}
+
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="url"],
+textarea,
+select {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 2px solid var(--border-color) !important;
+}
+
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="url"]:focus,
+textarea:focus,
+select:focus {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--color-green) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(27, 217, 106, 0.1) !important;
+}
+
+input[type="text"]::placeholder,
+input[type="search"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="number"]::placeholder,
+input[type="url"]::placeholder,
+textarea::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 1 !important;
+}
+
+input[type="text"]:-webkit-autofill,
+input[type="search"]:-webkit-autofill,
+input[type="email"]:-webkit-autofill,
+input[type="password"]:-webkit-autofill,
+input[type="number"]:-webkit-autofill,
+input[type="url"]:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-tertiary) inset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+}
+
+.border {
+  border-width: 2px !important;
+  border-color: transparent;
+}

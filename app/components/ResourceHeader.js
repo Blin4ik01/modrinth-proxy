@@ -120,7 +120,7 @@ export default function ResourceHeader({ resource, contentType, versions = [] })
           </div>
 
           <div className="w-full lg:w-auto lg:flex lg:items-center">
-            <div className="hidden lg:block w-full lg:w-auto">
+            <div className="w-full lg:w-auto">
               <DownloadModal mod={resource} versions={versions} contentType={contentTypeRoute} />
             </div>
             

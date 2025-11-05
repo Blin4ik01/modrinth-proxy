@@ -2,8 +2,7 @@
 
 export default function MobileDownloadButton() {
   const handleClick = () => {
-    const modal = document.querySelector('[data-download-modal]')
-    if (modal) modal.click()
+    window.dispatchEvent(new Event('open-download-modal'))
   }
 
   return (

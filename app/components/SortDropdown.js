@@ -61,7 +61,7 @@ export default function SortDropdown({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-600 rounded-lg transition-all group"
+        className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-all group"
       >
         <svg className="w-4 h-4 text-gray-400 group-hover:text-modrinth-green transition-colors" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
           <path fill="currentColor" d="m2.3037109 20.5410156c-.3964844.3847656-.40625 1.0175781-.0214844 1.4140625l3.8457031 3.9638672c.0002441.0002441.0006104.0003662.0008545.0006104.1817627.1881104.4343262.3070068.7169189.3070068s.5351562-.1188965.7169189-.3070068c.0002441-.0002441.0006104-.0003662.0008545-.0006104l3.8466797-3.9638672c.3847656-.3964844.375-1.0292969-.0214844-1.4140625s-1.0292969-.375-1.4140625.0214844l-2.1289062 2.1940308v-15.9830933c0-.5527344-.4472656-1-1-1s-1 .4472656-1 1v15.9827881l-2.1279296-2.1937256c-.3847656-.3964844-1.0175781-.40625-1.4140625-.0214844z"/>
