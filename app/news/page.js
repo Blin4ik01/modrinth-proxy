@@ -79,51 +79,65 @@ function getCommitType(message) {
   const msg = message.toLowerCase()
   const firstWord = msg.split(/[\s:]/)[0]
   
+  if (msg.includes('улучшение') || msg.includes('улучшен') || msg.includes('улучшена') || msg.includes('улучшено')) {
+    return {
+      icon: '🚀',
+      color: 'from-blue-500 to-cyan-500',
+      bg: 'from-blue-500/20 to-cyan-500/20',
+      label: 'Обновление'
+    }
+  }
+  
   const types = [
     { 
-      keywords: ['fix', 'исправл', 'баг'], 
+      keywords: ['fix', 'исправл', 'баг', 'исправлен', 'исправлена', 'исправлено'], 
       icon: '🔧', 
       color: 'from-orange-500 to-red-500',
       bg: 'from-orange-500/20 to-red-500/20',
-      label: 'Исправление' 
+      label: 'Исправление',
+      priority: 1
     },
     { 
-      keywords: ['remove', 'delete', 'удал'], 
+      keywords: ['remove', 'delete', 'удал', 'удаление', 'удалён', 'удалена', 'удалено'], 
       icon: '🗑️', 
       color: 'from-red-500 to-rose-500',
       bg: 'from-red-500/20 to-rose-500/20',
-      label: 'Удаление' 
+      label: 'Удаление',
+      priority: 2
     },
     { 
-      keywords: ['add', 'new', 'добавл', 'создан'], 
+      keywords: ['add', 'new', 'добавл', 'создан', 'добавлено', 'добавлена', 'добавлен'], 
       icon: '✨', 
       color: 'from-green-500 to-emerald-500',
       bg: 'from-green-500/20 to-emerald-500/20',
-      label: 'Новое' 
+      label: 'Новое',
+      priority: 3
     },
     { 
-      keywords: ['update', 'обновл', 'улучш'], 
-      icon: '🚀', 
-      color: 'from-blue-500 to-cyan-500',
-      bg: 'from-blue-500/20 to-cyan-500/20',
-      label: 'Обновление' 
-    },
-    { 
-      keywords: ['design', 'redesign', 'ui', 'style'], 
+      keywords: ['design', 'redesign', 'ui', 'style', 'шрифт', 'дизайн', 'стиль'], 
       icon: '🎨', 
       color: 'from-purple-500 to-pink-500',
       bg: 'from-purple-500/20 to-pink-500/20',
-      label: 'Дизайн' 
+      label: 'Дизайн',
+      priority: 4
+    },
+    { 
+      keywords: ['update', 'обновл', 'улучш', 'api', 'теперь', 'изменил', 'изменён', 'изменена', 'изменено', 'получаем', 'роутинг', 'обработка', 'показать', 'попытка'], 
+      icon: '🚀', 
+      color: 'from-blue-500 to-cyan-500',
+      bg: 'from-blue-500/20 to-cyan-500/20',
+      label: 'Обновление',
+      priority: 5
     },
   ]
   
-  for (const type of types) {
+  for (const type of types.sort((a, b) => (a.priority || 999) - (b.priority || 999))) {
     if (type.keywords.some(keyword => firstWord.startsWith(keyword))) {
       return type
     }
   }
   
-  for (const type of types) {
+  for (const type of types.sort((a, b) => (a.priority || 999) - (b.priority || 999))) {
     if (type.keywords.some(keyword => msg.includes(keyword))) {
       return type
     }
