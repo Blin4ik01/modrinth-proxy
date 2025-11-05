@@ -87,10 +87,14 @@ export default function MobileNav({ onFilterClick }) {
   return (
     <>
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 pb-safe">
-        <div className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-900/90 backdrop-blur-lg border-t border-gray-800">
+        <div className="flex items-center justify-center gap-2 px-4 py-3 bg-[#16181c] backdrop-blur-xl shadow-[0_-4px_20px_rgba(27,217,106,0.15)] rounded-t-[24px]">
           <Link
             href="/"
-            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs font-medium transition-all duration-200"
+            className={`flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-300 ${
+              pathname === '/' 
+                ? 'bg-gradient-to-r from-[#1bd96a] to-[#22e477] text-black shadow-lg shadow-[#1bd96a]/30 scale-105' 
+                : 'bg-[#27292e] hover:bg-[#34363c] text-[#d1d5db] hover:text-[#1bd96a]'
+            }`}
           >
             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -101,7 +105,11 @@ export default function MobileNav({ onFilterClick }) {
           
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs font-medium transition-all duration-200"
+            className={`flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-300 ${
+              isOpen 
+                ? 'bg-gradient-to-r from-[#1bd96a] to-[#22e477] text-black shadow-lg shadow-[#1bd96a]/30 scale-105' 
+                : 'bg-[#27292e] hover:bg-[#34363c] text-[#d1d5db] hover:text-[#1bd96a]'
+            }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -112,7 +120,7 @@ export default function MobileNav({ onFilterClick }) {
           {showFilterButton && (
             <button
               onClick={handleFilterClick}
-              className="flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs font-medium transition-all duration-200"
+              className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#27292e] hover:bg-[#34363c] text-[#d1d5db] hover:text-[#1bd96a] rounded-xl text-xs font-semibold transition-all duration-300"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -128,20 +136,24 @@ export default function MobileNav({ onFilterClick }) {
           className="lg:hidden fixed inset-0 z-40 animate-fade-in"
           onClick={() => setIsOpen(false)}
         >
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
           
           <div 
-            className="absolute bottom-0 left-0 right-0 bg-gray-950 border-t border-gray-700 rounded-t-3xl shadow-2xl pb-safe animate-slide-up"
+            className="absolute bottom-0 left-0 right-0 bg-[#16181c] rounded-t-[32px] shadow-[0_-8px_40px_rgba(27,217,106,0.25)] pb-safe animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-center pt-3 pb-2">
-              <div className="w-12 h-1 bg-gray-700 rounded-full"></div>
+            <div className="flex justify-center pt-4 pb-3">
+              <div className="w-16 h-1.5 bg-gradient-to-r from-transparent via-[#1bd96a] to-transparent rounded-full"></div>
             </div>
             
-            <div className="p-3 pb-16">
-              <h3 className="text-sm font-bold text-white mb-3 text-center">Навигация</h3>
+            <div className="px-4 pb-20">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#1bd96a]/30 to-transparent"></div>
+                <h3 className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1bd96a] to-[#22e477] px-3">Навигация</h3>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#1bd96a]/30 to-transparent"></div>
+              </div>
               
-              <div className="grid grid-cols-2 gap-2 mobile-nav-grid">
+              <div className="grid grid-cols-2 gap-3 mobile-nav-grid">
                 {navItems.map((item) => {
                   const active = isActive(item.href)
                   return (
@@ -149,20 +161,23 @@ export default function MobileNav({ onFilterClick }) {
                       key={item.href}
                       href={item.href}
                       onClick={() => setIsOpen(false)}
-                      className={`flex flex-col items-center justify-center gap-2 p-3 rounded-lg transition-all duration-200 ${
+                      className={`group relative flex flex-col items-center justify-center gap-2.5 p-4 rounded-2xl transition-all duration-300 transform ${
                         active
-                          ? 'bg-gradient-to-br ' + item.color + ' shadow-md'
-                          : 'bg-gray-800/50 hover:bg-gray-800'
+                          ? 'bg-gradient-to-br ' + item.color + ' shadow-lg shadow-[#1bd96a]/30 scale-105'
+                          : 'bg-[#27292e] hover:bg-[#34363c] hover:scale-105'
                       }`}
                     >
-                      <div className={active ? 'text-white' : 'text-gray-400'}>
+                      <div className={`transition-all duration-300 ${active ? 'text-white scale-110' : 'text-[#9ca3af] group-hover:text-[#1bd96a] group-hover:scale-110'}`}>
                         {item.icon}
                       </div>
-                      <span className={`text-sm font-medium text-center ${
-                        active ? 'text-white' : 'text-gray-300'
+                      <span className={`text-sm font-semibold text-center transition-colors duration-300 ${
+                        active ? 'text-white' : 'text-[#d1d5db] group-hover:text-[#1bd96a]'
                       }`}>
                         {item.label}
                       </span>
+                      {active && (
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#1bd96a] rounded-full shadow-lg shadow-[#1bd96a]/50 animate-pulse"></div>
+                      )}
                     </Link>
                   )
                 })}
