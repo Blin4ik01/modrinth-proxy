@@ -1,5 +1,5 @@
 import './globals.css'
-import { JetBrains_Mono } from "next/font/google"
+import { Nunito } from "next/font/google"
 import { Suspense } from 'react'
 import MobileNav from './components/MobileNav'
 import Navigation from './components/Navigation'
@@ -9,10 +9,10 @@ import Footer from './components/Footer'
 import Logo from './components/Logo'
 import VersionsPreloader from './components/VersionsPreloader'
 
-const jetbrainsMono = JetBrains_Mono({
+const nunito = Nunito({
   subsets: ['latin', 'cyrillic'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-jetbrains-mono',
+  variable: '--font-nunito',
   display: 'swap'
 })
 
@@ -39,13 +39,13 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ru" className={`scroll-smooth ${jetbrainsMono.variable}`}>
+    <html lang="ru" className={`scroll-smooth ${nunito.variable}`}>
       <head>
         <link rel="apple-touch-icon" href="/icon.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={`${jetbrainsMono.className} overflow-x-hidden min-h-screen m-0`}>
+      <body className={`${nunito.className} overflow-x-hidden min-h-screen m-0`}>
         <VersionsPreloader />
         <TopNav />
         <nav className="bg-modrinth-darker shadow-lg hidden lg:block">
