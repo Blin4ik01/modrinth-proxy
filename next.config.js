@@ -22,6 +22,10 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    staticPageGenerationTimeout: 300,
+  },
+  staticPageGenerationTimeout: 300,
 }
 
 module.exports = withPWA(nextConfig)

@@ -34,26 +34,33 @@ export default async function sitemap() {
 
   const dynamicPages = []
 
-  for (const type of resourceTypes) {
+  const fetchPromises = resourceTypes.map(async (type) => {
     try {
-      const data = await searchMods({
-        facets: [['project_type:' + type.facet]],
-        limit: 100,
-        index: 'downloads',
-      })
+      const data = await Promise.race([
+        searchMods({
+          facets: [['project_type:' + type.facet]],
+          limit: 50,
+          index: 'downloads',
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout')), 8000)
+        )
+      ])
 
-      const projects = data.hits.map((project) => ({
+      return data.hits.map((project) => ({
         url: `${baseUrl}/${type.route}/${project.slug}`,
         lastModified: new Date(project.date_modified || project.date_created),
         changeFrequency: 'weekly',
         priority: 0.6,
       }))
-
-      dynamicPages.push(...projects)
     } catch (error) {
       console.error(`Error fetching ${type.facet}:`, error)
+      return []
     }
-  }
+  })
+
+  const results = await Promise.all(fetchPromises)
+  dynamicPages.push(...results.flat())
 
   return [...staticPages, ...dynamicPages]
 }
