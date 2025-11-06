@@ -41,7 +41,7 @@ export default function ExtensionPage() {
               <p className="text-lg text-gray-300 leading-relaxed mb-6">
                 Официальное браузерное расширение, которое автоматически перенаправляет все ссылки с 
                 <span className="text-modrinth-green font-semibold"> modrinth.com</span> на наш сервис 
-                <span className="text-modrinth-green font-semibold"> modrinth.white-minecraft.net</span>
+                <span className="text-modrinth-green font-semibold"> modrinth.black</span>
               </p>
               
               <div className="space-y-4">
