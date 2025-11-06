@@ -13,7 +13,10 @@ const nunito = Nunito({
   subsets: ['latin', 'cyrillic'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-nunito',
-  display: 'swap'
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: true,
+  fallback: ['system-ui', 'arial'],
 })
 
 export const metadata = {
