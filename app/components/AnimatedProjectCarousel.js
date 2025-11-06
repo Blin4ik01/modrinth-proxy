@@ -61,10 +61,10 @@ const AnimatedProjectCarousel = () => {
       <div className="full-bleed overflow-hidden">
         <div className="flex animate-scroll-left gap-6">
           {manyRow1.map((project, index) => (
-            <div key={`row1-${index}`} className="flex-shrink-0">
+            <div key={`row1-${index}`} className="flex-shrink-0 flex items-stretch">
             <Link
               href={`/${project.type}/${project.slug}`}
-                className="group relative block w-72 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm p-5 rounded-2xl border border-white/10 transition-all duration-500 overflow-hidden"
+                className="group relative block w-72 h-full bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm p-5 rounded-2xl border border-white/10 transition-all duration-500 overflow-hidden"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
               
@@ -102,10 +102,10 @@ const AnimatedProjectCarousel = () => {
       <div className="full-bleed overflow-hidden mt-8">
         <div className="flex animate-scroll-right gap-6">
           {manyRow2.map((project, index) => (
-            <div key={`row2-${index}`} className="flex-shrink-0">
+            <div key={`row2-${index}`} className="flex-shrink-0 flex items-stretch">
             <Link
               href={`/${project.type}/${project.slug}`}
-                className="group relative block w-72 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm p-5 rounded-2xl border border-white/10 transition-all duration-500 overflow-hidden"
+                className="group relative block w-72 h-full bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm p-5 rounded-2xl border border-white/10 transition-all duration-500 overflow-hidden"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
               
@@ -143,10 +143,10 @@ const AnimatedProjectCarousel = () => {
       <div className="full-bleed overflow-hidden mt-8">
         <div className="flex animate-scroll-left gap-6">
           {manyRow3.map((project, index) => (
-            <div key={`row3-${index}`} className="flex-shrink-0">
+            <div key={`row3-${index}`} className="flex-shrink-0 flex items-stretch">
             <Link
               href={`/${project.type}/${project.slug}`}
-                className="group relative block w-72 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm p-5 rounded-2xl border border-white/10 transition-all duration-500 overflow-hidden"
+                className="group relative block w-72 h-full bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm p-5 rounded-2xl border border-white/10 transition-all duration-500 overflow-hidden"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
               
