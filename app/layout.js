@@ -29,7 +29,7 @@ export const metadata = {
     title: 'ModrinthProxy'
   },
   verification: {
-    yandex: '79af01936dc8fd7f'
+    yandex: '63b445e8cd86247b'
   }
 }
 
